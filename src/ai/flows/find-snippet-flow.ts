@@ -40,7 +40,3 @@ Chỉ trả về 'slug' của snippet đó. Nếu không tìm thấy snippet nà
   const { output } = await prompt({ query, context: snippetsAsText });
   return output || { slug: '' };
 }
-
-// Ensure the flow is registered with Genkit for development inspection.
-import { findSnippetFlow } from './dev-exports';
-findSnippetFlow;

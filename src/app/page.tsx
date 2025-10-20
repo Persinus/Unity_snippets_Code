@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { getAllSnippets }s from "@/lib/snippets";
+import { getAllSnippets } from "@/lib/snippets";
 import SnippetCard from "@/components/snippet-card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
