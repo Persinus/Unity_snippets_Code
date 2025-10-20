@@ -193,12 +193,11 @@ export default function Home() {
             return (
               <Badge
                 key={tag}
-                variant="outline"
                 onClick={() => toggleTag(tag)}
                 className={cn(
                   "cursor-pointer transition-all hover:brightness-125",
                    getTagColorClasses(tag),
-                   !isSelected && "opacity-60 hover:opacity-100"
+                   !isSelected && selectedTags.length > 0 && "opacity-50"
                 )}
               >
                 {tag}
