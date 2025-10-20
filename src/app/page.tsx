@@ -187,21 +187,21 @@ export default function Home() {
         
         <div className="flex flex-wrap items-center justify-center gap-2">
           <span className="text-sm font-medium text-muted-foreground">Filter by tag:</span>
-          {allTags.map((tag) => (
-            <Badge
-              key={tag}
-              variant={selectedTags.includes(tag) ? "default" : "secondary"}
-              onClick={() => toggleTag(tag)}
-              className="cursor-pointer transition-colors"
-              style={selectedTags.includes(tag) ? {
-                  backgroundColor: `hsl(var(--tag-${getTagColorClasses(tag, 'raw')}-bg))`,
-                  color: `hsl(var(--tag-${getTagColorClasses(tag, 'raw')}-fg))`,
-                  borderColor: `hsl(var(--tag-${getTagColorClasses(tag, 'raw')}-bg))`
-              } : undefined}
-            >
-              {tag}
-            </Badge>
-          ))}
+          {allTags.map((tag) => {
+            const isSelected = selectedTags.includes(tag);
+            return (
+              <Badge
+                key={tag}
+                variant={isSelected ? "default" : "secondary"}
+                onClick={() => toggleTag(tag)}
+                className={`cursor-pointer transition-colors ${
+                  !isSelected ? 'hover:bg-accent hover:text-accent-foreground' : getTagColorClasses(tag)
+                }`}
+              >
+                {tag}
+              </Badge>
+            );
+          })}
           {selectedTags.length > 0 && (
              <button onClick={() => {setSelectedTags([]); setCurrentPage(1);}} className="text-sm text-primary hover:underline">Clear</button>
           )}
