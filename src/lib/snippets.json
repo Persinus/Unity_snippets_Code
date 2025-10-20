@@ -1,0 +1,32 @@
+{
+  "snippets": [
+    {
+      "slug": "move-character-input-system",
+      "title": "Di chuyển nhân vật bằng Input System mới",
+      "description": "Sử dụng Input System mới của Unity để di chuyển nhân vật 2D hoặc 3D một cách hiệu quả và linh hoạt.",
+      "tags": ["Input", "Gameplay", "Player"],
+      "code": "using UnityEngine;\nusing UnityEngine.InputSystem;\n\npublic class PlayerMovement : MonoBehaviour\n{\n    public float moveSpeed = 5f;\n    private Rigidbody2D rb;\n    private Vector2 moveInput;\n\n    void Awake()\n    {\n        rb = GetComponent<Rigidbody2D>();\n    }\n\n    void FixedUpdate()\n    {\n        rb.velocity = moveInput * moveSpeed;\n    }\n\n    public void OnMove(InputValue value)\n    {\n        moveInput = value.Get<Vector2>();\n    }\n}"
+    },
+    {
+      "slug": "spawn-object-over-time",
+      "title": "Spawn vật thể theo thời gian",
+      "description": "Một script đơn giản để tạo (spawn) các vật thể (prefabs) theo một khoảng thời gian định trước.",
+      "tags": ["Gameplay", "Spawning", "Timer"],
+      "code": "using UnityEngine;\n\npublic class ObjectSpawner : MonoBehaviour\n{\n    public GameObject objectToSpawn;\n    public float spawnInterval = 2f;\n    private float timer;\n\n    void Update()\n    {\n        timer += Time.deltaTime;\n        if (timer >= spawnInterval)\n        {\n            Instantiate(objectToSpawn, transform.position, transform.rotation);\n            timer = 0f;\n        }\n    }\n}"
+    },
+    {
+      "slug": "blur-screen-on-pause",
+      "title": "Làm mờ màn hình khi pause game",
+      "description": "Tự động áp dụng hiệu ứng Depth of Field để làm mờ màn hình khi game được tạm dừng, yêu cầu gói Post Processing.",
+      "tags": ["UI", "Effects", "Pause Menu"],
+      "code": "// This script requires a Post-processing package with Depth of Field.\n// Attach this to a GameObject with a Post-process Volume.\nusing UnityEngine;\nusing UnityEngine.Rendering.PostProcessing;\n\npublic class PauseBlur : MonoBehaviour\n{\n    private PostProcessVolume volume;\n    private DepthOfField dof;\n\n    void Start()\n    {\n        volume = GetComponent<PostProcessVolume>();\n        volume.profile.TryGetSettings(out dof);\n        if(dof != null) dof.enabled.value = false;\n    }\n\n    void Update()\n    {\n        if (dof == null) return;\n\n        if (Time.timeScale == 0f)\n        {\n            dof.enabled.value = true;\n            dof.focusDistance.value = 0.1f;\n        }\n        else\n        {\n            dof.enabled.value = false;\n        }\n    }\n}"
+    },
+    {
+      "slug": "check-collision-by-tag",
+      "title": "Kiểm tra va chạm với tag cụ thể",
+      "description": "Phát hiện va chạm vật lý với một đối tượng khác bằng cách kiểm tra tag của nó.",
+      "tags": ["Physics", "Collision", "Tag"],
+      "code": "using UnityEngine;\n\npublic class CollisionChecker : MonoBehaviour\n{\n    public string targetTag = \"Player\";\n\n    void OnCollisionEnter(Collision collision)\n    {\n        if (collision.gameObject.CompareTag(targetTag))\n        {\n            Debug.Log(\"Collided with \" + targetTag);\n            // Add your logic here\n        }\n    }\n}"
+    }
+  ]
+}
