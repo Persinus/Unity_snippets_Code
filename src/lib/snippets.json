@@ -231,6 +231,20 @@
       "description": "Sử dụng Spring Joint 2D để tạo một kết nối vật lý linh hoạt, giống như một sợi dây hoặc lò xo, giữa hai đối tượng.",
       "tags": ["Physics", "2D", "Joint"],
       "code": "using UnityEngine;\n\n// Gắn script này vào một trong hai vật thể bạn muốn nối\npublic class ConnectWithSpring : MonoBehaviour\n{\n    public Rigidbody2D connectedBody; // Kéo thả vật thể còn lại vào đây\n    public float distance = 2f;\n    public float frequency = 4f; // Độ cứng của lò xo\n\n    void Start()\n    {\n        SpringJoint2D spring = gameObject.AddComponent<SpringJoint2D>();\n\n        spring.connectedBody = connectedBody;\n        spring.autoConfigureDistance = false; // Tự đặt khoảng cách\n        spring.distance = distance;\n        spring.frequency = frequency;\n        spring.dampingRatio = 0.8f; // Độ giảm chấn\n    }\n\n    // Vẽ một đường thẳng giữa hai vật thể trong Editor để dễ hình dung\n    void OnDrawGizmos()\n    {\n        if (connectedBody != null)\n        {\n            Gizmos.color = Color.green;\n            Gizmos.DrawLine(transform.position, connectedBody.position);\n        }\n    }\n}"
+    },
+    {
+      "slug": "coroutines-for-timed-actions",
+      "title": "Quản lý hành động theo thời gian với Coroutine",
+      "description": "Một ví dụ cơ bản về cách sử dụng Coroutine để thực hiện một hành động sau một khoảng thời gian chờ, mà không làm đóng băng game.",
+      "tags": ["Gameplay", "Timer", "Coroutine", "Architecture"],
+      "code": "using UnityEngine;\nusing System.Collections;\n\npublic class CoroutineExample : MonoBehaviour\n{\n    void Start()\n    {\n        Debug.Log(\"Hành động sẽ bắt đầu sau 2 giây.\");\n        StartCoroutine(DelayedAction(2f));\n    }\n\n    private IEnumerator DelayedAction(float delay)\n    {\n        // Dừng thực thi của hàm này trong 'delay' giây\n        yield return new WaitForSeconds(delay);\n\n        // Code bên dưới sẽ chạy sau khi chờ xong\n        Debug.Log(\"Đã 2 giây trôi qua!\");\n        GetComponent<Renderer>().material.color = Color.blue;\n    }\n}"
+    },
+    {
+      "slug": "scriptableobject-for-data",
+      "title": "Sử dụng ScriptableObject để lưu trữ dữ liệu",
+      "description": "Sử dụng ScriptableObject để tạo các asset dữ liệu có thể tái sử dụng, giúp quản lý cấu hình cho vật phẩm, kẻ địch hoặc các cài đặt game một cách linh hoạt và độc lập với scene.",
+      "tags": ["Data Persistence", "Architecture", "ScriptableObject", "Optimization"],
+      "code": "/* ItemData.cs */\n// 1. Tạo một script mới cho ScriptableObject\nusing UnityEngine;\n\n[CreateAssetMenu(fileName = \"New ItemData\", menuName = \"Inventory/Item Data\")]\npublic class ItemData : ScriptableObject\n{\n    public string itemName;\n    public Sprite icon;\n    public int price;\n    public string description;\n}\n\n/* ItemDisplay.cs */\n// 2. Một script khác để sử dụng dữ liệu từ ScriptableObject\nusing UnityEngine;\nusing UnityEngine.UI;\nusing TMPro;\n\npublic class ItemDisplay : MonoBehaviour\n{\n    public ItemData itemData; // Kéo ItemData asset vào đây trong Inspector\n\n    public TextMeshProUGUI nameText;\n    public Image iconImage;\n\n    void Start()\n    {\n        if (itemData != null)\n        {\n            nameText.text = itemData.itemName;\n            iconImage.sprite = itemData.icon;\n        }\n    }\n}\n\n/* Cách tạo asset: */\n// 3. Trong Unity Editor, click chuột phải vào Project window,\n// chọn Create -> Inventory -> Item Data để tạo một asset Item mới."
     }
   ]
 }
