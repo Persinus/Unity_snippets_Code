@@ -16,6 +16,9 @@ const tagColorMap: { [key: string]: string } = {
   "Rich Text": "purple",
   "Addressables": "indigo",
   "Asset Management": "indigo",
+  "Animator": "teal",
+  "Movement": "teal",
+  "Boundaries": "orange",
 
   // Data
   "Data Persistence": "pink",
@@ -38,7 +41,6 @@ const tagColorMap: { [key: string]: string } = {
   // Tools
   DOTween: "teal",
   Animation: "teal",
-  Movement: "teal",
   Scale: "teal",
   Rotation: "teal",
   Fade: "teal",
