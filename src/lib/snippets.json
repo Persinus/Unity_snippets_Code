@@ -48,6 +48,41 @@
       "description": "Một hệ thống Object Pool đơn giản để tái sử dụng các đối tượng thay vì tạo và hủy liên tục, giúp tối ưu hiệu năng đáng kể, đặc biệt khi cần tạo nhiều đối tượng như đạn, kẻ địch.",
       "tags": ["Design Pattern", "Object Pool", "Optimization", "Performance"],
       "code": "using UnityEngine;\nusing System.Collections.Generic;\n\npublic class ObjectPool : MonoBehaviour\n{\n    public GameObject objectToPool;\n    public int amountToPool;\n\n    private List<GameObject> pooledObjects;\n\n    void Start()\n    {\n        pooledObjects = new List<GameObject>();\n        for (int i = 0; i < amountToPool; i++)\n        {\n            GameObject obj = Instantiate(objectToPool);\n            obj.SetActive(false);\n            pooledObjects.Add(obj);\n        }\n    }\n\n    public GameObject GetPooledObject()\n    {\n        for (int i = 0; i < pooledObjects.Count; i++)\n        {\n            if (!pooledObjects[i].activeInHierarchy)\n            {\n                return pooledObjects[i];\n            }\n        }\n        // If no inactive object is found, create a new one\n        GameObject obj = Instantiate(objectToPool);\n        pooledObjects.Add(obj);\n        return obj;\n    }\n\n    public void ReturnObjectToPool(GameObject obj)\n    {\n        obj.SetActive(false);\n    }\n}"
+    },
+    {
+      "slug": "dotween-domove",
+      "title": "DOTween: Hiệu ứng di chuyển (DOMove)",
+      "description": "Sử dụng DOTween để di chuyển một đối tượng đến vị trí mục tiêu một cách mượt mà.",
+      "tags": ["DOTween", "Animation", "Movement"],
+      "code": "using UnityEngine;\nusing DG.Tweening;\n\npublic class DoTweenMove : MonoBehaviour\n{\n    public Vector3 endPosition = new Vector3(5, 0, 0);\n    public float duration = 1f;\n    public Ease easeType = Ease.OutQuad;\n\n    void Start()\n    {\n        // Di chuyển đối tượng đến endPosition trong khoảng thời gian duration\n        transform.DOMove(endPosition, duration).SetEase(easeType);\n    }\n}"
+    },
+    {
+      "slug": "dotween-doscale",
+      "title": "DOTween: Hiệu ứng co giãn (DOScale)",
+      "description": "Sử dụng DOTween để thay đổi kích thước của một đối tượng, tạo hiệu ứng phóng to hoặc thu nhỏ.",
+      "tags": ["DOTween", "Animation", "Scale", "UI"],
+      "code": "using UnityEngine;\nusing DG.Tweening;\n\npublic class DoTweenScale : MonoBehaviour\n{\n    public Vector3 endScale = new Vector3(1.5f, 1.5f, 1.5f);\n    public float duration = 0.5f;\n    public Ease easeType = Ease.OutBack;\n\n    void Start()\n    {\n        // Phóng to đối tượng lên endScale trong khoảng thời gian duration\n        // SetLoops(-1, LoopType.Yoyo) để lặp lại hiệu ứng phóng to-thu nhỏ\n        transform.DOScale(endScale, duration).SetEase(easeType).SetLoops(-1, LoopType.Yoyo);\n    }\n}"
+    },
+    {
+      "slug": "dotween-dorotate",
+      "title": "DOTween: Hiệu ứng xoay (DORotate)",
+      "description": "Sử dụng DOTween để xoay một đối tượng theo một góc nhất định.",
+      "tags": ["DOTween", "Animation", "Rotation"],
+      "code": "using UnityEngine;\nusing DG.Tweening;\n\npublic class DoTweenRotate : MonoBehaviour\n{\n    public Vector3 endRotation = new Vector3(0, 0, 360);\n    public float duration = 2f;\n    public RotateMode rotateMode = RotateMode.FastBeyond360;\n    public Ease easeType = Ease.Linear;\n\n    void Start()\n    {\n        // Xoay đối tượng 360 độ quanh trục Z\n        // SetLoops(-1) để xoay vô hạn\n        transform.DORotate(endRotation, duration, rotateMode).SetEase(easeType).SetLoops(-1, LoopType.Incremental);\n    }\n}"
+    },
+    {
+      "slug": "dotween-dofade-ui",
+      "title": "DOTween: Hiệu ứng mờ dần cho UI (DOFade)",
+      "description": "Sử dụng DOTween để làm mờ dần (fade in/out) một thành phần UI như Image hoặc TextMeshProUGUI.",
+      "tags": ["DOTween", "Animation", "Fade", "UI"],
+      "code": "using UnityEngine;\nusing UnityEngine.UI;\nusing DG.Tweening;\n\n// Gắn script này vào một GameObject có component Image\n[RequireComponent(typeof(Image))]\npublic class DoTweenFadeUI : MonoBehaviour\n{\n    private Image uiImage;\n    public float endValue = 0f; // Fade out (0 = trong suốt, 1 = rõ nét)\n    public float duration = 1f;\n\n    void Awake()\n    {\n        uiImage = GetComponent<Image>();\n    }\n\n    void Start()\n    {\n        // Làm mờ Image đến giá trị endValue\n        uiImage.DOFade(endValue, duration).SetLoops(-1, LoopType.Yoyo);\n    }\n}"
+    },
+    {
+      "slug": "dotween-dopunchscale",
+      "title": "DOTween: Hiệu ứng \"đấm\" (DOPunchScale)",
+      "description": "Sử dụng DOPunchScale của DOTween để tạo hiệu ứng 'nảy' hoặc 'đấm' cho đối tượng, rất hữu ích cho các nút bấm hoặc item.",
+      "tags": ["DOTween", "Animation", "Punch", "UI"],
+      "code": "using UnityEngine;\nusing DG.Tweening;\n\npublic class DoTweenPunch : MonoBehaviour\n{\n    public Vector3 punch = new Vector3(0.2f, 0.2f, 0);\n    public float duration = 0.5f;\n    public int vibrato = 10; // Độ rung\n    public float elasticity = 1f; // Độ đàn hồi\n\n    void Start()\n    {\n        // Bắt đầu hiệu ứng punch khi game chạy\n        // Có thể gọi hàm này khi người dùng click chuột\n        PlayPunchEffect(); \n    }\n\n    public void PlayPunchEffect()\n    {\n      // Tạo hiệu ứng punch cho scale của đối tượng\n      transform.DOPunchScale(punch, duration, vibrato, elasticity);\n    }\n}"
     }
   ]
 }
