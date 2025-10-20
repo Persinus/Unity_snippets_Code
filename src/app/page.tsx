@@ -16,6 +16,7 @@ import {
   PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { getTagColorClasses } from "@/lib/tag-colors";
+import { cn } from "@/lib/utils";
 
 const SNIPPETS_PER_PAGE = 9;
 
@@ -192,11 +193,13 @@ export default function Home() {
             return (
               <Badge
                 key={tag}
-                variant={isSelected ? "default" : "secondary"}
+                variant="outline"
                 onClick={() => toggleTag(tag)}
-                className={`cursor-pointer transition-colors ${
-                  !isSelected ? 'hover:bg-accent hover:text-accent-foreground' : getTagColorClasses(tag)
-                }`}
+                className={cn(
+                  "cursor-pointer transition-all hover:brightness-125",
+                   getTagColorClasses(tag),
+                   !isSelected && "opacity-60 hover:opacity-100"
+                )}
               >
                 {tag}
               </Badge>
