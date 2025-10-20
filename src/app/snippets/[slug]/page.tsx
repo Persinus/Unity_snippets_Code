@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { getTagColorClasses } from "@/lib/tag-colors";
 
 export async function generateStaticParams() {
   const snippets = getAllSnippets();
@@ -43,7 +44,10 @@ export default function SnippetPage({ params }: SnippetPageProps) {
           </h1>
           <div className="flex flex-wrap gap-2">
             {snippet.tags.map((tag) => (
-              <Badge key={tag} variant="secondary">
+              <Badge
+                key={tag}
+                className={getTagColorClasses(tag)}
+              >
                 {tag}
               </Badge>
             ))}

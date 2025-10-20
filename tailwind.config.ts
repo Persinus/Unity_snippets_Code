@@ -1,4 +1,5 @@
 import type {Config} from 'tailwindcss';
+import { getTagColorVariables } from './src/lib/tag-colors';
 
 export default {
   darkMode: ['class'],
@@ -72,6 +73,52 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        tag: {
+          blue: {
+            bg: 'hsl(var(--tag-blue-bg))',
+            fg: 'hsl(var(--tag-blue-fg))',
+          },
+          green: {
+            bg: 'hsl(var(--tag-green-bg))',
+            fg: 'hsl(var(--tag-green-fg))',
+          },
+           cyan: {
+            bg: 'hsl(var(--tag-cyan-bg))',
+            fg: 'hsl(var(--tag-cyan-fg))',
+          },
+          yellow: {
+            bg: 'hsl(var(--tag-yellow-bg))',
+            fg: 'hsl(var(--tag-yellow-fg))',
+          },
+          purple: {
+            bg: 'hsl(var(--tag-purple-bg))',
+            fg: 'hsl(var(--tag-purple-fg))',
+          },
+          orange: {
+            bg: 'hsl(var(--tag-orange-bg))',
+            fg: 'hsl(var(--tag-orange-fg))',
+          },
+          red: {
+            bg: 'hsl(var(--tag-red-bg))',
+            fg: 'hsl(var(--tag-red-fg))',
+          },
+          pink: {
+            bg: 'hsl(var(--tag-pink-bg))',
+            fg: 'hsl(var(--tag-pink-fg))',
+          },
+          teal: {
+            bg: 'hsl(var(--tag-teal-bg))',
+            fg: 'hsl(var(--tag-teal-fg))',
+          },
+          indigo: {
+            bg: 'hsl(var(--tag-indigo-bg))',
+            fg: 'hsl(var(--tag-indigo-fg))',
+          },
+          gray: {
+            bg: 'hsl(var(--tag-gray-bg))',
+            fg: 'hsl(var(--tag-gray-fg))',
+          },
+        }
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -102,5 +149,13 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
+  plugins: [
+    require('tailwindcss-animate'), 
+    require('@tailwindcss/typography'),
+    function ({ addBase }) {
+      addBase({
+        ':root': getTagColorVariables(),
+      });
+    },
+  ],
 } satisfies Config;

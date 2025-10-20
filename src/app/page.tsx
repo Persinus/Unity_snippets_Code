@@ -6,6 +6,18 @@ import SnippetCard from "@/components/snippet-card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationLink,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
+import { getTagColorClasses } from "@/lib/tag-colors";
+
+const SNIPPETS_PER_PAGE = 9;
 
 export default function Home() {
   const allSnippets = useMemo(() => getAllSnippets(), []);
@@ -19,6 +31,7 @@ export default function Home() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filteredSnippets = useMemo(() => {
     return allSnippets.filter((snippet) => {
@@ -35,13 +48,116 @@ export default function Home() {
     });
   }, [allSnippets, searchTerm, selectedTags]);
 
+  const totalPages = Math.ceil(filteredSnippets.length / SNIPPETS_PER_PAGE);
+
+  const currentSnippets = useMemo(() => {
+    const start = (currentPage - 1) * SNIPPETS_PER_PAGE;
+    const end = start + SNIPPETS_PER_PAGE;
+    return filteredSnippets.slice(start, end);
+  }, [filteredSnippets, currentPage]);
+
   const toggleTag = (tag: string) => {
     setSelectedTags((prevTags) =>
       prevTags.includes(tag)
         ? prevTags.filter((t) => t !== tag)
         : [...prevTags, tag]
     );
+    setCurrentPage(1); // Reset to first page on filter change
   };
+  
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    const halfMaxPages = Math.floor(maxPagesToShow / 2);
+    let startPage = Math.max(1, currentPage - halfMaxPages);
+    let endPage = Math.min(totalPages, currentPage + halfMaxPages);
+
+    if (currentPage - 1 <= halfMaxPages) {
+      endPage = Math.min(totalPages, maxPagesToShow);
+    }
+    if (totalPages - currentPage <= halfMaxPages) {
+      startPage = Math.max(1, totalPages - maxPagesToShow + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+       <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(currentPage - 1);
+              }}
+              aria-disabled={currentPage === 1}
+              className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+            />
+          </PaginationItem>
+
+          {startPage > 1 && (
+             <PaginationItem>
+                <PaginationLink href="#" onClick={(e) => {e.preventDefault(); handlePageChange(1);}}>1</PaginationLink>
+             </PaginationItem>
+          )}
+          {startPage > 2 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+
+          {pageNumbers.map((page) => (
+            <PaginationItem key={page}>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(page);
+                }}
+                isActive={currentPage === page}
+              >
+                {page}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+
+          {endPage < totalPages -1 && (
+             <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+          {endPage < totalPages && (
+              <PaginationItem>
+                  <PaginationLink href="#" onClick={(e) => {e.preventDefault(); handlePageChange(totalPages);}}>{totalPages}</PaginationLink>
+              </PaginationItem>
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePageChange(currentPage + 1);
+              }}
+              aria-disabled={currentPage === totalPages}
+              className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -62,7 +178,10 @@ export default function Home() {
             placeholder="Search snippets by title or description..."
             className="w-full pl-10"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1); // Reset to first page on search
+            }}
           />
         </div>
         
@@ -74,19 +193,24 @@ export default function Home() {
               variant={selectedTags.includes(tag) ? "default" : "secondary"}
               onClick={() => toggleTag(tag)}
               className="cursor-pointer transition-colors"
+              style={selectedTags.includes(tag) ? {
+                  backgroundColor: `hsl(var(--tag-${getTagColorClasses(tag, 'raw')}-bg))`,
+                  color: `hsl(var(--tag-${getTagColorClasses(tag, 'raw')}-fg))`,
+                  borderColor: `hsl(var(--tag-${getTagColorClasses(tag, 'raw')}-bg))`
+              } : undefined}
             >
               {tag}
             </Badge>
           ))}
           {selectedTags.length > 0 && (
-             <button onClick={() => setSelectedTags([])} className="text-sm text-primary hover:underline">Clear</button>
+             <button onClick={() => {setSelectedTags([]); setCurrentPage(1);}} className="text-sm text-primary hover:underline">Clear</button>
           )}
         </div>
       </div>
       
-      {filteredSnippets.length > 0 ? (
+      {currentSnippets.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredSnippets.map((snippet) => (
+          {currentSnippets.map((snippet) => (
             <SnippetCard key={snippet.slug} snippet={snippet} />
           ))}
         </div>
@@ -95,6 +219,8 @@ export default function Home() {
           <p className="text-lg text-muted-foreground">No snippets found. Try a different search or filter.</p>
         </div>
       )}
+
+      {renderPagination()}
     </div>
   );
 }
