@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import hljs from "highlight.js/lib/core";
+import csharp from "highlight.js/lib/languages/csharp";
+import "highlight.js/styles/github-dark.css"; // Or your preferred theme
+
+hljs.registerLanguage("csharp", csharp);
 
 type CodeBlockProps = {
   code: string;
@@ -12,6 +17,13 @@ type CodeBlockProps = {
 
 export default function CodeBlock({ code, className }: CodeBlockProps) {
   const [hasCopied, setHasCopied] = useState(false);
+  const codeRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (codeRef.current) {
+      hljs.highlightElement(codeRef.current);
+    }
+  }, [code]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(code).then(() => {
@@ -29,7 +41,7 @@ export default function CodeBlock({ code, className }: CodeBlockProps) {
         className
       )}
     >
-      <div className="absolute right-2 top-2">
+      <div className="absolute right-2 top-2 z-10">
         <Button
           size="icon"
           variant="ghost"
@@ -45,7 +57,9 @@ export default function CodeBlock({ code, className }: CodeBlockProps) {
         </Button>
       </div>
       <pre className="overflow-x-auto p-4">
-        <code>{code}</code>
+        <code ref={codeRef} className="language-csharp bg-transparent p-0">
+          {code}
+        </code>
       </pre>
     </div>
   );
