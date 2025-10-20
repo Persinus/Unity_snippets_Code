@@ -133,6 +133,22 @@
       "description": "Một script thống nhất để xử lý cả input từ chuột trên máy tính và chạm trên thiết bị di động để di chuyển một đối tượng.",
       "tags": ["Input", "Mobile", "Player", "Movement"],
       "code": "using UnityEngine;\n\npublic class TouchAndMouseInput : MonoBehaviour\n{\n    public float moveSpeed = 10f;\n\n    void Update()\n    {\n        Vector3 targetPosition = Vector3.zero;\n        bool hasInput = false;\n\n        // Xử lý Touch Input\n        if (Input.touchCount > 0)\n        {\n            Touch touch = Input.GetTouch(0);\n            if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)\n            {\n                targetPosition = Camera.main.ScreenToWorldPoint(touch.position);\n                hasInput = true;\n            }\n        }\n        // Xử lý Mouse Input\n        else if (Input.GetMouseButton(0)) // 0 là nút chuột trái\n        {\n            targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);\n            hasInput = true;\n        }\n\n        if (hasInput)\n        {\n            targetPosition.z = transform.position.z; // Giữ nguyên trục Z\n            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);\n        }\n    }\n}"
+    },
+    {
+      "slug": "temporary-slow-motion",
+      "title": "Tạo hiệu ứng slow motion tạm thời",
+      "description": "Một script đơn giản để làm chậm thời gian (slow motion) trong một khoảng thời gian ngắn, sau đó tự động trở về tốc độ bình thường.",
+      "tags": ["Gameplay", "Effects", "Time"],
+      "code": "using UnityEngine;\nusing System.Collections;\n\npublic class SlowMotionEffect : MonoBehaviour\n{\n    public float slowMotionFactor = 0.5f;\n    public float slowMotionDuration = 2f;\n\n    // Kích hoạt hiệu ứng\n    public void TriggerSlowMotion()\n    {\n        StartCoroutine(DoSlowMotion());\n    }\n\n    private IEnumerator DoSlowMotion()\n    {\n        Time.timeScale = slowMotionFactor;\n        Time.fixedDeltaTime = Time.timeScale * 0.02f;\n\n        // Chờ hết thời gian slow motion\n        yield return new WaitForSecondsRealtime(slowMotionDuration);\n\n        // Trở về tốc độ bình thường\n        Time.timeScale = 1f;\n        Time.fixedDeltaTime = 0.02f;\n    }\n\n    // Ví dụ cách kích hoạt hiệu ứng khi nhấn phím Q\n    void Update()\n    {\n        if (Input.GetKeyDown(KeyCode.Q))\n        {\n            TriggerSlowMotion();\n        }\n    }\n}"
+    },
+    {
+      "slug": "cinemachine-camera-shake-impulse",
+      "title": "Rung camera với Cinemachine Impulse",
+      "description": "Sử dụng Cinemachine Impulse để tạo hiệu ứng rung camera mạnh mẽ. Yêu cầu đã cài đặt Cinemachine và có một Cinemachine Impulse Listener trên camera.",
+      "tags": ["Cinemachine", "Camera", "Effects"],
+      "code": "using UnityEngine;\nusing Cinemachine;\n\npublic class CameraShaker : MonoBehaviour\n{\n    // Tham chiếu đến CinemachineImpulseSource\n    private CinemachineImpulseSource impulseSource;\n\n    void Awake()\n    {\n        impulseSource = GetComponent<CinemachineImpulseSource>();\n    }\n\n    public void ShakeCamera(Vector3 force)\n    {\n        if(impulseSource != null)\n        {\n            impulseSource.GenerateImpulseWithVelocity(force);\n        }\n    }\n\n    // Ví dụ cách kích hoạt rung camera khi nhấn Space\n    void Update()\n    {\n        if (Input.GetKeyDown(KeyCode.Space))\n        {\n            ShakeCamera(Vector3.one * 2f); // Lực rung\n        }\n    }\n}"
     }
   ]
 }
+
+    
