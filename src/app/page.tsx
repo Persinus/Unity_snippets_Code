@@ -188,22 +188,18 @@ export default function Home() {
         
         <div className="flex flex-wrap items-center justify-center gap-2">
           <span className="text-sm font-medium text-muted-foreground">Filter by tag:</span>
-          {allTags.map((tag) => {
-            const isSelected = selectedTags.includes(tag);
-            return (
-              <Badge
-                key={tag}
-                onClick={() => toggleTag(tag)}
-                className={cn(
-                  "cursor-pointer transition-all hover:brightness-125",
-                   getTagColorClasses(tag),
-                   !isSelected && selectedTags.length > 0 && "opacity-50"
-                )}
-              >
-                {tag}
-              </Badge>
-            );
-          })}
+          {allTags.map((tag) => (
+            <Badge
+              key={tag}
+              onClick={() => toggleTag(tag)}
+              className={cn(
+                "cursor-pointer transition-all",
+                getTagColorClasses(tag, selectedTags.includes(tag), selectedTags.length > 0)
+              )}
+            >
+              {tag}
+            </Badge>
+          ))}
           {selectedTags.length > 0 && (
              <button onClick={() => {setSelectedTags([]); setCurrentPage(1);}} className="text-sm text-primary hover:underline">Clear</button>
           )}

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Snippet } from "@/lib/snippets";
 import { ArrowRight } from "lucide-react";
 import { getTagColorClasses } from "@/lib/tag-colors";
+import { cn } from "@/lib/utils";
 
 type SnippetCardProps = {
   snippet: Snippet;
@@ -31,7 +32,7 @@ export default function SnippetCard({ snippet }: SnippetCardProps) {
         <CardContent className="flex-grow">
           <div className="flex flex-wrap gap-2">
             {snippet.tags.map((tag) => (
-              <Badge key={tag} className={getTagColorClasses(tag)}>
+              <Badge key={tag} className={cn(getTagColorClasses(tag))}>
                 {tag}
               </Badge>
             ))}

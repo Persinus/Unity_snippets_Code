@@ -37,12 +37,19 @@ const tagColorMap: { [key: string]: string } = {
   Performance: "indigo",
 };
 
-export function getTagColorClasses(tag: string, type: 'classes' | 'raw' = 'classes'): string {
+export function getTagColorClasses(tag: string, selected: boolean = false, hasSelection: boolean = false): string {
   const colorName = tagColorMap[tag] || "gray";
-  if (type === 'raw') {
-    return colorName;
+  const baseClasses = `bg-tag-${colorName}-bg text-tag-${colorName}-fg border-tag-${colorName}-bg`;
+  
+  if (hasSelection) {
+    if (selected) {
+      return `${baseClasses} brightness-125 shadow-md`;
+    } else {
+      return `${baseClasses} opacity-50 hover:opacity-100`;
+    }
   }
-  return `bg-tag-${colorName}-bg text-tag-${colorName}-fg border-tag-${colorName}-bg`;
+  
+  return `${baseClasses} hover:brightness-125`;
 }
 
 // Generates CSS variables for Tailwind
