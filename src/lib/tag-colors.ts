@@ -1,4 +1,5 @@
 
+
 const tagColorMap: { [key: string]: string } = {
   // Unity specific
   Input: "blue",
@@ -23,6 +24,7 @@ const tagColorMap: { [key: string]: string } = {
   "Time": "yellow",
   "Cinemachine": "red",
   "Camera": "red",
+  "Scene Management": "green",
 
 
   // Data
@@ -95,4 +97,5 @@ export function getTagColorVariables() {
   return variables;
 }
 
+    
     

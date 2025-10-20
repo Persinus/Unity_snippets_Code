@@ -147,6 +147,13 @@
       "description": "Sử dụng Cinemachine Impulse để tạo hiệu ứng rung camera mạnh mẽ. Yêu cầu đã cài đặt Cinemachine và có một Cinemachine Impulse Listener trên camera.",
       "tags": ["Cinemachine", "Camera", "Effects"],
       "code": "using UnityEngine;\nusing Cinemachine;\n\npublic class CameraShaker : MonoBehaviour\n{\n    // Tham chiếu đến CinemachineImpulseSource\n    private CinemachineImpulseSource impulseSource;\n\n    void Awake()\n    {\n        impulseSource = GetComponent<CinemachineImpulseSource>();\n    }\n\n    public void ShakeCamera(Vector3 force)\n    {\n        if(impulseSource != null)\n        {\n            impulseSource.GenerateImpulseWithVelocity(force);\n        }\n    }\n\n    // Ví dụ cách kích hoạt rung camera khi nhấn Space\n    void Update()\n    {\n        if (Input.GetKeyDown(KeyCode.Space))\n        {\n            ShakeCamera(Vector3.one * 2f); // Lực rung\n        }\n    }\n}"
+    },
+    {
+      "slug": "scene-loader-async",
+      "title": "Tải và chuyển cảnh (SceneLoader)",
+      "description": "Một script quản lý việc chuyển cảnh trong Unity, bao gồm cả việc tải cảnh bất đồng bộ (asynchronously) với thanh tiến trình (loading bar).",
+      "tags": ["Gameplay", "Scene Management", "UI"],
+      "code": "using UnityEngine;\nusing UnityEngine.SceneManagement;\nusing UnityEngine.UI;\nusing System.Collections;\n\npublic class SceneLoader : MonoBehaviour\n{\n    public Slider loadingBar;\n    public GameObject loadingScreen;\n\n    // Tải một cảnh bằng tên của nó\n    public void LoadScene(string sceneName)\n    {\n        StartCoroutine(LoadSceneAsynchronously(sceneName));\n    }\n\n    private IEnumerator LoadSceneAsynchronously(string sceneName)\n    {\n        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);\n\n        if (loadingScreen != null) loadingScreen.SetActive(true);\n\n        while (!operation.isDone)\n        {\n            // operation.progress có giá trị từ 0 đến 0.9\n            float progress = Mathf.Clamp01(operation.progress / 0.9f);\n            \n            if (loadingBar != null) loadingBar.value = progress;\n\n            Debug.Log(\"Loading progress: \" + (progress * 100f) + \"%\");\n\n            yield return null;\n        }\n    }\n\n    // Tải lại cảnh hiện tại\n    public void ReloadCurrentScene()\n    {\n        SceneManager.LoadScene(SceneManager.GetActiveScene().name);\n    }\n}"
     }
   ]
 }
