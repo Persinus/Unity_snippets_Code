@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { getAllSnippets } from "@/lib/snippets";
+import { getAllSnippets }s from "@/lib/snippets";
 import SnippetCard from "@/components/snippet-card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/pagination";
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { CommandDialogSearch } from "@/components/command-dialog-search";
 
 const SNIPPETS_PER_PAGE = 9;
 
@@ -33,6 +35,8 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [open, setOpen] = useState(false)
+
 
   const filteredSnippets = useMemo(() => {
     return allSnippets.filter((snippet) => {
@@ -162,6 +166,7 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
+       <CommandDialogSearch open={open} setOpen={setOpen} />
       <div className="text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           Welcome to Unity Codex
@@ -184,6 +189,13 @@ export default function Home() {
               setCurrentPage(1); // Reset to first page on search
             }}
           />
+        </div>
+        
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <Button onClick={() => setOpen(true)} variant="outline">
+            <Search className="mr-2 h-4 w-4" />
+            Hỏi AI...
+          </Button>
         </div>
         
         <div className="flex flex-wrap items-center justify-center gap-2">
