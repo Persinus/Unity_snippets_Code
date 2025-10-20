@@ -12,6 +12,11 @@ const tagColorMap: { [key: string]: string } = {
   Collision: "orange",
   Tag: "orange",
   Mobile: "red",
+  "TextMeshPro": "purple",
+  "Rich Text": "purple",
+  "Addressables": "indigo",
+  "Asset Management": "indigo",
+
 
   // Monetization
   AdMob: "green",
