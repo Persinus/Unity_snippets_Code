@@ -168,6 +168,34 @@
       "description": "Tạo hiệu ứng chiều sâu cho background 2D bằng cách di chuyển các lớp (layers) với tốc độ khác nhau khi camera di chuyển.",
       "tags": ["Effects", "Camera", "Movement"],
       "code": "using UnityEngine;\n\npublic class ParallaxBackground : MonoBehaviour\n{\n    private Transform cameraTransform;\n    private Vector3 lastCameraPosition;\n    [SerializeField] private Vector2 parallaxEffectMultiplier;\n\n    void Start()\n    {\n        cameraTransform = Camera.main.transform;\n        lastCameraPosition = cameraTransform.position;\n    }\n\n    void LateUpdate()\n    {\n        Vector3 deltaMovement = cameraTransform.position - lastCameraPosition;\n        transform.position += new Vector3(deltaMovement.x * parallaxEffectMultiplier.x, deltaMovement.y * parallaxEffectMultiplier.y, 0);\n        lastCameraPosition = cameraTransform.position;\n    }\n}"
+    },
+    {
+      "slug": "basic-health-system",
+      "title": "Hệ thống máu cơ bản",
+      "description": "Quản lý máu của nhân vật hoặc kẻ địch, nhận sát thương và xử lý khi hết máu.",
+      "tags": ["Gameplay", "Player", "Health"],
+      "code": "using UnityEngine;\nusing UnityEngine.Events;\n\npublic class HealthSystem : MonoBehaviour\n{\n    public int maxHealth = 100;\n    private int currentHealth;\n\n    public UnityEvent OnDeath;\n\n    void Start()\n    {\n        currentHealth = maxHealth;\n    }\n\n    public void TakeDamage(int damageAmount)\n    {\n        currentHealth -= damageAmount;\n        if (currentHealth <= 0)\n        {\n            currentHealth = 0;\n            Die();\n        }\n    }\n\n    private void Die()\n    {\n        Debug.Log(gameObject.name + \" has died.\");\n        OnDeath.Invoke();\n        // Ví dụ: Destroy(gameObject);\n    }\n}"
+    },
+    {
+      "slug": "audio-manager-singleton",
+      "title": "Quản lý âm thanh (AudioManager)",
+      "description": "Một Singleton để quản lý và phát các hiệu ứng âm thanh (SFX) và nhạc nền (BGM) một cách dễ dàng từ bất kỳ đâu trong game.",
+      "tags": ["Audio", "Singleton", "Architecture"],
+      "code": "using UnityEngine;\n\npublic class AudioManager : MonoBehaviour\n{\n    public static AudioManager Instance { get; private set; }\n\n    public AudioSource sfxSource;\n    public AudioSource bgmSource;\n\n    void Awake()\n    {\n        if (Instance == null)\n        {\n            Instance = this;\n            DontDestroyOnLoad(gameObject);\n        }\n        else\n        {\n            Destroy(gameObject);\n        }\n    }\n\n    public void PlaySFX(AudioClip clip)\n    {\n        sfxSource.PlayOneShot(clip);\n    }\n\n    public void PlayBGM(AudioClip clip)\n    {\n        bgmSource.clip = clip;\n        bgmSource.Play();\n    }\n}"
+    },
+    {
+      "slug": "look-at-mouse-2d",
+      "title": "Xoay theo con trỏ chuột (2D)",
+      "description": "Làm cho một đối tượng 2D luôn xoay và hướng về vị trí của con trỏ chuột, hữu ích cho các game top-down.",
+      "tags": ["Movement", "Rotation", "Input", "Player"],
+      "code": "using UnityEngine;\n\npublic class LookAtMouse : MonoBehaviour\n{\n    void Update()\n    {\n        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);\n        Vector2 direction = mousePosition - transform.position;\n        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;\n        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));\n    }\n}"
+    },
+    {
+      "slug": "sprite-blinking-effect",
+      "title": "Hiệu ứng nhấp nháy cho Sprite",
+      "description": "Tạo hiệu ứng nhấp nháy cho Sprite Renderer, thường được sử dụng khi nhân vật nhận sát thương để biểu thị trạng thái bất tử tạm thời.",
+      "tags": ["Effects", "Visuals", "Player"],
+      "code": "using System.Collections;\nusing UnityEngine;\n\npublic class BlinkEffect : MonoBehaviour\n{\n    private SpriteRenderer spriteRenderer;\n\n    void Awake()\n    {\n        spriteRenderer = GetComponent<SpriteRenderer>();\n    }\n\n    public void StartBlinking(float duration, float blinkInterval)\n    {\n        StartCoroutine(BlinkCoroutine(duration, blinkInterval));\n    }\n\n    private IEnumerator BlinkCoroutine(float duration, float blinkInterval)\n    {\n        float endTime = Time.time + duration;\n        while (Time.time < endTime)\n        {\n            spriteRenderer.enabled = !spriteRenderer.enabled;\n            yield return new WaitForSeconds(blinkInterval);\n        }\n        spriteRenderer.enabled = true; // Ensure sprite is visible at the end\n    }\n}"
     }
   ]
 }

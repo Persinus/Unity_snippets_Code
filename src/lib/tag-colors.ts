@@ -25,7 +25,10 @@ const tagColorMap: { [key: string]: string } = {
   "Cinemachine": "red",
   "Camera": "red",
   "Scene Management": "green",
-
+  "Health": "red",
+  "Audio": "blue",
+  "Visuals": "purple",
+  "Rotation": "teal",
 
   // Data
   "Data Persistence": "pink",
@@ -49,7 +52,6 @@ const tagColorMap: { [key: string]: string } = {
   DOTween: "teal",
   Animation: "teal",
   Scale: "teal",
-  Rotation: "teal",
   Fade: "teal",
   Punch: "teal",
 
