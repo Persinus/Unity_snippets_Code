@@ -17,6 +17,13 @@ const tagColorMap: { [key: string]: string } = {
   "Addressables": "indigo",
   "Asset Management": "indigo",
 
+  // Data
+  "Data Persistence": "pink",
+  Saving: "pink",
+  PlayerPrefs: "pink",
+  JSON: "pink",
+  Newtonsoft: "pink",
+
 
   // Monetization
   AdMob: "green",
