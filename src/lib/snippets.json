@@ -247,34 +247,6 @@
       "code": "/* ItemData.cs */\n// 1. Tạo một script mới cho ScriptableObject\nusing UnityEngine;\n\n[CreateAssetMenu(fileName = \"New ItemData\", menuName = \"Inventory/Item Data\")]\npublic class ItemData : ScriptableObject\n{\n    public string itemName;\n    public Sprite icon;\n    public int price;\n    public string description;\n}\n\n/* ItemDisplay.cs */\n// 2. Một script khác để sử dụng dữ liệu từ ScriptableObject\nusing UnityEngine;\nusing UnityEngine.UI;\nusing TMPro;\n\npublic class ItemDisplay : MonoBehaviour\n{\n    public ItemData itemData; // Kéo ItemData asset vào đây trong Inspector\n\n    public TextMeshProUGUI nameText;\n    public Image iconImage;\n\n    void Start()\n    {\n        if (itemData != null)\n        {\n            nameText.text = itemData.itemName;\n            iconImage.sprite = itemData.icon;\n        }\n    }\n}\n\n/* Cách tạo asset: */\n// 3. Trong Unity Editor, click chuột phải vào Project window,\n// chọn Create -> Inventory -> Item Data để tạo một asset Item mới."
     },
     {
-      "slug": "ui-typewriter-effect",
-      "title": "Hiệu ứng chữ chạy (Typewriter Effect)",
-      "description": "Làm cho văn bản trong TextMeshPro xuất hiện tuần tự từng chữ một, tạo cảm giác như đang được gõ máy chữ, thường dùng trong hội thoại.",
-      "tags": ["UI", "Effects", "TextMeshPro"],
-      "code": "using System.Collections;\nusing UnityEngine;\nusing TMPro;\n\npublic class TypewriterEffect : MonoBehaviour\n{\n    public TextMeshProUGUI textComponent;\n    public float delay = 0.05f;\n    private string fullText;\n\n    void Awake()\n    {\n        if (textComponent == null) textComponent = GetComponent<TextMeshProUGUI>();\n        fullText = textComponent.text;\n        textComponent.text = \"\";\n    }\n\n    void Start()\n    {\n        StartCoroutine(ShowText());\n    }\n\n    IEnumerator ShowText()\n    {\n        for (int i = 0; i <= fullText.Length; i++)\n        {\n            textComponent.text = fullText.Substring(0, i);\n            yield return new WaitForSeconds(delay);\n        }\n    }\n}"
-    },
-    {
-      "slug": "world-space-health-bar",
-      "title": "Thanh máu hướng về camera (World Space UI)",
-      "description": "Tạo một thanh máu dạng World Space UI (ví dụ: trên đầu kẻ địch) và đảm bảo nó luôn xoay về phía camera chính của người chơi.",
-      "tags": ["UI", "Health", "Camera", "3D"],
-      "code": "using UnityEngine;\n\npublic class Billboard : MonoBehaviour\n{\n    private Transform mainCameraTransform;\n\n    void Start()\n    {\n        if (Camera.main != null)\n        {\n            mainCameraTransform = Camera.main.transform;\n        }\n    }\n\n    void LateUpdate()\n    {\n        if (mainCameraTransform == null) return;\n\n        // Xoay đối tượng này để nó nhìn vào camera\n        // nhưng chỉ xoay quanh trục Y của camera\n        transform.LookAt(transform.position + mainCameraTransform.rotation * Vector3.forward,\n                         mainCameraTransform.rotation * Vector3.up);\n    }\n}"
-    },
-    {
-      "slug": "ui-compass-system",
-      "title": "Hệ thống La bàn (Compass)",
-      "description": "Hiển thị các điểm đánh dấu (marker) cho các mục tiêu trên một thanh la bàn UI, giúp người chơi định hướng.",
-      "tags": ["UI", "Gameplay", "Navigation"],
-      "code": "using UnityEngine;\nusing UnityEngine.UI;\n\npublic class Compass : MonoBehaviour\n{\n    public Transform playerTransform;\n    public RectTransform compassBar;\n    public GameObject markerPrefab;\n    public Transform target;\n\n    private Image markerImage;\n\n    void Start()\n    {\n        GameObject newMarker = Instantiate(markerPrefab, compassBar);\n        markerImage = newMarker.GetComponent<Image>();\n    }\n\n    void Update()\n    {\n        if (playerTransform == null || target == null || markerImage == null) return;\n\n        // Tính toán hướng tới mục tiêu\n        Vector3 directionToTarget = (target.position - playerTransform.position).normalized;\n\n        // Chuyển hướng 3D thành góc 2D trên mặt phẳng XZ\n        float angle = Vector2.SignedAngle(new Vector2(playerTransform.forward.x, playerTransform.forward.z), \n                                            new Vector2(directionToTarget.x, directionToTarget.z));\n\n        // Chuyển góc thành vị trí trên thanh la bàn\n        float compassWidth = compassBar.rect.width;\n        float markerPositionX = Mathf.Clamp(angle / 180f * compassWidth, -compassWidth / 2f, compassWidth / 2f);\n\n        markerImage.rectTransform.anchoredPosition = new Vector2(markerPositionX, 0);\n    }\n}"
-    },
-    {
-      "slug": "options-menu-settings",
-      "title": "Menu Tùy chọn (Âm thanh, Đồ họa)",
-      "description": "Một script để quản lý menu tùy chọn, cho phép người chơi điều chỉnh âm lượng tổng, chất lượng đồ họa và độ phân giải màn hình.",
-      "tags": ["UI", "Audio", "Settings"],
-      "code": "using UnityEngine;\nusing UnityEngine.UI;\nusing UnityEngine.Audio;\nusing System.Collections.Generic;\nusing TMPro;\n\npublic class OptionsMenu : MonoBehaviour\n{\n    public AudioMixer audioMixer;\n    public TMP_Dropdown resolutionDropdown;\n\n    private Resolution[] resolutions;\n\n    void Start()\n    {\n        // Lấy danh sách độ phân giải màn hình hỗ trợ\n        resolutions = Screen.resolutions;\n        resolutionDropdown.ClearOptions();\n\n        List<string> options = new List<string>();\n        int currentResolutionIndex = 0;\n        for (int i = 0; i < resolutions.Length; i++)\n        {\n            string option = resolutions[i].width + \" x \" + resolutions[i].height;\n            options.Add(option);\n\n            if (resolutions[i].width == Screen.currentResolution.width &&\n                resolutions[i].height == Screen.currentResolution.height)\n            {\n                currentResolutionIndex = i;\n            }\n        }\n\n        resolutionDropdown.AddOptions(options);\n        resolutionDropdown.value = currentResolutionIndex;\n        resolutionDropdown.RefreshShownValue();\n    }\n\n    public void SetVolume(float volume)\n    {\n        // \"MasterVolume\" phải được tạo trong AudioMixer trước\n        audioMixer.SetFloat(\"MasterVolume\", Mathf.Log10(volume) * 20);\n    }\n\n    public void SetQuality(int qualityIndex)\n    {\n        QualitySettings.SetQualityLevel(qualityIndex);\n    }\n\n    public void SetFullscreen(bool isFullscreen)\n    {\n        Screen.fullScreen = isFullscreen;\n    }\n\n    public void SetResolution(int resolutionIndex)\n    {\n        Resolution resolution = resolutions[resolutionIndex];\n        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);\n    }\n}"
-    },
-    {
       "slug": "android-manifest-example",
       "title": "AndroidManifest.xml toàn diện",
       "description": "Một ví dụ về tệp AndroidManifest.xml với các quyền và cấu hình phổ biến được chú thích chi tiết. Dùng làm tài liệu tham khảo khi build cho Android.",
@@ -413,6 +385,34 @@
       "description": "Giúp nhân vật đứng vững trên các nền tảng di chuyển (moving platforms) bằng cách tạm thời đặt nhân vật làm con của nền tảng đó.",
       "tags": ["Movement", "Player", "Physics", "Platformer"],
       "code": "using UnityEngine;\n\n// Gắn script này vào Player\npublic class MovingPlatformInteractor : MonoBehaviour\n{\n    private Transform originalParent;\n\n    void Start()\n    {\n        originalParent = transform.parent; // Lưu lại parent ban đầu (nếu có)\n    }\n\n    private void OnCollisionEnter(Collision collision)\n    {\n        // Kiểm tra nếu va chạm với một đối tượng có tag \"MovingPlatform\"\n        if (collision.gameObject.CompareTag(\"MovingPlatform\"))\n        {\n            // Đặt player làm con của platform để di chuyển cùng nó\n            transform.SetParent(collision.transform);\n        }\n    }\n\n    private void OnCollisionExit(Collision collision)\n    {\n        if (collision.gameObject.CompareTag(\"MovingPlatform\"))\n        {\n            // Trả player về trạng thái ban đầu khi rời khỏi platform\n            transform.SetParent(originalParent);\n        }\n    }\n}"
+    },
+    {
+      "slug": "ui-typewriter-effect",
+      "title": "Hiệu ứng chữ chạy (Typewriter Effect)",
+      "description": "Làm cho văn bản trong TextMeshPro xuất hiện tuần tự từng chữ một, tạo cảm giác như đang được gõ máy chữ, thường dùng trong hội thoại.",
+      "tags": ["UI", "Effects", "TextMeshPro"],
+      "code": "using System.Collections;\nusing UnityEngine;\nusing TMPro;\n\npublic class TypewriterEffect : MonoBehaviour\n{\n    public TextMeshProUGUI textComponent;\n    public float delay = 0.05f;\n    private string fullText;\n\n    void Awake()\n    {\n        if (textComponent == null) textComponent = GetComponent<TextMeshProUGUI>();\n        fullText = textComponent.text;\n        textComponent.text = \"\";\n    }\n\n    void Start()\n    {\n        StartCoroutine(ShowText());\n    }\n\n    IEnumerator ShowText()\n    {\n        for (int i = 0; i <= fullText.Length; i++)\n        {\n            textComponent.text = fullText.Substring(0, i);\n            yield return new WaitForSeconds(delay);\n        }\n    }\n}"
+    },
+    {
+      "slug": "world-space-health-bar",
+      "title": "Thanh máu hướng về camera (World Space UI)",
+      "description": "Tạo một thanh máu dạng World Space UI (ví dụ: trên đầu kẻ địch) và đảm bảo nó luôn xoay về phía camera chính của người chơi.",
+      "tags": ["UI", "Health", "Camera", "3D"],
+      "code": "using UnityEngine;\n\npublic class Billboard : MonoBehaviour\n{\n    private Transform mainCameraTransform;\n\n    void Start()\n    {\n        if (Camera.main != null)\n        {\n            mainCameraTransform = Camera.main.transform;\n        }\n    }\n\n    void LateUpdate()\n    {\n        if (mainCameraTransform == null) return;\n\n        // Xoay đối tượng này để nó nhìn vào camera\n        // nhưng chỉ xoay quanh trục Y của camera\n        transform.LookAt(transform.position + mainCameraTransform.rotation * Vector3.forward,\n                         mainCameraTransform.rotation * Vector3.up);\n    }\n}"
+    },
+    {
+      "slug": "ui-compass-system",
+      "title": "Hệ thống La bàn (Compass)",
+      "description": "Hiển thị các điểm đánh dấu (marker) cho các mục tiêu trên một thanh la bàn UI, giúp người chơi định hướng.",
+      "tags": ["UI", "Gameplay", "Navigation"],
+      "code": "using UnityEngine;\nusing UnityEngine.UI;\n\npublic class Compass : MonoBehaviour\n{\n    public Transform playerTransform;\n    public RectTransform compassBar;\n    public GameObject markerPrefab;\n    public Transform target;\n\n    private Image markerImage;\n\n    void Start()\n    {\n        GameObject newMarker = Instantiate(markerPrefab, compassBar);\n        markerImage = newMarker.GetComponent<Image>();\n    }\n\n    void Update()\n    {\n        if (playerTransform == null || target == null || markerImage == null) return;\n\n        // Tính toán hướng tới mục tiêu\n        Vector3 directionToTarget = (target.position - playerTransform.position).normalized;\n\n        // Chuyển hướng 3D thành góc 2D trên mặt phẳng XZ\n        float angle = Vector2.SignedAngle(new Vector2(playerTransform.forward.x, playerTransform.forward.z), \n                                            new Vector2(directionToTarget.x, directionToTarget.z));\n\n        // Chuyển góc thành vị trí trên thanh la bàn\n        float compassWidth = compassBar.rect.width;\n        float markerPositionX = Mathf.Clamp(angle / 180f * compassWidth, -compassWidth / 2f, compassWidth / 2f);\n\n        markerImage.rectTransform.anchoredPosition = new Vector2(markerPositionX, 0);\n    }\n}"
+    },
+    {
+      "slug": "options-menu-settings",
+      "title": "Menu Tùy chọn (Âm thanh, Đồ họa)",
+      "description": "Một script để quản lý menu tùy chọn, cho phép người chơi điều chỉnh âm lượng tổng, chất lượng đồ họa và độ phân giải màn hình.",
+      "tags": ["UI", "Audio", "Settings"],
+      "code": "using UnityEngine;\nusing UnityEngine.UI;\nusing UnityEngine.Audio;\nusing System.Collections.Generic;\nusing TMPro;\n\npublic class OptionsMenu : MonoBehaviour\n{\n    public AudioMixer audioMixer;\n    public TMP_Dropdown resolutionDropdown;\n\n    private Resolution[] resolutions;\n\n    void Start()\n    {\n        // Lấy danh sách độ phân giải màn hình hỗ trợ\n        resolutions = Screen.resolutions;\n        resolutionDropdown.ClearOptions();\n\n        List<string> options = new List<string>();\n        int currentResolutionIndex = 0;\n        for (int i = 0; i < resolutions.Length; i++)\n        {\n            string option = resolutions[i].width + \" x \" + resolutions[i].height;\n            options.Add(option);\n\n            if (resolutions[i].width == Screen.currentResolution.width &&\n                resolutions[i].height == Screen.currentResolution.height)\n            {\n                currentResolutionIndex = i;\n            }\n        }\n\n        resolutionDropdown.AddOptions(options);\n        resolutionDropdown.value = currentResolutionIndex;\n        resolutionDropdown.RefreshShownValue();\n    }\n\n    public void SetVolume(float volume)\n    {\n        // \"MasterVolume\" phải được tạo trong AudioMixer trước\n        audioMixer.SetFloat(\"MasterVolume\", Mathf.Log10(volume) * 20);\n    }\n\n    public void SetQuality(int qualityIndex)\n    {\n        QualitySettings.SetQualityLevel(qualityIndex);\n    }\n\n    public void SetFullscreen(bool isFullscreen)\n    {\n        Screen.fullScreen = isFullscreen;\n    }\n\n    public void SetResolution(int resolutionIndex)\n    {\n        Resolution resolution = resolutions[resolutionIndex];\n        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);\n    }\n}"
     }
   ]
 }

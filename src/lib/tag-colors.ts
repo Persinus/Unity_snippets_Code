@@ -44,6 +44,8 @@ const tagColorMap: { [key: string]: string } = {
   "Network": "bg-tag-blue-bg text-tag-blue-fg border-tag-blue-bg",
   "Coroutine": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
   "Interface": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  "Tooltip": "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg",
+  "Settings": "bg-tag-slate-bg text-tag-slate-fg border-tag-slate-bg",
 
   // Data & Architecture
   "Data Persistence": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
