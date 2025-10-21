@@ -1,93 +1,124 @@
 /**
- * @file Firestore Security Rules
- * @description This ruleset enforces a strict user-ownership model for user profiles and bookmarks.
- * Tags are publicly readable, but write access is not granted. Snippets have not been defined, so no rules are written for them.
+ * @fileoverview Firestore Security Rules for Prototyping.
+ *
+ * Core Philosophy:
+ * This ruleset prioritizes strict authorization based on user identity and ownership while relaxing data validation to accelerate prototyping.
+ * It enforces that only authenticated users can access data, and restricts write access based on ownership where applicable. Data validation is minimized to allow for flexible schema evolution during early development.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profile information, accessible only to the authenticated user.
- * - /users/{userId}/bookmarks/{snippetSlug}: Stores bookmarks owned by the user.
- * - /tags/{tagId}: Stores publicly accessible tags.
+ * - /users/{userId}: Stores user profiles. 'userId' must match the authenticated user's UID.
+ * - /users/{userId}/bookmarks/{snippetSlug}: Stores bookmarks for a user. 'userId' must match the authenticated user's UID.
+ * - /tags/{tagId}: Stores public tags.
+ * - /snippets/{snippetId}/comments/{commentId}: Stores comments for snippets. Anyone can read, but only authenticated users can create, update or delete comments.
  *
  * Key Security Decisions:
- * - Users can only access their own profile data and bookmarks.
- * - Listing of user profiles is explicitly denied.
- * - Tags are publicly readable to allow snippets to be easily categorized, but write permissions are not granted.
- * - Comments are not defined in the data model, so rules for those are not defined.
+ * - User listing is disallowed.
+ * - Data validation is relaxed. Only essential authorization and relational integrity checks are performed.
+ * - Public read access is enabled for /tags/{tagId}.
+ * - Tags are assumed to be managed via the Firebase Console and their creation/update/deletion is not exposed via the client.
+ *
+ * Denormalization for Authorization:
+ * - Comments include `authorId`, `authorDisplayName`, and `authorAvatarUrl` to avoid needing to query the user's profile for display purposes.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the request is made by a signed-in user.
-     * @return {bool} True if the user is signed in, false otherwise.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the request is made by the owner of the resource.
-     * @param {string} userId The user ID to compare with the request's authentication UID.
-     * @return {bool} True if the user ID matches the authenticated user's UID, false otherwise.
-     */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the request is made by the owner of the resource and the resource exists.
-     * @param {string} userId The user ID to compare with the request's authentication UID.
-     * @return {bool} True if the user ID matches the authenticated user's UID and the resource exists, false otherwise.
-     */
-    function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * @description Rules for the /users/{userId} collection.
+     * @description Allows access to user profile information, enforcing ownership.
      * @path /users/{userId}
-     * @allow (create) User 'user_abc' with ID 'user_abc' can create their profile.
-     * @deny (create) User 'user_xyz' cannot create profile for 'user_abc'.
-     * @allow (get, update, delete) User 'user_abc' can access their profile.
-     * @deny (get, update, delete) User 'user_xyz' cannot access profile of 'user_abc'.
+     * @allow (create) User with matching UID can create their profile.
+     * @allow (get, update, delete) User can access/modify their own profile.
+     * @deny (create, get, update, delete) User cannot access/modify other user profiles.
      * @principle Enforces document ownership for all operations.
      */
     match /users/{userId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource.data != null;
+      }
+
       allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
-      allow delete: if isExistingOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
     /**
-     * @description Rules for the /users/{userId}/bookmarks/{snippetSlug} collection.
+     * @description Allows a user to manage their own bookmarks.
      * @path /users/{userId}/bookmarks/{snippetSlug}
-     * @allow (create) User 'user_abc' can create a bookmark.
-     * @deny (create) User 'user_xyz' cannot create a bookmark for user 'user_abc'.
-     * @allow (get, update, delete) User 'user_abc' can access their bookmarks.
-     * @deny (get, update, delete) User 'user_xyz' cannot access bookmarks of 'user_abc'.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User can create a bookmark for themselves.
+     * @allow (get, update, delete) User can access/modify their own bookmarks.
+     * @deny (create, get, update, delete) User cannot access/modify other user's bookmarks.
+     * @principle Restricts access to a user's own data tree.
      */
     match /users/{userId}/bookmarks/{snippetSlug} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource.data != null;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if isSignedIn() && isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isExistingOwner(userId);
+      allow delete: if isSignedIn() && isExistingOwner(userId);
     }
 
-   /**
-     * @description Rules for the /tags/{tagId} collection.
+    /**
+     * @description Allows public read access to tags. Tags are managed via the Firebase Console.
      * @path /tags/{tagId}
      * @allow (get, list) Any user can read tags.
-     * @deny (create, update, delete) No user can create, update, or delete tags.
-     * @principle Tags are publicly readable but not writable.
+     * @deny (create, update, delete) No user can create, update, or delete tags via the client.
+     * @principle Provides public read access with restricted write access.
      */
     match /tags/{tagId} {
       allow get, list: if true;
       allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Allows users to read comments, but restricts write access to authenticated users.
+     * @path /snippets/{snippetId}/comments/{commentId}
+     * @allow (get, list) Any user can read comments.
+     * @allow (create) Authenticated user can create a comment.
+     * @allow (update, delete) Only the comment's author can update or delete it.
+     * @deny (create) Non-authenticated users cannot create comments.
+     * @deny (update, delete) Users cannot modify other users' comments.
+     * @principle Restricts write access to authenticated users and enforces ownership.
+     */
+    match /snippets/{snippetId}/comments/{commentId} {
+        function isSignedIn() {
+          return request.auth != null;
+        }
+
+        function isOwner(authorId) {
+            return request.auth.uid == authorId;
+        }
+
+        function isExistingOwner(authorId) {
+          return isOwner(authorId) && resource.data != null && resource.data.authorId == authorId;
+        }
+
+        allow get, list: if true;
+        allow create: if isSignedIn();
+        allow update: if isSignedIn() && isExistingOwner(resource.data.authorId);
+        allow delete: if isSignedIn() && isExistingOwner(resource.data.authorId);
     }
   }
 }
