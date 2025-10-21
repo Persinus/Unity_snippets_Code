@@ -3,8 +3,8 @@
 /**
  * @fileOverview A Genkit flow for securely adding comments to a snippet.
  *
- * - addCommentFlow - The main flow function.
- * - AddCommentInput - The Zod schema for the flow's input.
+ * This file defines the `addCommentFlow` but does not export it.
+ * The flow is intended to be imported and used by server-side logic (e.g., in `src/lib/comments.ts`).
  */
 
 import { ai } from '@/ai/genkit';
@@ -36,7 +36,8 @@ export const AddCommentInputSchema = z.object({
 
 export type AddCommentInput = z.infer<typeof AddCommentInputSchema>;
 
-// Define the Genkit flow
+// Define the Genkit flow but DO NOT export it.
+// It will be imported and used by `src/lib/comments.ts`.
 export const addCommentFlow = ai.defineFlow(
   {
     name: 'addCommentFlow',

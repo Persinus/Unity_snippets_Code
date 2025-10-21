@@ -14,7 +14,8 @@ interface NewCommentClientData {
 
 /**
  * Adds a new comment to a snippet by calling a secure backend flow.
- * @param firestore - The Firestore instance (currently unused but kept for API consistency).
+ * This function is a Server Action and can be called from client components.
+ * @param firestore - The Firestore instance (unused, kept for API consistency).
  * @param snippetSlug - The slug of the snippet to comment on.
  * @param commentData - The data for the new comment from the client.
  */
@@ -25,17 +26,13 @@ export async function addComment(
 ) {
   if (!commentData.authorId) {
     console.error("User is not authenticated.");
-    toast({
-      variant: "destructive",
-      title: "Lỗi",
-      description: "Bạn cần đăng nhập để bình luận.",
-    });
-    // Return a rejected promise to be caught by the caller
-    return Promise.reject(new Error("User not authenticated."));
+    // This server-side error won't show a toast on the client directly.
+    // The client-side catch block should handle UI feedback.
+    throw new Error("User not authenticated.");
   }
 
   try {
-    // Call the backend Genkit flow instead of writing to Firestore directly
+    // Call the backend Genkit flow directly.
     const result = await addCommentFlow({
       snippetSlug: snippetSlug,
       comment: {
@@ -47,17 +44,15 @@ export async function addComment(
     });
 
     if (!result.success) {
-        throw new Error('Failed to add comment via flow');
+        // Create a more specific error message if the flow fails.
+        throw new Error(`Failed to add comment. Flow returned success: false. CommentId: ${result.commentId}`);
     }
+    // Success is handled on the client side.
     
   } catch (error) {
-    console.error("Error adding comment via flow: ", error);
-    toast({
-      variant: "destructive",
-      title: "Lỗi",
-      description: "Không thể đăng bình luận. Vui lòng thử lại.",
-    });
-    // Re-throw the error to be caught by the caller's catch block
-    throw error;
+    console.error("Error in addComment Server Action: ", error);
+    // Re-throw the error so the client's catch block can handle it.
+    // This allows for displaying a toast or other UI feedback.
+    throw new Error("Could not post comment. Please try again.");
   }
 }
