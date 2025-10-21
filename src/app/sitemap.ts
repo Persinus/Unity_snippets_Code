@@ -1,8 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getAllSnippets } from '@/lib/snippets';
 
-// IMPORTANT: Update this to your production domain.
-const domain = 'https://unity-codex.com';
+const domain = 'https://unity-snippets-code.vercel.app';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Get all snippet slugs
@@ -19,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: domain,
       lastModified: new Date(),
-      changeFrequency: 'yearly',
+      changeFrequency: 'weekly',
       priority: 1,
     },
     {
@@ -44,3 +43,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [...staticRoutes, ...snippetRoutes];
 }
+
+    

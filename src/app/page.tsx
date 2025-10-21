@@ -299,7 +299,7 @@ export default function Home() {
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80" align="center">
+            <PopoverContent className="w-80" align="start" side="bottom">
                <div className="grid gap-4">
                   <div className="space-y-2">
                     <h4 className="font-medium leading-none">Chọn Tag</h4>
@@ -307,7 +307,7 @@ export default function Home() {
                       Chọn một hoặc nhiều tag để lọc.
                     </p>
                   </div>
-                   <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                   <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
                     {allTags.map((tag) => (
                         <TagCheckboxItem key={tag} tag={tag} />
                     ))}
