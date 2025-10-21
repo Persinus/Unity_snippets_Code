@@ -197,10 +197,10 @@ export default function Home() {
     <div className="space-y-8">
       <div className="text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Welcome to Unity Codex
+          Chào mừng đến với Unity Codex
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Your modern archive for Unity C# code snippets.
+          Kho lưu trữ hiện đại của bạn cho các đoạn mã Unity C#.
         </p>
       </div>
 
@@ -209,7 +209,7 @@ export default function Home() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search snippets by title or description..."
+            placeholder="Tìm kiếm snippet theo tiêu đề hoặc mô tả..."
             className="w-full pl-10"
             value={searchTerm}
             onChange={(e) => {
@@ -223,12 +223,12 @@ export default function Home() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                Filter by tag
+                Lọc theo tag
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-[calc(100vw-2rem)] max-w-[600px]" align="center">
-              <DropdownMenuLabel>Select tags to filter</DropdownMenuLabel>
+              <DropdownMenuLabel>Chọn tag để lọc</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-1">
                 {allTags.map((tag) => (
@@ -253,7 +253,7 @@ export default function Home() {
                 setCurrentPage(1);
               }}
             >
-              Clear Filters
+              Xóa bộ lọc
             </Button>
           )}
         </div>
@@ -262,7 +262,7 @@ export default function Home() {
           {selectedTags.map((tag) => (
              <Badge
               key={tag}
-              className={cn(getTagColorClasses(tag, true, true))}
+              className={cn(getTagColorClasses(tag, true, true), "cursor-pointer")}
               variant="outline"
               onClick={() => toggleTag(tag)}
             >
@@ -287,7 +287,7 @@ export default function Home() {
       ) : (
         <div className="text-center py-16">
           <p className="text-lg text-muted-foreground">
-            No snippets found. Try a different search or filter.
+            Không tìm thấy snippet nào. Vui lòng thử lại với từ khóa hoặc bộ lọc khác.
           </p>
         </div>
       )}

@@ -35,10 +35,10 @@ export default function SnippetCard({ snippet, index, selectedTags, onTagClick }
           <CardTitle className="font-headline text-lg font-semibold group-hover/title:text-primary">
             {snippet.title}
           </CardTitle>
-          <CardDescription className="line-clamp-2 pt-1">
-            {snippet.description}
-          </CardDescription>
         </Link>
+        <CardDescription className="line-clamp-2 pt-1">
+          {snippet.description}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
         <div className="flex flex-wrap gap-2">
@@ -53,6 +53,7 @@ export default function SnippetCard({ snippet, index, selectedTags, onTagClick }
                 e.preventDefault();
                 onTagClick(tag);
               }}
+              variant="outline"
             >
               {tag}
             </Badge>
@@ -61,7 +62,7 @@ export default function SnippetCard({ snippet, index, selectedTags, onTagClick }
       </CardContent>
       <CardFooter>
           <Link href={`/snippets/${snippet.slug}`} className="flex items-center text-sm font-medium text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              View Snippet
+              Xem Snippet
               <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
       </CardFooter>
