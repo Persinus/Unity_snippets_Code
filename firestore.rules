@@ -1,109 +1,113 @@
 /**
- * @fileoverview Firestore Security Rules for Unity Codex.
+ * @fileoverview Firestore Security Rules for the Unity C# Snippet application.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for code snippets,
- * where users can only manage snippets they have authored. User profiles
- * are also private and only accessible to the owning user. Tags are
- * publicly readable but only manageable by an admin (currently not
- * implemented, but designed to be easily added in the future).
+ * This ruleset enforces a strict user-ownership model for user profiles and bookmarks,
+ * while allowing public read access to tags. All write operations are protected by
+ * authorization checks based on the authenticated user's UID.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profile information, with 'userId' matching the Firebase Authentication UID.
- * - /users/{userId}/snippets/{snippetId}: Stores code snippets created by the user. Each snippet includes an 'authorId' field for authorization.
- * - /tags/{tagId}: Stores publicly available tags that can be associated with code snippets.
+ * - /users/{userId}: Stores user profiles, with 'userId' matching the Firebase Authentication UID.
+ * - /users/{userId}/bookmarks/{snippetSlug}: Stores bookmarks for each user, with 'snippetSlug'
+ *   being the ID of the bookmarked snippet.
+ * - /tags/{tagId}: Stores tags that can be associated with code snippets. These are publicly readable.
  *
  * Key Security Decisions:
- * - Users can only create, read, update, and delete their own user profiles and snippets.
- * - Listing all users is not permitted.
- * - Tags are publicly readable.
- * - Write access to tags is not currently restricted but should be restricted to admins in the future.
+ * - User profiles and bookmarks are only accessible by the owning user.
+ * - Listing bookmarks is restricted to the owning user.
+ * - Tags are publicly readable but writes are forbidden in this prototype.
  *
  * Denormalization for Authorization:
- * - Snippets contain the 'authorId' field, which is denormalized from the user's document. This allows snippet rules to directly check ownership without requiring additional reads.
+ *  N/A - The current structure uses path-based authorization, so denormalization isn't needed.
+ *
+ * Structural Segregation:
+ *  N/A - The application uses a clear separation of user-owned data (profiles, bookmarks) and
+ *  public data (tags).
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to user profile documents.
+     * @description Defines a global function to check if a user is signed in.
+     * @returns {boolean} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Defines a global function to check if the request is made by the owner of the resource.
+     * @param {string} userId - The user ID to compare against the request's authentication UID.
+     * @returns {boolean} True if the user is the owner, false otherwise.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Defines a global function to check if the user is the owner and the resource exists.
+     * @param {string} userId - The user ID to compare against the request's authentication UID.
+     * @returns {boolean} True if the user is the owner and the resource exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Rules for user profiles.
      * @path /users/{userId}
-     * @allow (create) User with UID 'user123' can create their own profile with matching ID.
-     * @allow (get) User with UID 'user123' can read their own profile.
-     * @allow (update) User with UID 'user123' can update their own profile.
-     * @allow (delete) User with UID 'user123' can delete their own profile.
-     * @deny (create) User with UID 'user456' cannot create a profile for 'user123'.
-     * @deny (get) User with UID 'user456' cannot read 'user123' profile.
-     * @principle Enforces document ownership for all operations on user profiles.
+     * @allow (create) User S01QX5PjsSgzaihB7TAhMUN75n62 can create their profile with ID 'S01QX5PjsSgzaihB7TAhMUN75n62'.
+     * @deny (create) User S01QX5PjsSgzaihB7TAhMUN75n62 cannot create a profile with ID 'DIFFERENT_ID'.
+     * @allow (get) User S01QX5PjsSgzaihB7TAhMUN75n62 can get their profile.
+     * @deny (get) User DIFFERENT_ID cannot get the profile of S01QX5PjsSgzaihB7TAhMUN75n62.
+     * @allow (update) User S01QX5PjsSgzaihB7TAhMUN75n62 can update their profile.
+     * @deny (update) User DIFFERENT_ID cannot update the profile of S01QX5PjsSgzaihB7TAhMUN75n62.
+     * @allow (delete) User S01QX5PjsSgzaihB7TAhMUN75n62 can delete their profile.
+     * @deny (delete) User DIFFERENT_ID cannot delete the profile of S01QX5PjsSgzaihB7TAhMUN75n62.
+     * @principle Enforces document ownership for writes.
      */
     match /users/{userId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
       allow get: if isOwner(userId);
-      allow list: if false; // Listing users is not allowed.
+      allow list: if false;
       allow create: if isOwner(userId) && request.resource.data.id == userId;
       allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Controls access to code snippets nested under user profiles.
-     * @path /users/{userId}/snippets/{snippetId}
-     * @allow (create) User 'user123' can create a snippet under their profile with authorId 'user123'.
-     * @allow (get) User 'user123' can read a snippet under their profile.
-     * @allow (update) User 'user123' can update a snippet under their profile.
-     * @allow (delete) User 'user123' can delete a snippet under their profile.
-     * @deny (create) User 'user456' cannot create a snippet for 'user123'.
-     * @deny (get) User 'user456' cannot read a snippet under 'user123' profile.
-     * @principle Enforces document ownership for all operations on code snippets.
+     * @description Rules for user bookmarks.
+     * @path /users/{userId}/bookmarks/{snippetSlug}
+     * @allow (create) User S01QX5PjsSgzaihB7TAhMUN75n62 can create a bookmark.
+     * @deny (create) User DIFFERENT_ID cannot create a bookmark for user S01QX5PjsSgzaihB7TAhMUN75n62.
+     * @allow (get) User S01QX5PjsSgzaihB7TAhMUN75n62 can get their bookmark.
+     * @deny (get) User DIFFERENT_ID cannot get the bookmark of user S01QX5PjsSgzaihB7TAhMUN75n62.
+     * @allow (update) User S01QX5PjsSgzaihB7TAhMUN75n62 can update their bookmark.
+     * @deny (update) User DIFFERENT_ID cannot update the bookmark of user S01QX5PjsSgzaihB7TAhMUN75n62.
+     * @allow (delete) User S01QX5PjsSgzaihB7TAhMUN75n62 can delete their bookmark.
+     * @deny (delete) User DIFFERENT_ID cannot delete the bookmark of user S01QX5PjsSgzaihB7TAhMUN75n62.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
      */
-    match /users/{userId}/snippets/{snippetId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return request.auth.uid == userId;
-      }
-
-      function isExistingOwner(authorId) {
-          return request.auth.uid == authorId && resource != null;
-      }
-
+    match /users/{userId}/bookmarks/{snippetSlug} {
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.authorId == request.auth.uid;
-      allow update: if isExistingOwner(resource.data.authorId);
-      allow delete: if isExistingOwner(resource.data.authorId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Controls access to tags.
+     * @description Rules for tags.
      * @path /tags/{tagId}
-     * @allow (get) Any user can read tags.
-     * @allow (list) Any user can list tags.
-     * @allow (create) Currently open for prototyping; restrict to admins in production.
-     * @allow (update) Currently open for prototyping; restrict to admins in production.
-     * @allow (delete) Currently open for prototyping; restrict to admins in production.
-     * @principle Allows public read access to tags but requires admin privileges for write access in production.
+     * @allow (get) Any user can read any tag.
+     * @allow (list) Any user can list all tags.
+     * @deny (create) No user can create a tag.
+     * @deny (update) No user can update a tag.
+     * @deny (delete) No user can delete a tag.
      */
     match /tags/{tagId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if true; // TODO: Restrict to admins
-      allow update: if true; // TODO: Restrict to admins
-      allow delete: if true; // TODO: Restrict to admins
+      allow get, list: if true;
+      allow create, update, delete: if false;
     }
   }
 }
