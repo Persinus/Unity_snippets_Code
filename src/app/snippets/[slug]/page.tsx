@@ -8,12 +8,16 @@ import { ArrowLeft } from "lucide-react";
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
 
+// This function is now commented out as we are not using file-based static generation for now.
+// The data will be fetched at request time.
+/*
 export async function generateStaticParams() {
   const snippets = getAllSnippets();
   return snippets.map((snippet) => ({
     slug: snippet.slug,
   }));
 }
+*/
 
 type SnippetPageProps = {
   params: {
