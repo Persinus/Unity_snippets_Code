@@ -78,6 +78,7 @@ export default function SnippetCard({ snippet, index, selectedCategories, select
                     size="icon"
                     className="h-8 w-8 shrink-0"
                     onClick={handleBookmarkClick}
+                    aria-label="Bookmark this snippet"
                   >
                     <Bookmark className={cn("h-5 w-5", isBookmarked ? "fill-primary text-primary" : "text-muted-foreground")} />
                   </Button>

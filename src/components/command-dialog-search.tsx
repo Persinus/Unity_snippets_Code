@@ -17,6 +17,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
+  DialogTitle,
 } from '@/components/ui/command';
 // AI flow is no longer used
 // import { findSnippet } from '@/ai/flows/find-snippet-flow';
@@ -53,6 +54,7 @@ export function CommandDialogSearch({ open, setOpen }: Props) {
   return (
     // The CommandDialog is now empty as the AI functionality is removed
     <CommandDialog open={open} onOpenChange={setOpen}>
+        <DialogTitle className="sr-only">AI Search</DialogTitle>
     </CommandDialog>
   );
 }

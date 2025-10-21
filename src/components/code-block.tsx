@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -47,7 +48,7 @@ export default function CodeBlock({ code, className }: CodeBlockProps) {
           variant="ghost"
           onClick={copyToClipboard}
           className="h-8 w-8 text-muted-foreground hover:bg-muted"
-          aria-label="Copy code"
+          aria-label="Copy code to clipboard"
         >
           {hasCopied ? (
             <Check className="h-4 w-4 text-primary" />
