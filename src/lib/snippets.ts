@@ -4,6 +4,7 @@ export type Snippet = {
   slug: string;
   title: string;
   description: string;
+  categories: string[];
   tags: string[];
   code: string;
 };

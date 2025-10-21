@@ -1,10 +1,18 @@
 
 const tagColorMap: { [key: string]: string } = {
+  // Categories
+  "PC": "bg-tag-slate-bg text-tag-slate-fg border-tag-slate-bg",
+  "Android": "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
+  "Mobile": "bg-tag-light-blue-bg text-tag-light-blue-fg border-tag-light-blue-bg",
+  "2D": "bg-tag-cool-gray-bg text-tag-cool-gray-fg border-tag-cool-gray-bg",
+  "3D": "bg-tag-blue-gray-bg text-tag-blue-gray-fg border-tag-blue-gray-bg",
+  "iOS": "bg-tag-slate-bg text-tag-slate-fg border-tag-slate-bg",
+
   // Unity specific
   "Input": "bg-tag-blue-bg text-tag-blue-fg border-tag-blue-bg",
   "Gameplay": "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
   "Player": "bg-tag-cyan-bg text-tag-cyan-fg border-tag-cyan-bg",
-  "Spawning": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
+  "Spawning": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-fg",
   "Timer": "bg-tag-lime-bg text-tag-lime-fg border-tag-lime-bg",
   "UI": "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
   "Effects": "bg-tag-violet-bg text-tag-violet-fg border-tag-violet-bg",
@@ -12,7 +20,6 @@ const tagColorMap: { [key: string]: string } = {
   "Physics": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
   "Collision": "bg-tag-amber-bg text-tag-amber-fg border-tag-amber-bg",
   "Tag": "bg-tag-warm-gray-bg text-tag-warm-gray-fg border-tag-warm-gray-bg",
-  "Mobile": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
   "TextMeshPro": "bg-tag-light-blue-bg text-tag-light-blue-fg border-tag-light-blue-bg",
   "Rich Text": "bg-tag-sky-bg text-tag-sky-fg border-tag-sky-bg",
   "Addressables": "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
@@ -20,7 +27,7 @@ const tagColorMap: { [key: string]: string } = {
   "Animator": "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
   "Movement": "bg-tag-emerald-bg text-tag-emerald-fg border-tag-emerald-bg",
   "Boundaries": "bg-tag-true-gray-bg text-tag-true-gray-fg border-tag-true-gray-bg",
-  "Time": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
+  "Time": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-fg",
   "Cinemachine": "bg-tag-rose-bg text-tag-rose-fg border-tag-rose-bg",
   "Camera": "bg-tag-rose-bg text-tag-rose-fg border-tag-rose-bg",
   "Scene Management": "bg-tag-light-green-bg text-tag-light-green-fg border-tag-light-green-bg",
@@ -28,16 +35,12 @@ const tagColorMap: { [key: string]: string } = {
   "Audio": "bg-tag-sky-bg text-tag-sky-fg border-tag-sky-bg",
   "Visuals": "bg-tag-fuchsia-bg text-tag-fuchsia-fg border-tag-fuchsia-bg",
   "Rotation": "bg-tag-cyan-bg text-tag-cyan-fg border-tag-cyan-bg",
-  "2D": "bg-tag-cool-gray-bg text-tag-cool-gray-fg border-tag-cool-gray-bg",
-  "3D": "bg-tag-blue-gray-bg text-tag-blue-gray-fg border-tag-blue-gray-bg",
   "Platformer": "bg-tag-lime-bg text-tag-lime-fg border-tag-lime-bg",
   "Feedback": "bg-tag-amber-bg text-tag-amber-fg border-tag-amber-bg",
   "Joint": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
   "Native": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
   "Integration": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
   "Configuration": "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg",
-  "Android": "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
-  "iOS": "bg-tag-slate-bg text-tag-slate-fg border-tag-slate-bg",
   "Build": "bg-tag-cool-gray-bg text-tag-cool-gray-fg border-tag-cool-gray-bg",
   "Permissions": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
   "Java": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
@@ -69,7 +72,7 @@ const tagColorMap: { [key: string]: string } = {
   "Interaction": "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
   "Inventory": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
   "Stamina": "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
-  "Quest": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
+  "Quest": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-fg",
   "Navigation": "bg-tag-blue-bg text-tag-blue-fg border-tag-blue-bg",
   "Render Texture": "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
   "Trigger": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
@@ -102,22 +105,22 @@ const tagColorMap: { [key: string]: string } = {
 
 const defaultColorClasses = "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg";
 
-export function getTagColorClasses(tag: string, selected: boolean = false, hasSelection: boolean = false): string {
+export function getTagColorClasses(tag: string, selected: boolean = false, hasSelection: boolean = false, isCategory: boolean = false): string {
   const baseClasses = tagColorMap[tag] || defaultColorClasses;
   
-  // Add a general transition for a smoother effect
   const transitionClass = "transition-all duration-200";
+
+  if (isCategory) {
+     return `${baseClasses} ${transitionClass} hover:brightness-110`;
+  }
 
   if (hasSelection) {
     if (selected) {
-      // The tag is selected, make it pop
       return `${baseClasses} ${transitionClass} brightness-100 shadow-md`;
     } else {
-      // There's a selection, but this tag is not it, so dim it
       return `${baseClasses} ${transitionClass} opacity-40 hover:opacity-100 hover:brightness-125`;
     }
   }
   
-  // No selection, default hover effect
   return `${baseClasses} ${transitionClass} hover:brightness-125`;
 }

@@ -27,21 +27,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 
 const SNIPPETS_PER_PAGE = 10;
 
 export default function Home() {
   const allSnippets = useMemo(() => getAllSnippets(), []);
-  const allTags = useMemo(() => {
+  
+  const { allTags, allCategories } = useMemo(() => {
     const tags = new Set<string>();
+    const categories = new Set<string>();
     allSnippets.forEach((snippet) => {
       snippet.tags.forEach((tag) => tags.add(tag));
+      snippet.categories.forEach((cat) => categories.add(cat));
     });
-    return Array.from(tags).sort();
+    return { 
+      allTags: Array.from(tags).sort(), 
+      allCategories: Array.from(categories).sort() 
+    };
   }, [allSnippets]);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredSnippets = useMemo(() => {
@@ -55,9 +63,13 @@ export default function Home() {
         selectedTags.length === 0 ||
         selectedTags.every((tag) => snippet.tags.includes(tag));
 
-      return searchMatch && tagMatch;
+      const categoryMatch =
+        selectedCategories.length === 0 ||
+        selectedCategories.every((cat) => snippet.categories.includes(cat));
+
+      return searchMatch && tagMatch && categoryMatch;
     });
-  }, [allSnippets, searchTerm, selectedTags]);
+  }, [allSnippets, searchTerm, selectedTags, selectedCategories]);
 
   const totalPages = Math.ceil(filteredSnippets.length / SNIPPETS_PER_PAGE);
 
@@ -68,12 +80,22 @@ export default function Home() {
   }, [filteredSnippets, currentPage]);
 
   const toggleTag = (tag: string) => {
-    setSelectedTags((prevTags) => {
-      const newTags = prevTags.includes(tag)
-        ? prevTags.filter((t) => t !== tag)
-        : [...prevTags, tag];
-      setCurrentPage(1); // Reset to first page on filter change
-      return newTags;
+    setSelectedTags((prev) => {
+      const newSelection = prev.includes(tag)
+        ? prev.filter((t) => t !== tag)
+        : [...prev, tag];
+      setCurrentPage(1);
+      return newSelection;
+    });
+  };
+  
+  const toggleCategory = (category: string) => {
+    setSelectedCategories((prev) => {
+      const newSelection = prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category];
+      setCurrentPage(1);
+      return newSelection;
     });
   };
 
@@ -193,6 +215,12 @@ export default function Home() {
     );
   };
 
+  const clearFilters = () => {
+    setSelectedTags([]);
+    setSelectedCategories([]);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -220,15 +248,38 @@ export default function Home() {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-2">
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Lọc theo Nền tảng
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Chọn Nền tảng</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {allCategories.map((cat) => (
+                  <DropdownMenuCheckboxItem
+                    key={cat}
+                    checked={selectedCategories.includes(cat)}
+                    onCheckedChange={() => toggleCategory(cat)}
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    {cat}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                Lọc theo tag
+                Lọc theo Tag
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-[calc(100vw-2rem)] max-w-[600px]" align="center">
-              <DropdownMenuLabel>Chọn tag để lọc</DropdownMenuLabel>
+              <DropdownMenuLabel>Chọn Tag</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-1">
                 {allTags.map((tag) => (
@@ -236,7 +287,7 @@ export default function Home() {
                     key={tag}
                     checked={selectedTags.includes(tag)}
                     onCheckedChange={() => toggleTag(tag)}
-                    onSelect={(e) => e.preventDefault()} // Prevent closing on select
+                    onSelect={(e) => e.preventDefault()}
                   >
                     {tag}
                   </DropdownMenuCheckboxItem>
@@ -245,30 +296,41 @@ export default function Home() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {selectedTags.length > 0 && (
+          {(selectedTags.length > 0 || selectedCategories.length > 0) && (
             <Button
               variant="ghost"
-              onClick={() => {
-                setSelectedTags([]);
-                setCurrentPage(1);
-              }}
+              onClick={clearFilters}
             >
               Xóa bộ lọc
             </Button>
           )}
         </div>
         
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          {selectedTags.map((tag) => (
-             <Badge
-              key={tag}
-              className={cn(getTagColorClasses(tag, true, true), "cursor-pointer")}
-              variant="outline"
-              onClick={() => toggleTag(tag)}
-            >
-              {tag}
-            </Badge>
-          ))}
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {selectedCategories.map((cat) => (
+              <Badge
+                key={cat}
+                className={cn(getTagColorClasses(cat, true, true), "cursor-pointer text-base")}
+                onClick={() => toggleCategory(cat)}
+              >
+                {cat}
+              </Badge>
+            ))}
+          </div>
+          {selectedCategories.length > 0 && selectedTags.length > 0 && <Separator orientation="vertical" className="h-6"/>}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {selectedTags.map((tag) => (
+              <Badge
+                key={tag}
+                className={cn(getTagColorClasses(tag, true, true), "cursor-pointer")}
+                variant="outline"
+                onClick={() => toggleTag(tag)}
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -280,7 +342,9 @@ export default function Home() {
               snippet={snippet} 
               index={index} 
               selectedTags={selectedTags}
+              selectedCategories={selectedCategories}
               onTagClick={toggleTag}
+              onCategoryClick={toggleCategory}
             />
           ))}
         </div>

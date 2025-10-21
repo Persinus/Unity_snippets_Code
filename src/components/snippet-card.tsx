@@ -13,22 +13,25 @@ import type { Snippet } from "@/lib/snippets";
 import { ArrowRight, Bookmark } from "lucide-react";
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Button } from "./ui/button";
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from "@/firebase";
+import { useCollection, useFirestore, useMemoFirebase, useUser } from "@/firebase";
 import { toggleBookmark } from "@/lib/bookmarks";
-import { collection, doc } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
+import { Separator } from "./ui/separator";
 
 type SnippetCardProps = {
   snippet: Snippet;
   index: number;
+  selectedCategories: string[];
   selectedTags: string[];
+  onCategoryClick: (category: string) => void;
   onTagClick: (tag: string) => void;
 };
 
-export default function SnippetCard({ snippet, index, selectedTags, onTagClick }: SnippetCardProps) {
-  const hasSelection = selectedTags.length > 0;
+export default function SnippetCard({ snippet, index, selectedCategories, selectedTags, onCategoryClick, onTagClick }: SnippetCardProps) {
+  const hasSelection = selectedTags.length > 0 || selectedCategories.length > 0;
   const { user } = useUser();
   const firestore = useFirestore();
 
@@ -84,25 +87,46 @@ export default function SnippetCard({ snippet, index, selectedTags, onTagClick }
           {snippet.description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow">
-        <div className="flex flex-wrap gap-2">
-          {snippet.tags.map((tag) => (
-            <Badge 
-              key={tag} 
-              className={cn(
-                "cursor-pointer",
-                getTagColorClasses(tag, selectedTags.includes(tag), hasSelection)
-              )}
-              onClick={(e) => {
-                e.preventDefault();
-                onTagClick(tag);
-              }}
-              variant="outline"
-            >
-              {tag}
-            </Badge>
-          ))}
-        </div>
+      <CardContent className="flex-grow flex flex-col gap-4">
+        {snippet.categories.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {snippet.categories.map((cat) => (
+              <Badge
+                key={cat}
+                className={cn(
+                  "cursor-pointer",
+                  getTagColorClasses(cat, selectedCategories.includes(cat), hasSelection, true)
+                )}
+                onClick={(e) => { e.preventDefault(); onCategoryClick(cat); }}
+              >
+                {cat}
+              </Badge>
+            ))}
+          </div>
+        )}
+         {snippet.categories.length > 0 && snippet.tags.length > 0 && (
+          <Separator />
+        )}
+        {snippet.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {snippet.tags.map((tag) => (
+              <Badge 
+                key={tag} 
+                className={cn(
+                  "cursor-pointer",
+                  getTagColorClasses(tag, selectedTags.includes(tag), hasSelection)
+                )}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onTagClick(tag);
+                }}
+                variant="outline"
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
       </CardContent>
       <CardFooter>
           <Link href={`/snippets/${snippet.slug}`} className="flex items-center text-sm font-medium text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100">

@@ -78,15 +78,34 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
               </Button>
             )}
           </div>
-          <div className="flex flex-wrap gap-2">
-            {snippet.tags.map((tag) => (
-              <Badge
-                key={tag}
-                className={cn(getTagColorClasses(tag))}
-              >
-                {tag}
-              </Badge>
-            ))}
+          <div className="flex flex-col gap-3">
+             {snippet.categories.length > 0 && (
+                <div className="flex flex-wrap gap-2 items-center">
+                    <span className="text-sm font-semibold text-muted-foreground">Nền tảng:</span>
+                    {snippet.categories.map((cat) => (
+                    <Badge
+                        key={cat}
+                        className={cn(getTagColorClasses(cat, false, false, true))}
+                    >
+                        {cat}
+                    </Badge>
+                    ))}
+                </div>
+            )}
+             {snippet.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 items-center">
+                    <span className="text-sm font-semibold text-muted-foreground">Tags:</span>
+                    {snippet.tags.map((tag) => (
+                    <Badge
+                        key={tag}
+                        variant="outline"
+                        className={cn(getTagColorClasses(tag))}
+                    >
+                        {tag}
+                    </Badge>
+                    ))}
+                </div>
+            )}
           </div>
         </header>
 
