@@ -58,10 +58,10 @@ export default function SnippetPage({ params }: SnippetPageProps) {
             ))}
           </div>
         </header>
-        <div className="prose prose-invert max-w-none text-muted-foreground">
+        <CodeBlock code={snippet.code} />
+        <div className="prose prose-invert max-w-none text-muted-foreground pt-4">
           <p>{snippet.description}</p>
         </div>
-        <CodeBlock code={snippet.code} />
       </article>
     </div>
   );

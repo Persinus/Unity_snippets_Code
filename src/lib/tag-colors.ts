@@ -105,13 +105,19 @@ const defaultColorClasses = "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg"
 export function getTagColorClasses(tag: string, selected: boolean = false, hasSelection: boolean = false): string {
   const baseClasses = tagColorMap[tag] || defaultColorClasses;
   
+  // Add a general transition for a smoother effect
+  const transitionClass = "transition-all duration-200";
+
   if (hasSelection) {
     if (selected) {
-      return `${baseClasses} brightness-125 shadow-md`;
+      // The tag is selected, make it pop
+      return `${baseClasses} ${transitionClass} brightness-100 shadow-md`;
     } else {
-      return `${baseClasses} opacity-50 hover:opacity-100`;
+      // There's a selection, but this tag is not it, so dim it
+      return `${baseClasses} ${transitionClass} opacity-40 hover:opacity-100 hover:brightness-125`;
     }
   }
   
-  return `${baseClasses} hover:brightness-125`;
+  // No selection, default hover effect
+  return `${baseClasses} ${transitionClass} hover:brightness-125`;
 }
