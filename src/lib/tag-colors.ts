@@ -46,6 +46,8 @@ const tagColorMap: { [key: string]: string } = {
   "Interface": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
   "Tooltip": "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg",
   "Settings": "bg-tag-slate-bg text-tag-slate-fg border-tag-slate-bg",
+  "Stealth": "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
+  "Rendering": "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
 
   // Data & Architecture
   "Data Persistence": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
@@ -59,8 +61,9 @@ const tagColorMap: { [key: string]: string } = {
   "Singleton": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
   "Object Pool": "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
   
-  // AI
+  // AI & Combat
   "AI": "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
+  "Combat": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
 
   // Gameplay Systems
   "Interaction": "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
@@ -69,6 +72,7 @@ const tagColorMap: { [key: string]: string } = {
   "Quest": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
   "Navigation": "bg-tag-blue-bg text-tag-blue-fg border-tag-blue-bg",
   "Render Texture": "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
+  "Trigger": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
 
   // Monetization
   "AdMob": "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
@@ -86,6 +90,14 @@ const tagColorMap: { [key: string]: string } = {
   "Optimization": "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
   "Performance": "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
   "Utility": "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg",
+  "Gesture": "bg-tag-sky-bg text-tag-sky-fg border-tag-sky-bg",
+  "Sensor": "bg-tag-cyan-bg text-tag-cyan-fg border-tag-cyan-bg",
+  
+  // New tags from this request
+  "Daily Reward": "bg-tag-gold-bg text-tag-gold-fg border-tag-gold-bg",
+  "IAP": "bg-tag-lime-bg text-tag-lime-fg border-tag-lime-bg",
+  "Drag and Drop": "bg-tag-true-gray-bg text-tag-true-gray-fg border-tag-true-gray-bg",
+  "UniTask": "bg-tag-deep-purple-bg text-tag-deep-purple-fg border-tag-deep-purple-bg",
 };
 
 const defaultColorClasses = "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg";

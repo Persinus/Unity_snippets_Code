@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 const tagColorVariables = {
@@ -49,6 +50,12 @@ const tagColorVariables = {
   '--tag-warm-gray-fg': '30 10% 98%',
   '--tag-true-gray-bg': '0 0% 50%',
   '--tag-true-gray-fg': '0 0% 98%',
+  '--tag-emerald-bg': '150 70% 45%',
+  '--tag-emerald-fg': '150 70% 98%',
+  '--tag-gold-bg': '45 90% 50%',
+  '--tag-gold-fg': '45 90% 10%',
+  '--tag-deep-purple-bg': '280 80% 60%',
+  '--tag-deep-purple-fg': '280 80% 98%',
 };
 
 
@@ -221,6 +228,18 @@ export default {
           'true-gray': {
             bg: 'hsl(var(--tag-true-gray-bg))',
             fg: 'hsl(var(--tag-true-gray-fg))',
+          },
+          emerald: {
+            bg: 'hsl(var(--tag-emerald-bg))',
+            fg: 'hsl(var(--tag-emerald-fg))',
+          },
+          gold: {
+            bg: 'hsl(var(--tag-gold-bg))',
+            fg: 'hsl(var(--tag-gold-fg))',
+          },
+          'deep-purple': {
+            bg: 'hsl(var(--tag-deep-purple-bg))',
+            fg: 'hsl(var(--tag-deep-purple-fg))',
           },
         }
       },
