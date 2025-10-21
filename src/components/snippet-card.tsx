@@ -65,7 +65,7 @@ export default function SnippetCard({ snippet, index, selectedTags, onTagClick }
       <CardHeader>
         <div className="flex justify-between items-start">
             <Link href={`/snippets/${snippet.slug}`} className="group/title block flex-grow">
-              <CardTitle className="font-headline text-lg font-semibold group-hover/title:text-primary">
+              <CardTitle as="h2" className="font-headline text-lg font-semibold group-hover/title:text-primary">
                 {snippet.title}
               </CardTitle>
             </Link>
