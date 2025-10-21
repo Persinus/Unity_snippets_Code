@@ -19,7 +19,6 @@ import {
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CommandDialogSearch } from "@/components/command-dialog-search";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -44,7 +43,6 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [open, setOpen] = useState(false);
 
   const filteredSnippets = useMemo(() => {
     return allSnippets.filter((snippet) => {
@@ -197,7 +195,6 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      <CommandDialogSearch open={open} setOpen={setOpen} />
       <div className="text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           Welcome to Unity Codex
@@ -223,11 +220,6 @@ export default function Home() {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <Button onClick={() => setOpen(true)} variant="outline">
-            <Search className="mr-2 h-4 w-4" />
-            Hỏi AI...
-          </Button>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
@@ -235,7 +227,7 @@ export default function Home() {
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[450px] md:w-[600px]" align="center">
+            <DropdownMenuContent className="w-[calc(100vw-2rem)] max-w-[600px]" align="center">
               <DropdownMenuLabel>Select tags to filter</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-1">
