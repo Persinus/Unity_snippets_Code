@@ -1,6 +1,8 @@
+
 'use server';
 import { ai } from './genkit';
 import { findSnippet } from './flows/find-snippet-flow';
+import { addCommentFlow } from './flows/add-comment-flow';
 import { z } from 'zod';
 
 // This is a "debug" flow that is not used in the application,
@@ -15,3 +17,6 @@ export const findSnippetFlow = ai.defineFlow(
     return await findSnippet(query);
   }
 );
+
+// Export the addCommentFlow for debugging as well.
+export { addCommentFlow };

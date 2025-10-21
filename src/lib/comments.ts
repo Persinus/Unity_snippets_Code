@@ -1,10 +1,11 @@
 
-import { collection, addDoc, serverTimestamp, Firestore } from "firebase/firestore";
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
-import { toast } from "@/hooks/use-toast";
+'use server';
 
-interface NewCommentData {
+import { addCommentFlow } from "@/ai/flows/add-comment-flow";
+import { toast } from "@/hooks/use-toast";
+import type { Firestore } from "firebase/firestore";
+
+interface NewCommentClientData {
     text: string;
     authorId: string;
     authorDisplayName: string;
@@ -12,15 +13,15 @@ interface NewCommentData {
 }
 
 /**
- * Adds a new comment to a snippet.
- * @param firestore - The Firestore instance.
+ * Adds a new comment to a snippet by calling a secure backend flow.
+ * @param firestore - The Firestore instance (currently unused but kept for API consistency).
  * @param snippetSlug - The slug of the snippet to comment on.
- * @param commentData - The data for the new comment.
+ * @param commentData - The data for the new comment from the client.
  */
-export function addComment(
-  firestore: Firestore,
+export async function addComment(
+  firestore: Firestore, // No longer used directly but kept for consistency
   snippetSlug: string,
-  commentData: NewCommentData
+  commentData: NewCommentClientData
 ) {
   if (!commentData.authorId) {
     console.error("User is not authenticated.");
@@ -29,28 +30,29 @@ export function addComment(
       title: "Lỗi",
       description: "Bạn cần đăng nhập để bình luận.",
     });
-    return;
+    // Return a rejected promise to be caught by the caller
+    return Promise.reject(new Error("User not authenticated."));
   }
 
-  const commentsRef = collection(firestore, "snippets", snippetSlug, "comments");
-  const dataWithTimestamp = {
-    ...commentData,
-    createdAt: serverTimestamp(),
-  };
-
-  addDoc(commentsRef, dataWithTimestamp)
-    .catch((serverError) => {
-      console.error("Error adding comment: ", serverError);
-      const contextualError = new FirestorePermissionError({
-        operation: 'create',
-        path: `${commentsRef.path}/${'new-comment'}`, // Placeholder for new doc
-        requestResourceData: dataWithTimestamp,
-      });
-      errorEmitter.emit('permission-error', contextualError);
-      toast({
-        variant: "destructive",
-        title: "Lỗi",
-        description: "Không thể đăng bình luận. Vui lòng thử lại.",
-      });
+  try {
+    // Call the backend Genkit flow instead of writing to Firestore directly
+    await addCommentFlow({
+      snippetSlug: snippetSlug,
+      comment: {
+        text: commentData.text,
+        authorId: commentData.authorId,
+        authorDisplayName: commentData.authorDisplayName,
+        authorAvatarUrl: commentData.authorAvatarUrl,
+      },
     });
+  } catch (error) {
+    console.error("Error adding comment via flow: ", error);
+    toast({
+      variant: "destructive",
+      title: "Lỗi",
+      description: "Không thể đăng bình luận. Vui lòng thử lại.",
+    });
+    // Re-throw the error to be caught by the caller's catch block
+    throw error;
+  }
 }
