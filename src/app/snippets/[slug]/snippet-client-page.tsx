@@ -6,7 +6,7 @@ import CodeBlock from "@/components/code-block";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Bookmark, ChevronRight, Home } from "lucide-react";
+import { ArrowLeft, Bookmark, ChevronRight, Home, Share2 } from "lucide-react";
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
@@ -47,6 +47,12 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
     }
     toggleBookmark(firestore, user.uid, snippet.slug, isBookmarked);
   };
+  
+  const handleShareClick = () => {
+    const urlToShare = window.location.href;
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(urlToShare)}`;
+    window.open(facebookShareUrl, '_blank', 'noopener,noreferrer');
+  };
 
 
   return (
@@ -66,17 +72,28 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
             <h1 className="font-headline text-3xl font-bold tracking-tight text-foreground md:text-4xl">
               {snippet.title}
             </h1>
-            {user && (
+            <div className="flex items-center gap-2">
               <Button
-                variant="outline"
-                size="icon"
-                className="h-10 w-10 shrink-0"
-                onClick={handleBookmarkClick}
-                aria-label="Bookmark this snippet"
-              >
-                <Bookmark className={cn("h-5 w-5", isBookmarked ? "fill-primary text-primary" : "text-muted-foreground")} />
+                  variant="outline"
+                  size="icon"
+                  className="h-10 w-10 shrink-0"
+                  onClick={handleShareClick}
+                  aria-label="Share on Facebook"
+                >
+                  <Share2 className="h-5 w-5 text-muted-foreground" />
               </Button>
-            )}
+              {user && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-10 w-10 shrink-0"
+                  onClick={handleBookmarkClick}
+                  aria-label="Bookmark this snippet"
+                >
+                  <Bookmark className={cn("h-5 w-5", isBookmarked ? "fill-primary text-primary" : "text-muted-foreground")} />
+                </Button>
+              )}
+            </div>
           </div>
           <div className="flex flex-col gap-3">
              {snippet.categories.length > 0 && (
