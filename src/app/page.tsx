@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from "react";
@@ -5,7 +6,7 @@ import { getAllSnippets } from "@/lib/snippets";
 import SnippetCard from "@/components/snippet-card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -19,8 +20,16 @@ import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { CommandDialogSearch } from "@/components/command-dialog-search";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-const SNIPPETS_PER_PAGE = 9;
+const SNIPPETS_PER_PAGE = 10;
 
 export default function Home() {
   const allSnippets = useMemo(() => getAllSnippets(), []);
@@ -35,8 +44,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [open, setOpen] = useState(false)
-
+  const [open, setOpen] = useState(false);
 
   const filteredSnippets = useMemo(() => {
     return allSnippets.filter((snippet) => {
@@ -44,7 +52,7 @@ export default function Home() {
         searchTerm === "" ||
         snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         snippet.description.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const tagMatch =
         selectedTags.length === 0 ||
         selectedTags.every((tag) => snippet.tags.includes(tag));
@@ -62,14 +70,15 @@ export default function Home() {
   }, [filteredSnippets, currentPage]);
 
   const toggleTag = (tag: string) => {
-    setSelectedTags((prevTags) =>
-      prevTags.includes(tag)
+    setSelectedTags((prevTags) => {
+      const newTags = prevTags.includes(tag)
         ? prevTags.filter((t) => t !== tag)
-        : [...prevTags, tag]
-    );
-    setCurrentPage(1); // Reset to first page on filter change
+        : [...prevTags, tag];
+      setCurrentPage(1); // Reset to first page on filter change
+      return newTags;
+    });
   };
-  
+
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -97,7 +106,7 @@ export default function Home() {
     }
 
     return (
-       <Pagination>
+      <Pagination>
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
@@ -107,14 +116,24 @@ export default function Home() {
                 handlePageChange(currentPage - 1);
               }}
               aria-disabled={currentPage === 1}
-              className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+              className={
+                currentPage === 1 ? "pointer-events-none opacity-50" : ""
+              }
             />
           </PaginationItem>
 
           {startPage > 1 && (
-             <PaginationItem>
-                <PaginationLink href="#" onClick={(e) => {e.preventDefault(); handlePageChange(1);}}>1</PaginationLink>
-             </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(1);
+                }}
+              >
+                1
+              </PaginationLink>
+            </PaginationItem>
           )}
           {startPage > 2 && (
             <PaginationItem>
@@ -137,15 +156,23 @@ export default function Home() {
             </PaginationItem>
           ))}
 
-          {endPage < totalPages -1 && (
-             <PaginationItem>
+          {endPage < totalPages - 1 && (
+            <PaginationItem>
               <PaginationEllipsis />
             </PaginationItem>
           )}
           {endPage < totalPages && (
-              <PaginationItem>
-                  <PaginationLink href="#" onClick={(e) => {e.preventDefault(); handlePageChange(totalPages);}}>{totalPages}</PaginationLink>
-              </PaginationItem>
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handlePageChange(totalPages);
+                }}
+              >
+                {totalPages}
+              </PaginationLink>
+            </PaginationItem>
           )}
 
           <PaginationItem>
@@ -156,17 +183,21 @@ export default function Home() {
                 handlePageChange(currentPage + 1);
               }}
               aria-disabled={currentPage === totalPages}
-              className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+              className={
+                currentPage === totalPages
+                  ? "pointer-events-none opacity-50"
+                  : ""
+              }
             />
           </PaginationItem>
         </PaginationContent>
       </Pagination>
     );
-  }
+  };
 
   return (
     <div className="space-y-8">
-       <CommandDialogSearch open={open} setOpen={setOpen} />
+      <CommandDialogSearch open={open} setOpen={setOpen} />
       <div className="text-center">
         <h1 className="font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           Welcome to Unity Codex
@@ -176,7 +207,7 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-4xl space-y-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
@@ -190,43 +221,75 @@ export default function Home() {
             }}
           />
         </div>
-        
+
         <div className="flex flex-wrap items-center justify-center gap-2">
           <Button onClick={() => setOpen(true)} variant="outline">
             <Search className="mr-2 h-4 w-4" />
             Hỏi AI...
           </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Filter by tag
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[450px] md:w-[600px]" align="center">
+              <DropdownMenuLabel>Select tags to filter</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-1">
+                {allTags.map((tag) => (
+                  <DropdownMenuCheckboxItem
+                    key={tag}
+                    checked={selectedTags.includes(tag)}
+                    onCheckedChange={() => toggleTag(tag)}
+                    onSelect={(e) => e.preventDefault()} // Prevent closing on select
+                  >
+                    {tag}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {selectedTags.length > 0 && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setSelectedTags([]);
+                setCurrentPage(1);
+              }}
+            >
+              Clear Filters
+            </Button>
+          )}
         </div>
         
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">Filter by tag:</span>
-          {allTags.map((tag) => (
-            <Badge
+          {selectedTags.map((tag) => (
+             <Badge
               key={tag}
-              onClick={() => toggleTag(tag)}
-              className={cn(
-                "cursor-pointer transition-all",
-                getTagColorClasses(tag, selectedTags.includes(tag), selectedTags.length > 0)
-              )}
+              className={cn(getTagColorClasses(tag))}
+              variant="outline"
             >
               {tag}
             </Badge>
           ))}
-          {selectedTags.length > 0 && (
-             <button onClick={() => {setSelectedTags([]); setCurrentPage(1);}} className="text-sm text-primary hover:underline">Clear</button>
-          )}
         </div>
       </div>
-      
+
       {currentSnippets.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {currentSnippets.map((snippet) => (
             <SnippetCard key={snippet.slug} snippet={snippet} />
           ))}
         </div>
       ) : (
         <div className="text-center py-16">
-          <p className="text-lg text-muted-foreground">No snippets found. Try a different search or filter.</p>
+          <p className="text-lg text-muted-foreground">
+            No snippets found. Try a different search or filter.
+          </p>
         </div>
       )}
 
