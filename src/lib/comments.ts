@@ -36,7 +36,7 @@ export async function addComment(
 
   try {
     // Call the backend Genkit flow instead of writing to Firestore directly
-    await addCommentFlow({
+    const result = await addCommentFlow({
       snippetSlug: snippetSlug,
       comment: {
         text: commentData.text,
@@ -45,6 +45,11 @@ export async function addComment(
         authorAvatarUrl: commentData.authorAvatarUrl,
       },
     });
+
+    if (!result.success) {
+        throw new Error('Failed to add comment via flow');
+    }
+    
   } catch (error) {
     console.error("Error adding comment via flow: ", error);
     toast({

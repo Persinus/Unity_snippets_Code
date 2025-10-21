@@ -49,11 +49,6 @@ export const addCommentFlow = ai.defineFlow(
   async (input) => {
     const { snippetSlug, comment } = input;
 
-    // In a real app, you would perform user authentication checks here.
-    // For now, we trust the authorId passed from the client.
-
-    // TODO: Add reCAPTCHA token verification here in the next step.
-
     try {
         const commentsRef = collection(db, 'snippets', snippetSlug, 'comments');
         
@@ -68,7 +63,6 @@ export const addCommentFlow = ai.defineFlow(
         };
     } catch (error) {
         console.error("Error in addCommentFlow: ", error);
-        // In a real app, you might want to return a more specific error message.
         return {
             success: false
         };
