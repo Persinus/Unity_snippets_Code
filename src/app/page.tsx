@@ -282,7 +282,7 @@ export default function Home() {
       {currentSnippets.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {currentSnippets.map((snippet, index) => (
-            <SnippetCard key={snippet.slug} snippet={snippet} style={{ animationDelay: `${index * 50}ms` }} />
+            <SnippetCard key={snippet.slug} snippet={snippet} index={index} />
           ))}
         </div>
       ) : (

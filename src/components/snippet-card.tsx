@@ -17,13 +17,16 @@ import React from "react";
 
 type SnippetCardProps = {
   snippet: Snippet;
-  style?: React.CSSProperties;
+  index: number;
 };
 
-export default function SnippetCard({ snippet, style }: SnippetCardProps) {
+export default function SnippetCard({ snippet, index }: SnippetCardProps) {
   return (
-    <Link href={`/snippets/${snippet.slug}`} className="group block" style={style}>
-      <Card className="flex h-full flex-col transition-all duration-300 group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/10 animate-fade-in-up">
+    <Link href={`/snippets/${snippet.slug}`} className="group block">
+      <Card 
+        className="flex h-full flex-col transition-all duration-300 group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/10 animate-in fade-in-90 slide-in-from-bottom-4 zoom-in-95"
+        style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
+      >
         <CardHeader>
           <CardTitle className="font-headline text-lg font-semibold group-hover:text-primary">
             {snippet.title}
