@@ -23,6 +23,32 @@ const tagColorVariables = {
   '--tag-indigo-fg': '239 84% 98%',
   '--tag-gray-bg': '240 5% 50%',
   '--tag-gray-fg': '240 5% 98%',
+  '--tag-lime-bg': '84 90% 50%',
+  '--tag-lime-fg': '84 90% 10%',
+  '--tag-amber-bg': '36 95% 55%',
+  '--tag-amber-fg': '36 95% 10%',
+  '--tag-violet-bg': '255 90% 65%',
+  '--tag-violet-fg': '255 90% 98%',
+  '--tag-fuchsia-bg': '290 85% 60%',
+  '--tag-fuchsia-fg': '290 85% 98%',
+  '--tag-rose-bg': '340 85% 65%',
+  '--tag-rose-fg': '340 85% 98%',
+  '--tag-light-blue-bg': '205 90% 55%',
+  '--tag-light-blue-fg': '205 90% 98%',
+  '--tag-sky-bg': '195 90% 50%',
+  '--tag-sky-fg': '195 90% 98%',
+  '--tag-light-green-bg': '120 70% 45%',
+  '--tag-light-green-fg': '120 70% 98%',
+  '--tag-slate-bg': '215 30% 50%',
+  '--tag-slate-fg': '215 30% 98%',
+  '--tag-cool-gray-bg': '220 15% 55%',
+  '--tag-cool-gray-fg': '220 15% 98%',
+  '--tag-blue-gray-bg': '210 25% 50%',
+  '--tag-blue-gray-fg': '210 25% 98%',
+  '--tag-warm-gray-bg': '30 10% 50%',
+  '--tag-warm-gray-fg': '30 10% 98%',
+  '--tag-true-gray-bg': '0 0% 50%',
+  '--tag-true-gray-fg': '0 0% 98%',
 };
 
 
@@ -143,6 +169,58 @@ export default {
           gray: {
             bg: 'hsl(var(--tag-gray-bg))',
             fg: 'hsl(var(--tag-gray-fg))',
+          },
+          lime: {
+            bg: 'hsl(var(--tag-lime-bg))',
+            fg: 'hsl(var(--tag-lime-fg))',
+          },
+          amber: {
+            bg: 'hsl(var(--tag-amber-bg))',
+            fg: 'hsl(var(--tag-amber-fg))',
+          },
+          violet: {
+            bg: 'hsl(var(--tag-violet-bg))',
+            fg: 'hsl(var(--tag-violet-fg))',
+          },
+          fuchsia: {
+            bg: 'hsl(var(--tag-fuchsia-bg))',
+            fg: 'hsl(var(--tag-fuchsia-fg))',
+          },
+          rose: {
+            bg: 'hsl(var(--tag-rose-bg))',
+            fg: 'hsl(var(--tag-rose-fg))',
+          },
+          'light-blue': {
+            bg: 'hsl(var(--tag-light-blue-bg))',
+            fg: 'hsl(var(--tag-light-blue-fg))',
+          },
+          sky: {
+            bg: 'hsl(var(--tag-sky-bg))',
+            fg: 'hsl(var(--tag-sky-fg))',
+          },
+          'light-green': {
+            bg: 'hsl(var(--tag-light-green-bg))',
+            fg: 'hsl(var(--tag-light-green-fg))',
+          },
+          slate: {
+            bg: 'hsl(var(--tag-slate-bg))',
+            fg: 'hsl(var(--tag-slate-fg))',
+          },
+          'cool-gray': {
+            bg: 'hsl(var(--tag-cool-gray-bg))',
+            fg: 'hsl(var(--tag-cool-gray-fg))',
+          },
+          'blue-gray': {
+            bg: 'hsl(var(--tag-blue-gray-bg))',
+            fg: 'hsl(var(--tag-blue-gray-fg))',
+          },
+          'warm-gray': {
+            bg: 'hsl(var(--tag-warm-gray-bg))',
+            fg: 'hsl(var(--tag-warm-gray-fg))',
+          },
+          'true-gray': {
+            bg: 'hsl(var(--tag-true-gray-bg))',
+            fg: 'hsl(var(--tag-true-gray-fg))',
           },
         }
       },
