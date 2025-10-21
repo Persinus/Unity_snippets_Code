@@ -16,6 +16,7 @@ import { toggleBookmark } from "@/lib/bookmarks";
 import { Separator } from "@/components/ui/separator";
 import CommentSection from "@/components/comment-section";
 import type { Snippet } from "@/lib/snippets";
+import RelatedSnippets from "@/components/related-snippets";
 
 type SnippetClientPageProps = {
   snippet: Snippet;
@@ -136,6 +137,11 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
       <Separator className="my-12" />
 
       <CommentSection snippetSlug={snippet.slug} />
+
+      <Separator className="my-12" />
+
+      <RelatedSnippets currentSnippet={snippet} />
     </div>
   );
 }
+
