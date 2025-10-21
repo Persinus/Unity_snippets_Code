@@ -107,6 +107,47 @@
       "required": [
         "id"
       ]
+    },
+    "Comment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Comment",
+      "type": "object",
+      "description": "Represents a comment on a code snippet.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the comment."
+        },
+        "text": {
+          "type": "string",
+          "description": "The content of the comment."
+        },
+        "authorId": {
+          "type": "string",
+          "description": "The UID of the user who wrote the comment."
+        },
+        "authorDisplayName": {
+          "type": "string",
+          "description": "The display name of the user who wrote the comment."
+        },
+        "authorAvatarUrl": {
+          "type": "string",
+          "description": "The avatar URL of the user who wrote the comment.",
+          "format": "uri"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The timestamp when the comment was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "authorId",
+        "authorDisplayName",
+        "createdAt"
+      ]
     }
   },
   "auth": {
@@ -164,6 +205,26 @@
             {
               "name": "tagId",
               "description": "Unique identifier for the tag."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/snippets/{snippetId}/comments/{commentId}",
+        "definition": {
+          "entityName": "Comment",
+          "schema": {
+            "$ref": "#/backend/entities/Comment"
+          },
+          "description": "Stores comments for a specific code snippet.",
+          "params": [
+            {
+              "name": "snippetId",
+              "description": "The slug of the snippet being commented on."
+            },
+            {
+              "name": "commentId",
+              "description": "Unique identifier for the comment."
             }
           ]
         }

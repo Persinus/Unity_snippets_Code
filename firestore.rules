@@ -1,71 +1,57 @@
 /**
- * @fileoverview Firestore Security Rules for the Unity C# Snippet application.
- *
- * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for user profiles and bookmarks,
- * while allowing public read access to tags. All write operations are protected by
- * authorization checks based on the authenticated user's UID.
+ * @file Firestore Security Rules
+ * @description This ruleset enforces a strict user-ownership model for user profiles and bookmarks.
+ * Tags are publicly readable, but write access is not granted. Snippets have not been defined, so no rules are written for them.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profiles, with 'userId' matching the Firebase Authentication UID.
- * - /users/{userId}/bookmarks/{snippetSlug}: Stores bookmarks for each user, with 'snippetSlug'
- *   being the ID of the bookmarked snippet.
- * - /tags/{tagId}: Stores tags that can be associated with code snippets. These are publicly readable.
+ * - /users/{userId}: Stores user profile information, accessible only to the authenticated user.
+ * - /users/{userId}/bookmarks/{snippetSlug}: Stores bookmarks owned by the user.
+ * - /tags/{tagId}: Stores publicly accessible tags.
  *
  * Key Security Decisions:
- * - User profiles and bookmarks are only accessible by the owning user.
- * - Listing bookmarks is restricted to the owning user.
- * - Tags are publicly readable but writes are forbidden in this prototype.
- *
- * Denormalization for Authorization:
- *  N/A - The current structure uses path-based authorization, so denormalization isn't needed.
- *
- * Structural Segregation:
- *  N/A - The application uses a clear separation of user-owned data (profiles, bookmarks) and
- *  public data (tags).
+ * - Users can only access their own profile data and bookmarks.
+ * - Listing of user profiles is explicitly denied.
+ * - Tags are publicly readable to allow snippets to be easily categorized, but write permissions are not granted.
+ * - Comments are not defined in the data model, so rules for those are not defined.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Defines a global function to check if a user is signed in.
-     * @returns {boolean} True if the user is signed in, false otherwise.
+     * @description Checks if the request is made by a signed-in user.
+     * @return {bool} True if the user is signed in, false otherwise.
      */
     function isSignedIn() {
       return request.auth != null;
     }
 
     /**
-     * @description Defines a global function to check if the request is made by the owner of the resource.
-     * @param {string} userId - The user ID to compare against the request's authentication UID.
-     * @returns {boolean} True if the user is the owner, false otherwise.
+     * @description Checks if the request is made by the owner of the resource.
+     * @param {string} userId The user ID to compare with the request's authentication UID.
+     * @return {bool} True if the user ID matches the authenticated user's UID, false otherwise.
      */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
     /**
-     * @description Defines a global function to check if the user is the owner and the resource exists.
-     * @param {string} userId - The user ID to compare against the request's authentication UID.
-     * @returns {boolean} True if the user is the owner and the resource exists, false otherwise.
+     * @description Checks if the request is made by the owner of the resource and the resource exists.
+     * @param {string} userId The user ID to compare with the request's authentication UID.
+     * @return {bool} True if the user ID matches the authenticated user's UID and the resource exists, false otherwise.
      */
     function isExistingOwner(userId) {
         return isOwner(userId) && resource != null;
     }
 
     /**
-     * @description Rules for user profiles.
+     * @description Rules for the /users/{userId} collection.
      * @path /users/{userId}
-     * @allow (create) User S01QX5PjsSgzaihB7TAhMUN75n62 can create their profile with ID 'S01QX5PjsSgzaihB7TAhMUN75n62'.
-     * @deny (create) User S01QX5PjsSgzaihB7TAhMUN75n62 cannot create a profile with ID 'DIFFERENT_ID'.
-     * @allow (get) User S01QX5PjsSgzaihB7TAhMUN75n62 can get their profile.
-     * @deny (get) User DIFFERENT_ID cannot get the profile of S01QX5PjsSgzaihB7TAhMUN75n62.
-     * @allow (update) User S01QX5PjsSgzaihB7TAhMUN75n62 can update their profile.
-     * @deny (update) User DIFFERENT_ID cannot update the profile of S01QX5PjsSgzaihB7TAhMUN75n62.
-     * @allow (delete) User S01QX5PjsSgzaihB7TAhMUN75n62 can delete their profile.
-     * @deny (delete) User DIFFERENT_ID cannot delete the profile of S01QX5PjsSgzaihB7TAhMUN75n62.
-     * @principle Enforces document ownership for writes.
+     * @allow (create) User 'user_abc' with ID 'user_abc' can create their profile.
+     * @deny (create) User 'user_xyz' cannot create profile for 'user_abc'.
+     * @allow (get, update, delete) User 'user_abc' can access their profile.
+     * @deny (get, update, delete) User 'user_xyz' cannot access profile of 'user_abc'.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId} {
       allow get: if isOwner(userId);
@@ -76,17 +62,13 @@ service cloud.firestore {
     }
 
     /**
-     * @description Rules for user bookmarks.
+     * @description Rules for the /users/{userId}/bookmarks/{snippetSlug} collection.
      * @path /users/{userId}/bookmarks/{snippetSlug}
-     * @allow (create) User S01QX5PjsSgzaihB7TAhMUN75n62 can create a bookmark.
-     * @deny (create) User DIFFERENT_ID cannot create a bookmark for user S01QX5PjsSgzaihB7TAhMUN75n62.
-     * @allow (get) User S01QX5PjsSgzaihB7TAhMUN75n62 can get their bookmark.
-     * @deny (get) User DIFFERENT_ID cannot get the bookmark of user S01QX5PjsSgzaihB7TAhMUN75n62.
-     * @allow (update) User S01QX5PjsSgzaihB7TAhMUN75n62 can update their bookmark.
-     * @deny (update) User DIFFERENT_ID cannot update the bookmark of user S01QX5PjsSgzaihB7TAhMUN75n62.
-     * @allow (delete) User S01QX5PjsSgzaihB7TAhMUN75n62 can delete their bookmark.
-     * @deny (delete) User DIFFERENT_ID cannot delete the bookmark of user S01QX5PjsSgzaihB7TAhMUN75n62.
-     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
+     * @allow (create) User 'user_abc' can create a bookmark.
+     * @deny (create) User 'user_xyz' cannot create a bookmark for user 'user_abc'.
+     * @allow (get, update, delete) User 'user_abc' can access their bookmarks.
+     * @deny (get, update, delete) User 'user_xyz' cannot access bookmarks of 'user_abc'.
+     * @principle Enforces document ownership for all operations.
      */
     match /users/{userId}/bookmarks/{snippetSlug} {
       allow get: if isOwner(userId);
@@ -96,14 +78,12 @@ service cloud.firestore {
       allow delete: if isExistingOwner(userId);
     }
 
-    /**
-     * @description Rules for tags.
+   /**
+     * @description Rules for the /tags/{tagId} collection.
      * @path /tags/{tagId}
-     * @allow (get) Any user can read any tag.
-     * @allow (list) Any user can list all tags.
-     * @deny (create) No user can create a tag.
-     * @deny (update) No user can update a tag.
-     * @deny (delete) No user can delete a tag.
+     * @allow (get, list) Any user can read tags.
+     * @deny (create, update, delete) No user can create, update, or delete tags.
+     * @principle Tags are publicly readable but not writable.
      */
     match /tags/{tagId} {
       allow get, list: if true;
