@@ -9,12 +9,11 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { signOut } from 'firebase/auth';
 import { collection } from 'firebase/firestore';
-import { useAuth } from '@/firebase';
+import { useAuth }from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import SnippetCard from '@/components/snippet-card';
-import { Snippet } from '@/lib/snippets';
-import { PlusCircle } from 'lucide-react';
+import { Snippet, getAllSnippets } from '@/lib/snippets';
 import Link from 'next/link';
 
 function ProfileSkeleton() {
@@ -41,12 +40,21 @@ export default function ProfilePage() {
   const firestore = useFirestore();
 
   // Memoize the query to prevent re-renders
-  const userSnippetsQuery = useMemoFirebase(() => {
+  const userBookmarksQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    return collection(firestore, 'users', user.uid, 'snippets');
+    return collection(firestore, 'users', user.uid, 'bookmarks');
   }, [firestore, user]);
 
-  const { data: snippets, isLoading: snippetsLoading } = useCollection<Snippet>(userSnippetsQuery);
+  const { data: bookmarks, isLoading: bookmarksLoading } = useCollection<{id: string}>(userBookmarksQuery);
+
+  const allSnippets = getAllSnippets();
+  
+  const bookmarkedSnippets = useMemoFirebase(() => {
+    if (!bookmarks || !allSnippets) return [];
+    const bookmarkedIds = new Set(bookmarks.map(b => b.id));
+    return allSnippets.filter(s => bookmarkedIds.has(s.slug));
+  }, [bookmarks, allSnippets]);
+
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -91,41 +99,35 @@ export default function ProfilePage() {
         
         <div className="w-full flex-1">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold tracking-tight">Snippet của tôi</h2>
-            <Button asChild>
-                <Link href="/snippets/new">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Tạo Snippet mới
-                </Link>
-            </Button>
+            <h2 className="text-3xl font-bold tracking-tight">Snippet đã đánh dấu</h2>
           </div>
           <Separator />
           
           <div className="mt-6">
-            {snippetsLoading ? (
+            {bookmarksLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <Skeleton className="h-48 w-full" />
                 <Skeleton className="h-48 w-full" />
               </div>
-            ) : snippets && snippets.length > 0 ? (
+            ) : bookmarkedSnippets && bookmarkedSnippets.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {snippets.map((snippet, index) => (
+                {bookmarkedSnippets.map((snippet, index) => (
                   <SnippetCard 
-                    key={snippet.id} 
+                    key={snippet.slug} 
                     snippet={snippet} 
                     index={index}
                     selectedTags={[]}
-                    onTagClick={() => {}} // No filtering on profile page
+                    onTagClick={() => {}} 
                   />
                 ))}
               </div>
             ) : (
               <div className="text-center py-16 border-2 border-dashed rounded-lg">
-                <h3 className="text-xl font-semibold text-muted-foreground">Bạn chưa có snippet nào</h3>
-                <p className="text-muted-foreground mt-2">Bắt đầu tạo và chia sẻ kiến thức của bạn!</p>
+                <h3 className="text-xl font-semibold text-muted-foreground">Bạn chưa đánh dấu snippet nào</h3>
+                <p className="text-muted-foreground mt-2">Khám phá và lưu lại những snippet bạn thấy hữu ích!</p>
                 <Button asChild className="mt-4">
-                  <Link href="/snippets/new">
-                    Tạo Snippet đầu tiên
+                  <Link href="/">
+                    Khám phá ngay
                   </Link>
                 </Button>
               </div>

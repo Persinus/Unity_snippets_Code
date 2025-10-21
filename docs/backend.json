@@ -92,6 +92,21 @@
         "displayName",
         "email"
       ]
+    },
+    "Bookmark": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Bookmark",
+      "type": "object",
+      "description": "Represents a user's bookmarked snippet.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The slug of the bookmarked snippet, matching Snippet.slug"
+        }
+      },
+      "required": [
+        "id"
+      ]
     }
   },
   "auth": {
@@ -118,21 +133,21 @@
         }
       },
       {
-        "path": "/users/{userId}/snippets/{snippetId}",
+        "path": "/users/{userId}/bookmarks/{snippetSlug}",
         "definition": {
-          "entityName": "Snippet",
+          "entityName": "Bookmark",
           "schema": {
-            "$ref": "#/backend/entities/Snippet"
+            "$ref": "#/backend/entities/Bookmark"
           },
-          "description": "Stores code snippets created by the user. Includes denormalized 'authorId' for authorization independence.",
+          "description": "Stores a reference to a snippet bookmarked by the user. The document ID is the snippet slug.",
           "params": [
             {
               "name": "userId",
-              "description": "The Firebase Authentication UID of the user who owns the snippet."
+              "description": "The Firebase Authentication UID of the user who owns the bookmark."
             },
             {
-              "name": "snippetId",
-              "description": "Unique identifier for the code snippet."
+              "name": "snippetSlug",
+              "description": "The slug of the bookmarked snippet, used as the document ID."
             }
           ]
         }
