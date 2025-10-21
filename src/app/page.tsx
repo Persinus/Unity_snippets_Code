@@ -27,6 +27,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 
 const SNIPPETS_PER_PAGE = 10;
@@ -221,6 +226,22 @@ export default function Home() {
     setCurrentPage(1);
   };
 
+  const TagCheckboxItem = ({ tag }: { tag: string }) => (
+      <div
+        key={tag}
+        onClick={() => toggleTag(tag)}
+        className="flex items-center space-x-2 p-2 rounded-md hover:bg-accent cursor-pointer"
+      >
+        <input
+          type="checkbox"
+          checked={selectedTags.includes(tag)}
+          readOnly
+          className="form-checkbox h-4 w-4 text-primary rounded border-gray-300 focus:ring-primary"
+        />
+        <label className="text-sm font-medium leading-none cursor-pointer">{tag}</label>
+      </div>
+  );
+
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -271,30 +292,29 @@ export default function Home() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <Popover>
+            <PopoverTrigger asChild>
               <Button variant="outline">
                 Lọc theo Tag
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[calc(100vw-2rem)] max-w-[600px]" align="center">
-              <DropdownMenuLabel>Chọn Tag</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-1 p-1">
-                {allTags.map((tag) => (
-                  <DropdownMenuCheckboxItem
-                    key={tag}
-                    checked={selectedTags.includes(tag)}
-                    onCheckedChange={() => toggleTag(tag)}
-                    onSelect={(e) => e.preventDefault()}
-                  >
-                    {tag}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="center">
+               <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium leading-none">Chọn Tag</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Chọn một hoặc nhiều tag để lọc.
+                    </p>
+                  </div>
+                   <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                    {allTags.map((tag) => (
+                        <TagCheckboxItem key={tag} tag={tag} />
+                    ))}
+                  </div>
+               </div>
+            </PopoverContent>
+          </Popover>
 
           {(selectedTags.length > 0 || selectedCategories.length > 0) && (
             <Button
@@ -360,3 +380,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
