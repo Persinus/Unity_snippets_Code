@@ -1,6 +1,6 @@
 # Unity Codex - Kho Tàng Snippet Dành Cho Lập Trình Viên Unity
 
-![Unity Codex Homepage](https://i.imgur.com/your-image-url.png) <!-- Bạn hãy thay thế URL này bằng ảnh chụp màn hình trang chủ của bạn -->
+![Unity Codex Homepage](https://github.com/user-attachments/assets/860e9b7a-8638-48c4-a91e-32b779956ad0)
 
 ## 📜 Giới thiệu
 
