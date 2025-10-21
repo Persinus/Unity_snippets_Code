@@ -1,0 +1,63 @@
+# Tên của workflow
+name: Build and Deploy to Firebase App Hosting
+
+# Workflow này sẽ được kích hoạt khi có code được push lên nhánh `main`
+on:
+  push:
+    branches:
+      - main
+
+# Các biến môi trường cần thiết cho việc build và deploy
+env:
+  # ID dự án Google Cloud của bạn
+  PROJECT_ID: studio-4746898573-a49e5
+  # Tên của backend trên App Hosting
+  BACKEND_ID: unity-codex-backend
+  # Khu vực triển khai backend
+  LOCATION: us-central1
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Cần thiết để xác thực với Google Cloud
+
+    steps:
+      # 1. Checkout code từ repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Xác thực với Google Cloud
+      # Hướng dẫn:
+      # a. Tạo một Service Account trong Google Cloud Console cho dự án của bạn.
+      # b. Gán cho Service Account đó role "Firebase App Hosting Admin".
+      # c. Tạo một key (dạng JSON) cho Service Account, tải về và sao chép nội dung.
+      # d. Trong GitHub repository, vào Settings -> Secrets and variables -> Actions.
+      # e. Tạo một "New repository secret" với tên là `GCP_SA_KEY` và dán nội dung file JSON vào.
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      # 3. Cài đặt Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 4. Cài đặt các dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 5. Build ứng dụng Next.js
+      - name: Build application
+        run: npm run build
+
+      # 6. Triển khai lên Firebase App Hosting
+      - name: Deploy to Firebase App Hosting
+        uses: google-github-actions/deploy-apphosting@v0
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          backend_id: ${{ env.BACKEND_ID }}
+          location: ${{ env.LOCATION }}
