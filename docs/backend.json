@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Snippet": {
@@ -95,8 +96,7 @@
   },
   "auth": {
     "providers": [
-      "password",
-      "anonymous"
+      "google.com"
     ]
   },
   "firestore": {
@@ -108,7 +108,7 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profile information.  The 'userId' parameter matches the Firebase Authentication UID.",
+          "description": "Stores user profile information. The 'userId' parameter matches the Firebase Authentication UID.",
           "params": [
             {
               "name": "userId",
@@ -153,7 +153,6 @@
           ]
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to support a code snippet sharing application ('Unity Codex') with user authentication via Google and a modern blog-like interface. The design prioritizes security, scalability, and ease of debugging, adhering to the principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs.  \n\n**Authorization Independence**: This is achieved through denormalization.  The `snippets` collection stores the `authorId`, enabling direct rule checks without requiring `get()` calls to the `users` collection. While tags do not require explicit authorization, the N:N relationship between Snippets and Tags is maintained through the `tagIds` array within each Snippet, avoiding complex queries or subcollections that would necessitate hierarchical authorization.\n\n**Clarity of Intent:** The structure uses explicit path-based ownership for snippets (/users/{userId}/snippets/{snippetId}), clearly associating snippets with their authors. The user profile is stored in /users/{userId}, directly linking user data to their authentication ID.\n\n**DBAC (No Custom Claims):** User roles are not used; authorization is based on the `request.auth.uid` and the `authorId` field in snippet documents.\n\n**QAPs (Rules are not Filters):** The structure enables secure `list` operations by segregating data based on ownership. Rules can easily filter snippets based on the `authorId` field, ensuring that users can only list snippets they own, or that are made publicly available through other mechanisms (not yet implemented but easily added with a dedicated 'public' field). Public snippets would exist in a separate collection, enabling filtering based on publication status without relying on filtering client-side.\n\n**Invariants:** The structure allows for easy enforcement of invariants such as ownership and timestamps (although timestamps are not explicitly defined in the current schema, they can be easily added and enforced via rules).\n\nThis structure promotes maintainable and secure code by avoiding complex rule logic and ensuring clear ownership and access control."
+    ]
   }
 }

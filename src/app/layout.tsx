@@ -1,8 +1,10 @@
+
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import Header from "@/components/layout/header";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
+import { FirebaseClientProvider } from "@/firebase/client-provider"; // Import the provider
 
 export const metadata: Metadata = {
   title: "Unity Codex",
@@ -25,20 +27,22 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="container mx-auto flex-grow px-4 py-8 md:px-6">
-              {children}
-            </main>
-            <footer className="py-6 md:px-6 md:py-8">
-              <div className="container mx-auto text-center text-sm text-muted-foreground">
-                <p>&copy; {new Date().getFullYear()} Unity Codex. All rights reserved.</p>
-              </div>
-            </footer>
-          </div>
-          <Toaster />
-        </ThemeProvider>
+        <FirebaseClientProvider>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="container mx-auto flex-grow px-4 py-8 md:px-6">
+                {children}
+              </main>
+              <footer className="py-6 md:px-6 md:py-8">
+                <div className="container mx-auto text-center text-sm text-muted-foreground">
+                  <p>&copy; {new Date().getFullYear()} Unity Codex. All rights reserved.</p>
+                </div>
+              </footer>
+            </div>
+            <Toaster />
+          </ThemeProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );
