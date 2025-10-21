@@ -1,96 +1,95 @@
 
-
-
 const tagColorMap: { [key: string]: string } = {
   // Unity specific
-  Input: "blue",
-  Gameplay: "green",
-  Player: "cyan",
-  Spawning: "yellow",
-  Timer: "yellow",
-  UI: "purple",
-  Effects: "purple",
-  "Pause Menu": "purple",
-  Physics: "orange",
-  Collision: "orange",
-  Tag: "orange",
-  Mobile: "red",
-  "TextMeshPro": "purple",
-  "Rich Text": "purple",
-  "Addressables": "indigo",
-  "Asset Management": "indigo",
-  "Animator": "teal",
-  "Movement": "teal",
-  "Boundaries": "orange",
-  "Time": "yellow",
-  "Cinemachine": "red",
-  "Camera": "red",
-  "Scene Management": "green",
-  "Health": "red",
-  "Audio": "blue",
-  "Visuals": "purple",
-  "Rotation": "teal",
-  "2D": "cyan",
-  "3D": "cyan",
-  "Platformer": "green",
-  "Feedback": "yellow",
-  "Joint": "orange",
-  "Native": "red",
-  "Integration": "red",
-  "Configuration": "red",
-  "Android": "green",
-  "iOS": "gray",
-  "Build": "gray",
-  "Permissions": "orange",
-  "Java": "orange",
-  "Network": "blue",
-  "Coroutine": "yellow",
-  "Interface": "pink",
+  Input: "bg-tag-blue-bg text-tag-blue-fg border-tag-blue-bg",
+  Gameplay: "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
+  Player: "bg-tag-cyan-bg text-tag-cyan-fg border-tag-cyan-bg",
+  Spawning: "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
+  Timer: "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
+  UI: "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
+  Effects: "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
+  "Pause Menu": "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
+  Physics: "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
+  Collision: "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
+  Tag: "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
+  Mobile: "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
+  "TextMeshPro": "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
+  "Rich Text": "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
+  "Addressables": "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
+  "Asset Management": "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
+  "Animator": "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
+  "Movement": "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
+  "Boundaries": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
+  "Time": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
+  "Cinemachine": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
+  "Camera": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
+  "Scene Management": "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
+  "Health": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
+  "Audio": "bg-tag-blue-bg text-tag-blue-fg border-tag-blue-bg",
+  "Visuals": "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
+  "Rotation": "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
+  "2D": "bg-tag-cyan-bg text-tag-cyan-fg border-tag-cyan-bg",
+  "3D": "bg-tag-cyan-bg text-tag-cyan-fg border-tag-cyan-bg",
+  "Platformer": "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
+  "Feedback": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
+  "Joint": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
+  "Native": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
+  "Integration": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
+  "Configuration": "bg-tag-red-bg text-tag-red-fg border-tag-red-bg",
+  "Android": "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
+  "iOS": "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg",
+  "Build": "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg",
+  "Permissions": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
+  "Java": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
+  "Network": "bg-tag-blue-bg text-tag-blue-fg border-tag-blue-bg",
+  "Coroutine": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
+  "Interface": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
 
   // Data & Architecture
-  "Data Persistence": "pink",
-  Saving: "pink",
-  PlayerPrefs: "pink",
-  JSON: "pink",
-  Newtonsoft: "pink",
-  "ScriptableObject": "pink",
-  Architecture: "pink",
-  "Design Pattern": "pink",
-  Singleton: "pink",
-  "Object Pool": "pink",
+  "Data Persistence": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  Saving: "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  PlayerPrefs: "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  JSON: "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  Newtonsoft: "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  "ScriptableObject": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  Architecture: "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  "Design Pattern": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  Singleton: "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
+  "Object Pool": "bg-tag-pink-bg text-tag-pink-fg border-tag-pink-bg",
   
   // AI
-  "AI": "indigo",
+  "AI": "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
 
   // Gameplay Systems
-  "Interaction": "teal",
-  "Inventory": "orange",
-  "Stamina": "green",
-  "Quest": "yellow",
-  "Navigation": "blue",
-  "Render Texture": "purple",
+  "Interaction": "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
+  "Inventory": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
+  "Stamina": "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
+  "Quest": "bg-tag-yellow-bg text-tag-yellow-fg border-tag-yellow-bg",
+  "Navigation": "bg-tag-blue-bg text-tag-blue-fg border-tag-blue-bg",
+  "Render Texture": "bg-tag-purple-bg text-tag-purple-fg border-tag-purple-bg",
 
   // Monetization
-  AdMob: "green",
-  Monetization: "green",
+  AdMob: "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
+  Monetization: "bg-tag-green-bg text-tag-green-fg border-tag-green-bg",
 
   // Tools
-  DOTween: "teal",
-  Animation: "teal",
-  Scale: "teal",
-  Fade: "teal",
-  Punch: "teal",
-  "Rigidbody": "orange",
+  DOTween: "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
+  Animation: "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
+  Scale: "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
+  Fade: "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
+  Punch: "bg-tag-teal-bg text-tag-teal-fg border-tag-teal-bg",
+  "Rigidbody": "bg-tag-orange-bg text-tag-orange-fg border-tag-orange-bg",
 
   // General
-  Optimization: "indigo",
-  Performance: "indigo",
-  "Utility": "gray",
+  Optimization: "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
+  Performance: "bg-tag-indigo-bg text-tag-indigo-fg border-tag-indigo-bg",
+  "Utility": "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg",
 };
 
+const defaultColorClasses = "bg-tag-gray-bg text-tag-gray-fg border-tag-gray-bg";
+
 export function getTagColorClasses(tag: string, selected: boolean = false, hasSelection: boolean = false): string {
-  const colorName = tagColorMap[tag] || "gray";
-  const baseClasses = `bg-tag-${colorName}-bg text-tag-${colorName}-fg border-tag-${colorName}-bg`;
+  const baseClasses = tagColorMap[tag] || defaultColorClasses;
   
   if (hasSelection) {
     if (selected) {
@@ -102,30 +101,3 @@ export function getTagColorClasses(tag: string, selected: boolean = false, hasSe
   
   return `${baseClasses} hover:brightness-125`;
 }
-
-// Generates CSS variables for Tailwind
-export function getTagColorVariables() {
-  const colors = {
-    blue: { bg: '217 91% 60%', fg: '217 91% 98%' },
-    green: { bg: '142 71% 45%', fg: '142 71% 98%' },
-    cyan: { bg: '187 81% 55%', fg: '187 81% 98%' },
-    yellow: { bg: '48 96% 58%', fg: '48 96% 5%' },
-    purple: { bg: '262 84% 60%', fg: '262 84% 98%' },
-    orange: { bg: '24 95% 53%', fg: '24 95% 98%' },
-    red: { bg: '0 84% 60%', fg: '0 84% 98%' },
-    pink: { bg: '329 84% 60%', fg: '329 84% 98%' },
-    teal: { bg: '166 84% 45%', fg: '166 84% 98%' },
-    indigo: { bg: '239 84% 60%', fg: '239 84% 98%' },
-    gray: { bg: '240 5% 50%', fg: '240 5% 98%' },
-  };
-
-  const variables: { [key: string]: string } = {};
-  for (const [name, shades] of Object.entries(colors)) {
-    variables[`--tag-${name}-bg`] = shades.bg;
-    variables[`--tag-${name}-fg`] = shades.fg;
-  }
-  return variables;
-}
-
-    
-    

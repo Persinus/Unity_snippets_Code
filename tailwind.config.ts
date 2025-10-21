@@ -1,5 +1,30 @@
 import type {Config} from 'tailwindcss';
-import { getTagColorVariables } from './src/lib/tag-colors';
+
+const tagColorVariables = {
+  '--tag-blue-bg': '217 91% 60%',
+  '--tag-blue-fg': '217 91% 98%',
+  '--tag-green-bg': '142 71% 45%',
+  '--tag-green-fg': '142 71% 98%',
+  '--tag-cyan-bg': '187 81% 55%',
+  '--tag-cyan-fg': '187 81% 98%',
+  '--tag-yellow-bg': '48 96% 58%',
+  '--tag-yellow-fg': '48 96% 5%',
+  '--tag-purple-bg': '262 84% 60%',
+  '--tag-purple-fg': '262 84% 98%',
+  '--tag-orange-bg': '24 95% 53%',
+  '--tag-orange-fg': '24 95% 98%',
+  '--tag-red-bg': '0 84% 60%',
+  '--tag-red-fg': '0 84% 98%',
+  '--tag-pink-bg': '329 84% 60%',
+  '--tag-pink-fg': '329 84% 98%',
+  '--tag-teal-bg': '166 84% 45%',
+  '--tag-teal-fg': '166 84% 98%',
+  '--tag-indigo-bg': '239 84% 60%',
+  '--tag-indigo-fg': '239 84% 98%',
+  '--tag-gray-bg': '240 5% 50%',
+  '--tag-gray-fg': '240 5% 98%',
+};
+
 
 export default {
   darkMode: ['class'],
@@ -154,7 +179,7 @@ export default {
     require('@tailwindcss/typography'),
     function ({ addBase }) {
       addBase({
-        ':root': getTagColorVariables(),
+        ':root': tagColorVariables,
       });
     },
   ],
