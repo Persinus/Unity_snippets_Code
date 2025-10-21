@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -79,7 +78,12 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
         description: 'Bình luận của bạn đã được đăng.',
       });
     } catch (error) {
-        // Error is handled by the global error handler
+        console.error("Failed to add comment:", error);
+        toast({
+            variant: "destructive",
+            title: "Lỗi",
+            description: (error as Error).message || "Không thể gửi bình luận. Vui lòng thử lại.",
+        });
     } finally {
       setIsSubmitting(false);
     }
