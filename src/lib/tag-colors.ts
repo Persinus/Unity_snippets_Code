@@ -1,5 +1,6 @@
 
 
+
 const tagColorMap: { [key: string]: string } = {
   // Unity specific
   Input: "blue",
@@ -79,6 +80,7 @@ const tagColorMap: { [key: string]: string } = {
   Scale: "teal",
   Fade: "teal",
   Punch: "teal",
+  "Rigidbody": "orange",
 
   // General
   Optimization: "indigo",
