@@ -29,24 +29,49 @@ const tagColorMap: { [key: string]: string } = {
   "Audio": "blue",
   "Visuals": "purple",
   "Rotation": "teal",
+  "2D": "cyan",
+  "3D": "cyan",
+  "Platformer": "green",
+  "Feedback": "yellow",
+  "Joint": "orange",
+  "Native": "red",
+  "Integration": "red",
+  "Configuration": "red",
+  "Android": "green",
+  "iOS": "gray",
+  "Build": "gray",
+  "Permissions": "orange",
+  "Java": "orange",
+  "Network": "blue",
+  "Coroutine": "yellow",
+  "Interface": "pink",
 
-  // Data
+  // Data & Architecture
   "Data Persistence": "pink",
   Saving: "pink",
   PlayerPrefs: "pink",
   JSON: "pink",
   Newtonsoft: "pink",
+  "ScriptableObject": "pink",
+  Architecture: "pink",
+  "Design Pattern": "pink",
+  Singleton: "pink",
+  "Object Pool": "pink",
+  
+  // AI
+  "AI": "indigo",
 
+  // Gameplay Systems
+  "Interaction": "teal",
+  "Inventory": "orange",
+  "Stamina": "green",
+  "Quest": "yellow",
+  "Navigation": "blue",
+  "Render Texture": "purple",
 
   // Monetization
   AdMob: "green",
   Monetization: "green",
-
-  // Design Patterns
-  "Design Pattern": "pink",
-  Singleton: "pink",
-  "Object Pool": "pink",
-  Architecture: "pink",
 
   // Tools
   DOTween: "teal",
@@ -58,6 +83,7 @@ const tagColorMap: { [key: string]: string } = {
   // General
   Optimization: "indigo",
   Performance: "indigo",
+  "Utility": "gray",
 };
 
 export function getTagColorClasses(tag: string, selected: boolean = false, hasSelection: boolean = false): string {
