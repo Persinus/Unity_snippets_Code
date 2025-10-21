@@ -13,15 +13,17 @@ import type { Snippet } from "@/lib/snippets";
 import { ArrowRight } from "lucide-react";
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 type SnippetCardProps = {
   snippet: Snippet;
+  style?: React.CSSProperties;
 };
 
-export default function SnippetCard({ snippet }: SnippetCardProps) {
+export default function SnippetCard({ snippet, style }: SnippetCardProps) {
   return (
-    <Link href={`/snippets/${snippet.slug}`} className="group block">
-      <Card className="flex h-full flex-col transition-all duration-300 group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/10">
+    <Link href={`/snippets/${snippet.slug}`} className="group block" style={style}>
+      <Card className="flex h-full flex-col transition-all duration-300 group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/10 animate-fade-in-up">
         <CardHeader>
           <CardTitle className="font-headline text-lg font-semibold group-hover:text-primary">
             {snippet.title}
