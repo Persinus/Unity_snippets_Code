@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Unity Codex",
   description: "A modern blog for collecting and sharing Unity C# code snippets.",
   verification: {
-    google: 'BkguS3oS48hEyhzSJ',
+    google: 'BkguS3oS48hEyhzSJnWY1IsfKr13lJZiM9lEZ7ELRGs',
   },
 };
 
