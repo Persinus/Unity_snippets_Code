@@ -29,12 +29,33 @@ jobs:
         uses: actions/checkout@v4
 
       # 2. Xác thực với Google Cloud
-      # Hướng dẫn:
-      # a. Tạo một Service Account trong Google Cloud Console cho dự án của bạn.
-      # b. Gán cho Service Account đó role "Firebase App Hosting Admin".
-      # c. Tạo một key (dạng JSON) cho Service Account, tải về và sao chép nội dung.
-      # d. Trong GitHub repository, vào Settings -> Secrets and variables -> Actions.
-      # e. Tạo một "New repository secret" với tên là `GCP_SA_KEY` và dán nội dung file JSON vào.
+      # HƯỚNG DẪN CHI TIẾT:
+      # Workflow này cần một "chìa khóa" để có quyền triển khai ứng dụng lên Firebase.
+      # Bạn cần tạo chìa khóa này trên Google Cloud và đưa nó cho GitHub một cách an toàn.
+      #
+      # PHẦN A: TẠO CHÌA KHÓA TRÊN GOOGLE CLOUD (SERVICE ACCOUNT)
+      #   1. Truy cập Google Cloud Console: https://console.cloud.google.com/
+      #   2. Đảm bảo bạn đang chọn đúng dự án (Project ID: ${{ env.PROJECT_ID }}).
+      #   3. Tìm kiếm và đi đến trang "IAM & Admin" -> "Service Accounts".
+      #   4. Nhấn vào nút "+ CREATE SERVICE ACCOUNT" ở trên cùng.
+      #   5. Đặt tên cho Service Account, ví dụ: "github-actions-deployer". Phần "Service account ID" sẽ tự động được tạo. Nhấn "CREATE AND CONTINUE".
+      #   6. Trong mục "Grant this service account access to project", tìm và chọn role (vai trò) là "Firebase App Hosting Admin". Nhấn "CONTINUE".
+      #   7. Bỏ qua bước 3 (Grant users access to this service account). Nhấn "DONE".
+      #   8. Bây giờ bạn sẽ thấy Service Account vừa tạo trong danh sách. Tìm đến nó, nhấn vào biểu tượng 3 chấm ở cột "Actions" và chọn "Manage keys".
+      #   9. Nhấn "ADD KEY" -> "Create new key".
+      #  10. Chọn "JSON" làm Key type và nhấn "CREATE". Một tệp tin JSON sẽ được tự động tải về máy bạn. **HÃY GIỮ KỸ TỆP NÀY**.
+      #
+      # PHẦN B: LƯU CHÌA KHÓA VÀO GITHUB (REPOSITORY SECRET)
+      #   1. Quay lại trang repository GitHub của bạn.
+      #   2. Nhấn vào tab "Settings".
+      #   3. Ở menu bên trái, chọn "Secrets and variables" -> "Actions".
+      #   4. Nhấn vào nút "New repository secret".
+      #   5. Ở ô "Name", nhập chính xác là `GCP_SA_KEY`.
+      #   6. Mở tệp JSON bạn vừa tải về ở Phần A. Sao chép TOÀN BỘ nội dung của nó.
+      #   7. Dán toàn bộ nội dung đã sao chép vào ô "Secret".
+      #   8. Nhấn "Add secret".
+      #
+      # Sau khi hoàn tất, workflow đã sẵn sàng để hoạt động.
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
