@@ -6,7 +6,7 @@ import { getAllSnippets } from "@/lib/snippets";
 import SnippetCard from "@/components/snippet-card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search, XCircle } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -250,6 +250,8 @@ export default function Home() {
       </div>
   );
 
+  const hasActiveFilters = selectedTags.length > 0 || selectedCategories.length > 0;
+
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -325,42 +327,47 @@ export default function Home() {
             </PopoverContent>
           </Popover>
 
-          {(selectedTags.length > 0 || selectedCategories.length > 0) && (
-            <Button
-              variant="ghost"
-              onClick={clearFilters}
-            >
-              Xóa bộ lọc
+           {hasActiveFilters && (
+             <Button
+                variant="destructive"
+                onClick={clearFilters}
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                Xóa bộ lọc
             </Button>
           )}
         </div>
         
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {selectedCategories.map((cat) => (
-              <Badge
-                key={cat}
-                className={cn(getTagColorClasses(cat, true, true, true), "cursor-pointer text-base")}
-                onClick={() => toggleCategory(cat)}
-              >
-                {cat}
-              </Badge>
-            ))}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap items-center justify-center gap-4 animate-in fade-in-50">
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {selectedCategories.map((cat) => (
+                <Badge
+                  key={cat}
+                  className={cn(getTagColorClasses(cat, true, true, true), "cursor-pointer text-base")}
+                  onClick={() => toggleCategory(cat)}
+                >
+                  {cat}
+                   <XCircle className="ml-2 h-3 w-3" />
+                </Badge>
+              ))}
+            </div>
+            {selectedCategories.length > 0 && selectedTags.length > 0 && <Separator orientation="vertical" className="h-6"/>}
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {selectedTags.map((tag) => (
+                <Badge
+                  key={tag}
+                  className={cn(getTagColorClasses(tag, true, true), "cursor-pointer")}
+                  variant="outline"
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                   <XCircle className="ml-2 h-3 w-3" />
+                </Badge>
+              ))}
+            </div>
           </div>
-          {selectedCategories.length > 0 && selectedTags.length > 0 && <Separator orientation="vertical" className="h-6"/>}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {selectedTags.map((tag) => (
-              <Badge
-                key={tag}
-                className={cn(getTagColorClasses(tag, true, true), "cursor-pointer")}
-                variant="outline"
-                onClick={() => toggleTag(tag)}
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
 
       {currentSnippets.length > 0 ? (

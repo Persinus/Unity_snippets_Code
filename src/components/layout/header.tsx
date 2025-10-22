@@ -15,10 +15,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import { LogIn, User as UserIcon, LogOut } from "lucide-react";
+import { LogIn, User as UserIcon, LogOut, ChevronDown, Braces, Code, Star, Share2 } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
+import { AdmobIcon, FirebaseIcon, GooglePlayGamesIcon, MetaIcon } from "../icons";
 
 export default function Header() {
   const auth = useAuth();
@@ -62,13 +64,50 @@ export default function Header() {
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Logo />
         </Link>
-        <nav className="hidden flex-1 items-center space-x-4 text-sm font-medium text-muted-foreground md:flex">
-          <Link
-            href="/"
-            className="transition-colors hover:text-foreground"
-          >
-            Home
-          </Link>
+        <nav className="hidden flex-1 items-center space-x-2 text-sm font-medium text-muted-foreground md:flex">
+          <Button variant="link" asChild className="text-muted-foreground">
+            <Link href="/">Trang chủ</Link>
+          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="link" className="flex items-center gap-1 text-muted-foreground">
+                Tài nguyên
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64" align="start">
+              <DropdownMenuLabel>Link hữu ích cho Unity Dev</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                  <a href="https://developers.google.com/admob/unity/quick-start" target="_blank" rel="noopener noreferrer">
+                    <AdmobIcon className="mr-2 h-4 w-4" />
+                    <span>Google Mobile Ads (AdMob)</span>
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href="https://developers.google.com/games/services/android/quickstart" target="_blank" rel="noopener noreferrer">
+                     <GooglePlayGamesIcon className="mr-2 h-4 w-4" />
+                    <span>Google Play Games</span>
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href="https://firebase.google.com/docs/unity/setup" target="_blank" rel="noopener noreferrer">
+                    <FirebaseIcon className="mr-2 h-4 w-4" />
+                    <span>Firebase SDK</span>
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href="https://developers.facebook.com/docs/unity/" target="_blank" rel="noopener noreferrer">
+                    <MetaIcon className="mr-2 h-4 w-4" />
+                    <span>Meta (Facebook) SDK</span>
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <ThemeToggle />

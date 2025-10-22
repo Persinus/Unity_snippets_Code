@@ -6,11 +6,11 @@ import CodeBlock from "@/components/code-block";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Bookmark, ChevronRight, Cog, Home, MessageSquare, Share2 } from "lucide-react";
+import { ArrowLeft, Bookmark, ChevronRight, Cog, Home, MessageSquare, Share2, Link as LinkIcon } from "lucide-react";
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
-import { collection } from "firebase/firestore";
+import { collection, doc, increment, updateDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import { toggleBookmark } from "@/lib/bookmarks";
 import { Separator } from "@/components/ui/separator";
@@ -47,7 +47,6 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
   const [tempCodeTheme, setTempCodeTheme] = useState<CodeTheme>(codeTheme);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-
   // Load settings from localStorage on initial render
   useEffect(() => {
     const savedFontSize = localStorage.getItem('code-fontSize') as FontSize || 'md';
@@ -63,6 +62,17 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
     setTempFontFamily(savedFontFamily);
     setTempCodeTheme(savedCodeTheme);
   }, []);
+  
+    // Increment view count
+  useEffect(() => {
+    if (firestore && snippet.slug) {
+      const snippetRef = doc(firestore, 'snippets', snippet.slug);
+      updateDoc(snippetRef, {
+        viewCount: increment(1)
+      }).catch(err => console.error("Failed to increment view count:", err));
+    }
+  }, [firestore, snippet.slug]);
+
 
   const handleApplySettings = () => {
     setFontSize(tempFontSize);
@@ -110,16 +120,39 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
     window.open(facebookShareUrl, '_blank', 'noopener,noreferrer');
   };
 
+  const handleCopyLinkClick = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        toast({
+            title: "Đã sao chép link!",
+            description: "Bạn có thể chia sẻ link này cho mọi người.",
+        });
+    }).catch(err => {
+        toast({
+            variant: "destructive",
+            title: "Lỗi",
+            description: "Không thể sao chép link. Vui lòng thử lại.",
+        });
+    });
+  };
+
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
-       <nav className="flex items-center text-sm text-muted-foreground">
-        <Link href="/" className="flex items-center gap-1 hover:text-primary transition-colors">
-          <Home className="h-4 w-4" />
-          Trang chủ
-        </Link>
-        <ChevronRight className="h-4 w-4 mx-1" />
-        <span className="font-medium text-foreground truncate">{snippet.title}</span>
+      <nav className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex items-center overflow-hidden">
+            <Link href="/" className="flex items-center gap-1 hover:text-primary transition-colors flex-shrink-0">
+            <Home className="h-4 w-4" />
+            Trang chủ
+            </Link>
+            <ChevronRight className="h-4 w-4 mx-1 flex-shrink-0" />
+            <span className="font-medium text-foreground truncate">{snippet.title}</span>
+        </div>
+         <Button asChild variant="outline" size="sm">
+            <Link href="/">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Quay về
+            </Link>
+        </Button>
       </nav>
 
       <div className="relative w-full aspect-[16/7] rounded-lg overflow-hidden">
@@ -141,6 +174,15 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
               {snippet.title}
             </h1>
             <div className="flex items-center gap-2">
+               <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-10 w-10 shrink-0"
+                  onClick={handleCopyLinkClick}
+                  aria-label="Copy link"
+                >
+                  <LinkIcon className="h-5 w-5 text-muted-foreground" />
+              </Button>
               <Button
                   variant="outline"
                   size="icon"
