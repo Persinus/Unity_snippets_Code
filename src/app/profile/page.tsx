@@ -77,27 +77,29 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto max-w-4xl py-8">
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12">
-        <Card className="w-full max-w-xs sticky top-24">
-          <CardHeader className="items-center text-center">
-            <Avatar className="h-24 w-24">
-              <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} />
-              <AvatarFallback className="text-3xl">
-                {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <CardTitle className="text-2xl mt-4">{user.displayName}</CardTitle>
-            <CardDescription>{user.email}</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col items-center gap-4">
-            <Button onClick={handleLogout} className="w-full" variant="destructive">
-              Đăng xuất
-            </Button>
-          </CardContent>
-        </Card>
+    <div className="container mx-auto max-w-6xl py-8">
+      <div className="flex flex-col md:flex-row items-start gap-8">
+        <aside className="w-full md:w-1/4 lg:w-1/5 md:sticky md:top-24">
+            <Card>
+              <CardHeader className="items-center text-center">
+                <Avatar className="h-24 w-24">
+                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} />
+                  <AvatarFallback className="text-3xl">
+                    {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <CardTitle className="text-2xl mt-4">{user.displayName}</CardTitle>
+                <CardDescription>{user.email}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center gap-4">
+                <Button onClick={handleLogout} className="w-full" variant="destructive">
+                  Đăng xuất
+                </Button>
+              </CardContent>
+            </Card>
+        </aside>
         
-        <div className="w-full flex-1">
+        <main className="w-full flex-1">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-3xl font-bold tracking-tight">Snippet đã đánh dấu</h2>
           </div>
@@ -135,7 +137,7 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -18,7 +19,7 @@ interface NewCommentClientData {
 
 /**
  * Adds a new comment to a snippet using the client-side SDK.
- * @param firestore - The Firestore instance.
+ * @param firestore - The Firestore instance from the client.
  * @param snippetSlug - The slug of the snippet to comment on.
  * @param commentData - The data for the new comment from the client.
  */
@@ -40,21 +41,19 @@ export async function addComment(
     createdAt: serverTimestamp(),
   };
 
-  // The 'await' here will naturally throw an error on permission failure,
-  // which will be caught by the handleSubmit's try/catch block in CommentSection.tsx
   try {
     await addDoc(commentsRef, payload);
   } catch (error) {
-     const permissionError = new FirestorePermissionError({
-        path: commentsRef.path,
-        operation: 'create',
-        requestResourceData: payload,
-      });
+    const permissionError = new FirestorePermissionError({
+      path: commentsRef.path,
+      operation: 'create',
+      requestResourceData: payload,
+    });
 
-      // Emit the error with the global error emitter
-      errorEmitter.emit('permission-error', permissionError);
+    // Emit the error with the global error emitter
+    errorEmitter.emit('permission-error', permissionError);
 
-      // Re-throw so the UI layer can handle it
-      throw permissionError;
+    // Re-throw so the UI layer can handle it
+    throw permissionError;
   }
 }
