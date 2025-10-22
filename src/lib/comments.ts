@@ -1,12 +1,8 @@
 'use server';
 
-import {
-  addDoc,
-  collection,
-  serverTimestamp,
-  type Firestore,
-} from 'firebase/firestore';
 import { revalidatePath } from 'next/cache';
+import { FieldValue } from 'firebase-admin/firestore';
+import { initializeAdminApp } from '@/firebase/admin-config';
 
 interface NewCommentClientData {
   text: string;
@@ -16,40 +12,41 @@ interface NewCommentClientData {
 }
 
 /**
- * Adds a new comment to a snippet by writing directly to Firestore within a Server Action.
- * This function is a Server Action and can be called from client components.
- * @param firestore - The Firestore instance (passed from the client).
+ * Adds a new comment to a snippet by writing directly to Firestore using the Admin SDK.
+ * This function is a Server Action and must be called from the client.
  * @param snippetSlug - The slug of the snippet to comment on.
  * @param commentData - The data for the new comment from the client.
  */
 export async function addComment(
-  firestore: Firestore,
   snippetSlug: string,
   commentData: NewCommentClientData
 ) {
   if (!commentData.authorId) {
-    console.error('User is not authenticated.');
-    throw new Error('User not authenticated.');
+    throw new Error('User is not authenticated.');
   }
-  if (!firestore) {
-    console.error('Firestore instance is not available.');
-    throw new Error('Firestore not available.');
+  if (!snippetSlug) {
+    throw new Error('Snippet slug is missing.');
   }
 
   try {
-    const commentsRef = collection(firestore, 'snippets', snippetSlug, 'comments');
+    const { firestore } = initializeAdminApp();
+    const commentsRef = firestore.collection('snippets').doc(snippetSlug).collection('comments');
     
-    await addDoc(commentsRef, {
+    // The new document will have an auto-generated ID.
+    await commentsRef.add({
         ...commentData,
-        createdAt: serverTimestamp(),
+        // Use FieldValue.serverTimestamp() from the Admin SDK
+        createdAt: FieldValue.serverTimestamp(),
     });
 
     // Revalidate the snippet page to show the new comment immediately
     revalidatePath(`/snippets/${snippetSlug}`);
+    
+    return { success: true };
 
   } catch (error) {
     console.error('Error in addComment Server Action: ', error);
-    // Re-throw the error so the client's catch block can handle it.
-    throw new Error('Could not post comment. Please try again.');
+    // Re-throw a generic error to avoid leaking implementation details to the client.
+    throw new Error('Could not post comment. Please try again later.');
   }
 }

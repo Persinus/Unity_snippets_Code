@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -60,14 +59,15 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !firestore || commentText.trim() === '') {
+    if (!user || commentText.trim() === '') {
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await addComment(firestore, snippetSlug, {
+      // Call the server action, no longer passing the firestore instance
+      await addComment(snippetSlug, {
         text: commentText,
         authorId: user.uid,
         authorDisplayName: user.displayName || 'Anonymous',
