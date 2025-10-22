@@ -148,5 +148,3 @@ export default function SnippetCard({ snippet, index, selectedCategories, select
     </Card>
   );
 }
-
-    

@@ -3,24 +3,11 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Calculator,
-  Code,
-  Smile,
-} from 'lucide-react';
-import { useDebounce } from 'use-debounce';
 
 import {
   CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
   DialogTitle,
 } from '@/components/ui/command';
-// AI flow is no longer used
-// import { findSnippet } from '@/ai/flows/find-snippet-flow';
 
 interface Props {
     open: boolean;
@@ -28,8 +15,6 @@ interface Props {
 }
 
 export function CommandDialogSearch({ open, setOpen }: Props) {
-  const [search, setSearch] = React.useState('');
-  // All AI related state and effects are removed
   const router = useRouter();
 
 
@@ -54,7 +39,7 @@ export function CommandDialogSearch({ open, setOpen }: Props) {
   return (
     // The CommandDialog is now empty as the AI functionality is removed
     <CommandDialog open={open} onOpenChange={setOpen}>
-        <DialogTitle className="sr-only">AI Search</DialogTitle>
+        <DialogTitle className="sr-only">Search</DialogTitle>
     </CommandDialog>
   );
 }

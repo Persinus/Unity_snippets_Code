@@ -1,9 +1,9 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, serverTimestamp, orderBy, query } from 'firebase/firestore';
+import { collection, orderBy, query } from 'firebase/firestore';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -153,5 +153,3 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
     </section>
   );
 }
-
-    
