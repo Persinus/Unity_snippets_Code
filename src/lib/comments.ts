@@ -1,8 +1,13 @@
-'use server';
+'use client';
 
-import { revalidatePath } from 'next/cache';
-import { FieldValue } from 'firebase-admin/firestore';
-import { initializeAdminApp } from '@/firebase/admin-config';
+import {
+  Firestore,
+  addDoc,
+  collection,
+  serverTimestamp,
+} from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 interface NewCommentClientData {
   text: string;
@@ -12,12 +17,13 @@ interface NewCommentClientData {
 }
 
 /**
- * Adds a new comment to a snippet by writing directly to Firestore using the Admin SDK.
- * This function is a Server Action and must be called from the client.
+ * Adds a new comment to a snippet using the client-side SDK.
+ * @param firestore - The Firestore instance.
  * @param snippetSlug - The slug of the snippet to comment on.
  * @param commentData - The data for the new comment from the client.
  */
 export async function addComment(
+  firestore: Firestore,
   snippetSlug: string,
   commentData: NewCommentClientData
 ) {
@@ -28,25 +34,27 @@ export async function addComment(
     throw new Error('Snippet slug is missing.');
   }
 
+  const commentsRef = collection(firestore, 'snippets', snippetSlug, 'comments');
+  const payload = {
+    ...commentData,
+    createdAt: serverTimestamp(),
+  };
+
+  // The 'await' here will naturally throw an error on permission failure,
+  // which will be caught by the handleSubmit's try/catch block in CommentSection.tsx
   try {
-    const { firestore } = initializeAdminApp();
-    const commentsRef = firestore.collection('snippets').doc(snippetSlug).collection('comments');
-    
-    // The new document will have an auto-generated ID.
-    await commentsRef.add({
-        ...commentData,
-        // Use FieldValue.serverTimestamp() from the Admin SDK
-        createdAt: FieldValue.serverTimestamp(),
-    });
-
-    // Revalidate the snippet page to show the new comment immediately
-    revalidatePath(`/snippets/${snippetSlug}`);
-    
-    return { success: true };
-
+    await addDoc(commentsRef, payload);
   } catch (error) {
-    console.error('Error in addComment Server Action: ', error);
-    // Re-throw a generic error to avoid leaking implementation details to the client.
-    throw new Error('Could not post comment. Please try again later.');
+     const permissionError = new FirestorePermissionError({
+        path: commentsRef.path,
+        operation: 'create',
+        requestResourceData: payload,
+      });
+
+      // Emit the error with the global error emitter
+      errorEmitter.emit('permission-error', permissionError);
+
+      // Re-throw so the UI layer can handle it
+      throw permissionError;
   }
 }

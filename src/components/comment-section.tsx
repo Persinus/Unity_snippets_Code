@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { collection, orderBy, query } from 'firebase/firestore';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { Skeleton } from './ui/skeleton';
 import { Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { useCollection, useMemoFirebase } from '@/firebase';
 
 interface CommentSectionProps {
   snippetSlug: string;
@@ -59,15 +60,14 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || commentText.trim() === '') {
+    if (!user || !firestore || commentText.trim() === '') {
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Call the server action, no longer passing the firestore instance
-      await addComment(snippetSlug, {
+      await addComment(firestore, snippetSlug, {
         text: commentText,
         authorId: user.uid,
         authorDisplayName: user.displayName || 'Anonymous',
