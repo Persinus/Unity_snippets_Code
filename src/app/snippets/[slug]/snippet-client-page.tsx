@@ -6,7 +6,7 @@ import CodeBlock from "@/components/code-block";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Bookmark, ChevronRight, Cog, Home, Share2 } from "lucide-react";
+import { ArrowLeft, Bookmark, ChevronRight, Cog, Home, MessageSquare, Share2 } from "lucide-react";
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
@@ -20,6 +20,7 @@ import RelatedSnippets from "@/components/related-snippets";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 type SnippetClientPageProps = {
   snippet: Snippet;
@@ -34,35 +35,49 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
   const { user } = useUser();
   const firestore = useFirestore();
 
+  // State for saved settings
   const [fontSize, setFontSize] = useState<FontSize>('md');
   const [fontFamily, setFontFamily] = useState<FontFamily>('source-code-pro');
   const [codeTheme, setCodeTheme] = useState<CodeTheme>('github-dark');
 
+  // Temporary state for popover selections
+  const [tempFontSize, setTempFontSize] = useState<FontSize>(fontSize);
+  const [tempFontFamily, setTempFontFamily] = useState<FontFamily>(fontFamily);
+  const [tempCodeTheme, setTempCodeTheme] = useState<CodeTheme>(codeTheme);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+
   // Load settings from localStorage on initial render
   useEffect(() => {
-    const savedFontSize = localStorage.getItem('code-fontSize') as FontSize;
-    const savedFontFamily = localStorage.getItem('code-fontFamily') as FontFamily;
-    const savedCodeTheme = localStorage.getItem('code-theme') as CodeTheme;
+    const savedFontSize = localStorage.getItem('code-fontSize') as FontSize || 'md';
+    const savedFontFamily = localStorage.getItem('code-fontFamily') as FontFamily || 'source-code-pro';
+    const savedCodeTheme = localStorage.getItem('code-theme') as CodeTheme || 'github-dark';
     
-    if (savedFontSize) setFontSize(savedFontSize);
-    if (savedFontFamily) setFontFamily(savedFontFamily);
-    if (savedCodeTheme) setCodeTheme(savedCodeTheme);
+    setFontSize(savedFontSize);
+    setFontFamily(savedFontFamily);
+    setCodeTheme(savedCodeTheme);
+
+    // Initialize temp state with saved values
+    setTempFontSize(savedFontSize);
+    setTempFontFamily(savedFontFamily);
+    setTempCodeTheme(savedCodeTheme);
   }, []);
 
-  // Handlers to update state and save to localStorage
-  const handleFontSizeChange = (value: FontSize) => {
-    setFontSize(value);
-    localStorage.setItem('code-fontSize', value);
-  };
+  const handleApplySettings = () => {
+    setFontSize(tempFontSize);
+    localStorage.setItem('code-fontSize', tempFontSize);
 
-  const handleFontFamilyChange = (value: FontFamily) => {
-    setFontFamily(value);
-    localStorage.setItem('code-fontFamily', value);
-  };
-  
-  const handleCodeThemeChange = (value: CodeTheme) => {
-    setCodeTheme(value);
-    localStorage.setItem('code-theme', value);
+    setFontFamily(tempFontFamily);
+    localStorage.setItem('code-fontFamily', tempFontFamily);
+
+    setCodeTheme(tempCodeTheme);
+    localStorage.setItem('code-theme', tempCodeTheme);
+
+    setIsPopoverOpen(false); // Close popover after applying
+    toast({
+      title: "Đã lưu cài đặt",
+      description: "Cài đặt hiển thị code của bạn đã được cập nhật.",
+    });
   };
 
   const userBookmarksQuery = useMemoFirebase(() => {
@@ -166,15 +181,16 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
           </div>
         </header>
 
-        <div className="relative">
-             <div className="absolute right-12 top-2 z-10">
-                <Popover>
+        <Card>
+            <CardHeader className="flex-row items-center justify-between p-3 border-b">
+                <p className="text-sm font-medium text-muted-foreground">C# Code</p>
+                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                     <PopoverTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-muted" aria-label="Code settings">
                            <Cog className="h-4 w-4" />
                         </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-64">
+                    <PopoverContent className="w-64" align="end">
                         <div className="grid gap-4">
                             <div className="space-y-2">
                                 <h4 className="font-medium leading-none">Cài đặt Code</h4>
@@ -182,10 +198,10 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
                                     Tùy chỉnh hiển thị của khối code.
                                 </p>
                             </div>
-                            <div className="grid gap-2">
+                            <div className="grid gap-4">
                                 <div className="grid grid-cols-3 items-center gap-4">
                                     <Label htmlFor="font-size">Cỡ chữ</Label>
-                                    <Select value={fontSize} onValueChange={(value: string) => handleFontSizeChange(value as FontSize)}>
+                                    <Select value={tempFontSize} onValueChange={(value: string) => setTempFontSize(value as FontSize)}>
                                         <SelectTrigger id="font-size" className="col-span-2 h-8">
                                             <SelectValue />
                                         </SelectTrigger>
@@ -198,7 +214,7 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
                                 </div>
                                 <div className="grid grid-cols-3 items-center gap-4">
                                     <Label htmlFor="font-family">Font</Label>
-                                     <Select value={fontFamily} onValueChange={(value: string) => handleFontFamilyChange(value as FontFamily)}>
+                                     <Select value={tempFontFamily} onValueChange={(value: string) => setTempFontFamily(value as FontFamily)}>
                                         <SelectTrigger id="font-family" className="col-span-2 h-8">
                                             <SelectValue />
                                         </SelectTrigger>
@@ -210,7 +226,7 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
                                 </div>
                                 <div className="grid grid-cols-3 items-center gap-4">
                                     <Label htmlFor="code-theme">Theme</Label>
-                                     <Select value={codeTheme} onValueChange={(value: string) => handleCodeThemeChange(value as CodeTheme)}>
+                                     <Select value={tempCodeTheme} onValueChange={(value: string) => setTempCodeTheme(value as CodeTheme)}>
                                         <SelectTrigger id="code-theme" className="col-span-2 h-8">
                                             <SelectValue />
                                         </SelectTrigger>
@@ -222,17 +238,20 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
                                     </Select>
                                 </div>
                             </div>
+                             <Button onClick={handleApplySettings} className="mt-4 w-full">Lưu Cài đặt</Button>
                         </div>
                     </PopoverContent>
                 </Popover>
-            </div>
-            <CodeBlock 
-              code={snippet.code} 
-              fontSize={fontSize}
-              fontFamily={fontFamily}
-              theme={codeTheme}
-            />
-        </div>
+            </CardHeader>
+            <CardContent className="p-0">
+                <CodeBlock 
+                  code={snippet.code} 
+                  fontSize={fontSize}
+                  fontFamily={fontFamily}
+                  theme={codeTheme}
+                />
+            </CardContent>
+        </Card>
 
 
         <div className="prose prose-invert max-w-none text-muted-foreground pt-4">

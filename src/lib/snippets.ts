@@ -7,6 +7,8 @@ export type Snippet = {
   categories: string[];
   tags: string[];
   code: string;
+  viewCount?: number;
+  commentCount?: number;
 };
 
 // The data is now directly imported from the JSON file

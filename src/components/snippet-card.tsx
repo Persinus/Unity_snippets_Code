@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Snippet } from "@/lib/snippets";
-import { ArrowRight, Bookmark } from "lucide-react";
+import { ArrowRight, Bookmark, Eye, MessageSquare } from "lucide-react";
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
 import React, { useMemo } from "react";
@@ -129,11 +129,21 @@ export default function SnippetCard({ snippet, index, selectedCategories, select
           </div>
         )}
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex justify-between items-center">
           <Link href={`/snippets/${snippet.slug}`} className="flex items-center text-sm font-medium text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100">
               Xem Snippet
               <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+             <div className="flex items-center gap-1.5">
+                <MessageSquare className="h-4 w-4" />
+                <span>({snippet.commentCount ?? 0})</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+                <Eye className="h-4 w-4" />
+                 <span>{snippet.viewCount ?? 0}</span>
+            </div>
+          </div>
       </CardFooter>
     </Card>
   );

@@ -63,7 +63,7 @@ export default function CodeBlock({
   return (
     <div
       className={cn(
-        "relative rounded-lg border bg-card text-sm",
+        "relative",
         theme, // Apply theme class
         fontFamilyClasses[fontFamily],
         fontSizeClasses[fontSize],
@@ -85,7 +85,7 @@ export default function CodeBlock({
           )}
         </Button>
       </div>
-      <pre className="overflow-x-auto p-4 !bg-transparent">
+      <pre className="overflow-x-auto p-4 !bg-transparent rounded-b-lg">
         <code ref={codeRef} className="language-csharp !bg-transparent p-0">
           {code}
         </code>
