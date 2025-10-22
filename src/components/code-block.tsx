@@ -7,16 +7,29 @@ import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import hljs from "highlight.js/lib/core";
 import csharp from "highlight.js/lib/languages/csharp";
-import "highlight.js/styles/github-dark.css"; // Or your preferred theme
+
+// Import themes
+import "highlight.js/styles/github-dark.css";
+import "highlight.js/styles/a11y-light.css";
+import "highlight.js/styles/monokai-sublime.css";
 
 hljs.registerLanguage("csharp", csharp);
 
 type CodeBlockProps = {
   code: string;
   className?: string;
+  theme?: string;
+  fontSize?: string;
+  fontFamily?: string;
 };
 
-export default function CodeBlock({ code, className }: CodeBlockProps) {
+export default function CodeBlock({ 
+  code, 
+  className,
+  theme = 'github-dark',
+  fontSize = 'md',
+  fontFamily = 'source-code-pro',
+}: CodeBlockProps) {
   const [hasCopied, setHasCopied] = useState(false);
   const codeRef = useRef<HTMLElement>(null);
 
@@ -24,7 +37,7 @@ export default function CodeBlock({ code, className }: CodeBlockProps) {
     if (codeRef.current) {
       hljs.highlightElement(codeRef.current);
     }
-  }, [code]);
+  }, [code, theme]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(code).then(() => {
@@ -35,10 +48,25 @@ export default function CodeBlock({ code, className }: CodeBlockProps) {
     });
   };
 
+  const fontSizeClasses: { [key: string]: string } = {
+    sm: 'text-[var(--code-font-size-sm)]',
+    md: 'text-[var(--code-font-size-md)]',
+    lg: 'text-[var(--code-font-size-lg)]',
+  };
+
+  const fontFamilyClasses: { [key: string]: string } = {
+    'source-code-pro': 'font-code',
+    'fira-code': 'font-fira-code',
+  };
+
+
   return (
     <div
       className={cn(
-        "relative rounded-lg border bg-card font-code text-sm",
+        "relative rounded-lg border bg-card text-sm",
+        theme, // Apply theme class
+        fontFamilyClasses[fontFamily],
+        fontSizeClasses[fontSize],
         className
       )}
     >
@@ -57,8 +85,8 @@ export default function CodeBlock({ code, className }: CodeBlockProps) {
           )}
         </Button>
       </div>
-      <pre className="overflow-x-auto p-4">
-        <code ref={codeRef} className="language-csharp bg-transparent p-0">
+      <pre className="overflow-x-auto p-4 !bg-transparent">
+        <code ref={codeRef} className="language-csharp !bg-transparent p-0">
           {code}
         </code>
       </pre>

@@ -5,12 +5,18 @@ import Header from "@/components/layout/header";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { FirebaseClientProvider } from "@/firebase/client-provider"; // Import the provider
-import { Source_Code_Pro } from 'next/font/google';
+import { Source_Code_Pro, Fira_Code } from 'next/font/google';
 import Link from "next/link";
 
 const sourceCodePro = Source_Code_Pro({
   subsets: ['latin'],
   variable: '--font-source-code-pro',
+  display: 'swap',
+});
+
+const firaCode = Fira_Code({
+  subsets: ['latin'],
+  variable: '--font-fira-code',
   display: 'swap',
 });
 
@@ -28,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={sourceCodePro.variable}>
+    <html lang="en" suppressHydrationWarning className={`${sourceCodePro.variable} ${firaCode.variable}`}>
       <body className="font-body antialiased">
         <FirebaseClientProvider>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>

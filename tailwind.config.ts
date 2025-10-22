@@ -80,6 +80,7 @@ export default {
         body: ['var(--font-source-code-pro)', 'monospace'],
         headline: ['var(--font-source-code-pro)', 'monospace'],
         code: ['var(--font-source-code-pro)', 'monospace'],
+        'fira-code': ['var(--font-fira-code)', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

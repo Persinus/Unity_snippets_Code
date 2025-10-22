@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -41,6 +42,11 @@ body {
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Code Block Settings */
+    --code-font-size-sm: 0.8rem;
+    --code-font-size-md: 0.875rem;
+    --code-font-size-lg: 1rem;
   }
 
   .dark {

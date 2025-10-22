@@ -1,12 +1,12 @@
 
 'use client';
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import CodeBlock from "@/components/code-block";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, Bookmark, ChevronRight, Home, Share2 } from "lucide-react";
+import { ArrowLeft, Bookmark, ChevronRight, Cog, Home, Share2 } from "lucide-react";
 import { getTagColorClasses } from "@/lib/tag-colors";
 import { cn } from "@/lib/utils";
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase";
@@ -17,14 +17,53 @@ import { Separator } from "@/components/ui/separator";
 import CommentSection from "@/components/comment-section";
 import type { Snippet } from "@/lib/snippets";
 import RelatedSnippets from "@/components/related-snippets";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type SnippetClientPageProps = {
   snippet: Snippet;
 };
 
+// Define types for settings
+type FontSize = 'sm' | 'md' | 'lg';
+type FontFamily = 'source-code-pro' | 'fira-code';
+type CodeTheme = 'github-dark' | 'a11y-light' | 'monokai-sublime';
+
 export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
   const { user } = useUser();
   const firestore = useFirestore();
+
+  const [fontSize, setFontSize] = useState<FontSize>('md');
+  const [fontFamily, setFontFamily] = useState<FontFamily>('source-code-pro');
+  const [codeTheme, setCodeTheme] = useState<CodeTheme>('github-dark');
+
+  // Load settings from localStorage on initial render
+  useEffect(() => {
+    const savedFontSize = localStorage.getItem('code-fontSize') as FontSize;
+    const savedFontFamily = localStorage.getItem('code-fontFamily') as FontFamily;
+    const savedCodeTheme = localStorage.getItem('code-theme') as CodeTheme;
+    
+    if (savedFontSize) setFontSize(savedFontSize);
+    if (savedFontFamily) setFontFamily(savedFontFamily);
+    if (savedCodeTheme) setCodeTheme(savedCodeTheme);
+  }, []);
+
+  // Handlers to update state and save to localStorage
+  const handleFontSizeChange = (value: FontSize) => {
+    setFontSize(value);
+    localStorage.setItem('code-fontSize', value);
+  };
+
+  const handleFontFamilyChange = (value: FontFamily) => {
+    setFontFamily(value);
+    localStorage.setItem('code-fontFamily', value);
+  };
+  
+  const handleCodeThemeChange = (value: CodeTheme) => {
+    setCodeTheme(value);
+    localStorage.setItem('code-theme', value);
+  };
 
   const userBookmarksQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -127,7 +166,74 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
           </div>
         </header>
 
-        <CodeBlock code={snippet.code} />
+        <div className="relative">
+             <div className="absolute right-12 top-2 z-10">
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-muted" aria-label="Code settings">
+                           <Cog className="h-4 w-4" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64">
+                        <div className="grid gap-4">
+                            <div className="space-y-2">
+                                <h4 className="font-medium leading-none">Cài đặt Code</h4>
+                                <p className="text-sm text-muted-foreground">
+                                    Tùy chỉnh hiển thị của khối code.
+                                </p>
+                            </div>
+                            <div className="grid gap-2">
+                                <div className="grid grid-cols-3 items-center gap-4">
+                                    <Label htmlFor="font-size">Cỡ chữ</Label>
+                                    <Select value={fontSize} onValueChange={(value: string) => handleFontSizeChange(value as FontSize)}>
+                                        <SelectTrigger id="font-size" className="col-span-2 h-8">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="sm">Nhỏ</SelectItem>
+                                            <SelectItem value="md">Vừa</SelectItem>
+                                            <SelectItem value="lg">Lớn</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-3 items-center gap-4">
+                                    <Label htmlFor="font-family">Font</Label>
+                                     <Select value={fontFamily} onValueChange={(value: string) => handleFontFamilyChange(value as FontFamily)}>
+                                        <SelectTrigger id="font-family" className="col-span-2 h-8">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="source-code-pro">Source Code Pro</SelectItem>
+                                            <SelectItem value="fira-code">Fira Code</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="grid grid-cols-3 items-center gap-4">
+                                    <Label htmlFor="code-theme">Theme</Label>
+                                     <Select value={codeTheme} onValueChange={(value: string) => handleCodeThemeChange(value as CodeTheme)}>
+                                        <SelectTrigger id="code-theme" className="col-span-2 h-8">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="github-dark">GitHub Dark</SelectItem>
+                                            <SelectItem value="a11y-light">A11y Light</SelectItem>
+                                            <SelectItem value="monokai-sublime">Monokai Sublime</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </div>
+                    </PopoverContent>
+                </Popover>
+            </div>
+            <CodeBlock 
+              code={snippet.code} 
+              fontSize={fontSize}
+              fontFamily={fontFamily}
+              theme={codeTheme}
+            />
+        </div>
+
 
         <div className="prose prose-invert max-w-none text-muted-foreground pt-4">
             <p>{snippet.description}</p>
@@ -144,5 +250,3 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
     </div>
   );
 }
-
-
