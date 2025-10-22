@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import {
   Card,
@@ -20,6 +19,7 @@ import { toggleBookmark } from "@/lib/bookmarks";
 import { collection } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
+import Image from "next/image";
 
 type SnippetCardProps = {
   snippet: Snippet;
@@ -62,9 +62,20 @@ export default function SnippetCard({ snippet, index, selectedCategories, select
 
   return (
     <Card 
-      className="flex h-full flex-col transition-all duration-300 group hover:border-primary hover:shadow-lg hover:shadow-primary/10 animate-in fade-in-90 slide-in-from-bottom-4 zoom-in-95"
+      className="flex h-full flex-col overflow-hidden transition-all duration-300 group hover:border-primary hover:shadow-lg hover:shadow-primary/10 animate-in fade-in-90 slide-in-from-bottom-4 zoom-in-95"
       style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
     >
+       <Link href={`/snippets/${snippet.slug}`} className="block group/image relative">
+         <Image
+            src={snippet.imageUrl}
+            alt={snippet.title}
+            width={400}
+            height={200}
+            className="w-full object-cover aspect-[2/1] group-hover/image:scale-105 transition-transform duration-300"
+            data-ai-hint="code snippet"
+          />
+         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+      </Link>
       <CardHeader>
         <div className="flex justify-between items-start">
             <Link href={`/snippets/${snippet.slug}`} className="group/title block flex-grow">

@@ -10,7 +10,6 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
-import { Separator } from './ui/separator';
 import { BookCopy } from 'lucide-react';
 
 type RelatedSnippetsProps = {
@@ -27,7 +26,8 @@ export default function RelatedSnippets({ currentSnippet }: RelatedSnippetsProps
     const currentTags = new Set(currentSnippet.tags);
 
     if (currentTags.size === 0) {
-      return [];
+      // If no tags, return a few random snippets, excluding the current one
+      return all.filter(s => s.slug !== currentSnippet.slug).sort(() => 0.5 - Math.random()).slice(0, 5);
     }
 
     return all
