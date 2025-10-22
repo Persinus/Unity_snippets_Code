@@ -241,6 +241,22 @@ export default function Home() {
         <label className="text-sm font-medium leading-none cursor-pointer">{tag}</label>
       </div>
   );
+  
+  const CategoryCheckboxItem = ({ category }: { category: string }) => (
+      <div
+        key={category}
+        onClick={() => toggleCategory(category)}
+        className="flex items-center space-x-2 p-2 rounded-md hover:bg-accent cursor-pointer"
+      >
+        <input
+          type="checkbox"
+          checked={selectedCategories.includes(category)}
+          readOnly
+          className="form-checkbox h-4 w-4 text-primary rounded border-gray-300 focus:ring-primary"
+        />
+        <label className="text-sm font-medium leading-none cursor-pointer">{category}</label>
+      </div>
+  );
 
   return (
     <div className="space-y-8">
@@ -269,28 +285,29 @@ export default function Home() {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-2">
-           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+           <Popover>
+            <PopoverTrigger asChild>
               <Button variant="outline">
                 Lọc theo Nền tảng
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Chọn Nền tảng</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {allCategories.map((cat) => (
-                  <DropdownMenuCheckboxItem
-                    key={cat}
-                    checked={selectedCategories.includes(cat)}
-                    onCheckedChange={() => toggleCategory(cat)}
-                    onSelect={(e) => e.preventDefault()}
-                  >
-                    {cat}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="start" side="bottom">
+               <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium leading-none">Chọn Nền tảng</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Chọn một hoặc nhiều nền tảng để lọc.
+                    </p>
+                  </div>
+                   <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
+                    {allCategories.map((cat) => (
+                        <CategoryCheckboxItem key={cat} category={cat} />
+                    ))}
+                  </div>
+               </div>
+            </PopoverContent>
+          </Popover>
 
           <Popover>
             <PopoverTrigger asChild>
@@ -331,7 +348,7 @@ export default function Home() {
             {selectedCategories.map((cat) => (
               <Badge
                 key={cat}
-                className={cn(getTagColorClasses(cat, true, true), "cursor-pointer text-base")}
+                className={cn(getTagColorClasses(cat, true, true, true), "cursor-pointer text-base")}
                 onClick={() => toggleCategory(cat)}
               >
                 {cat}
@@ -380,5 +397,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
