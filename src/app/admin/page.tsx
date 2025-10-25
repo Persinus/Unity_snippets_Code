@@ -7,11 +7,11 @@ import { useUserClaims } from '@/lib/user-claims';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import AdminDashboard from './admin-dashboard';
-import AdminRoute from '@/components/layout/admin-route';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useRouter } from 'next/navigation';
 
 const ADMIN_EMAIL = 'procnttdzaivl@gmail.com';
 
@@ -30,6 +30,18 @@ export default function AdminPage() {
   const { user, isUserLoading } = useUser();
   const { claims, isLoading: claimsLoading } = useUserClaims();
   const [isClaiming, setIsClaiming] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect non-admin users after claims are loaded and they are not the designated admin
+    if (!isUserLoading && !claimsLoading && user && user.email !== ADMIN_EMAIL && !claims?.admin) {
+        router.push('/');
+    }
+     // Redirect users who are not logged in at all
+    if (!isUserLoading && !user) {
+        router.push('/');
+    }
+  }, [user, isUserLoading, claims, claimsLoading, router]);
 
   const handleClaimAdmin = async () => {
     if (user?.email !== ADMIN_EMAIL) {
@@ -49,7 +61,7 @@ export default function AdminPage() {
         description: result.message + " Trang sẽ được tải lại...",
       });
       // Force a page reload to ensure the new token with claims is fetched
-      window.location.reload();
+      setTimeout(() => window.location.reload(), 2000);
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -63,14 +75,9 @@ export default function AdminPage() {
   if (isUserLoading || claimsLoading) {
     return <AdminPageSkeleton />;
   }
-
-  // If user is not logged in, AdminRoute will handle redirection after loading.
-  if (!user) {
-    return <AdminRoute><AdminPageSkeleton /></AdminRoute>;
-  }
   
-  // Show the grant admin UI if the user is the designated admin but doesn't have the claim yet.
-  if (user.email === ADMIN_EMAIL && !claims?.admin) {
+  // If user is the designated admin but doesn't have the claim yet, show the grant admin UI.
+  if (user && user.email === ADMIN_EMAIL && !claims?.admin) {
     return (
         <div className="container mx-auto flex items-center justify-center py-20">
             <Card className="max-w-md text-center">
@@ -87,17 +94,18 @@ export default function AdminPage() {
                     <Button onClick={handleClaimAdmin} disabled={isClaiming} className="w-full">
                         {isClaiming ? 'Đang xử lý...' : 'Cấp quyền Admin cho tôi'}
                     </Button>
+                    {isClaiming && <p className="text-sm mt-4 text-muted-foreground">Vui lòng đợi trong giây lát...</p>}
                 </CardContent>
             </Card>
         </div>
     );
   }
 
-  // If user is an admin, show the dashboard, protected by AdminRoute.
-  // If not admin, AdminRoute will redirect.
-  return (
-    <AdminRoute>
-      <AdminDashboard />
-    </AdminRoute>
-  );
+  // If user is an admin, show the dashboard.
+  if (claims?.admin) {
+    return <AdminDashboard />;
+  }
+
+  // Fallback for non-admin users or users not logged in, while useEffect handles redirection.
+  return <AdminPageSkeleton />;
 }
