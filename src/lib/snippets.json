@@ -729,6 +729,33 @@
       "tags": ["Optimization", "Architecture", "UniTask", "Coroutine"],
       "imageUrl": "https://picsum.photos/seed/81/400/200",
       "code": "// Yêu cầu: Cài đặt thư viện UniTask từ GitHub hoặc Package Manager (OpenUPM)\n// https://github.com/Cysharp/UniTask\n\nusing UnityEngine;\nusing Cysharp.Threading.Tasks;\nusing System;\n\npublic class UniTaskExample : MonoBehaviour\n{\n    async void Start()\n    {\n        Debug.Log(\"Bắt đầu chờ bằng UniTask...\");\n\n        // Thay thế cho 'yield return new WaitForSeconds(3f);'\n        await UniTask.Delay(TimeSpan.FromSeconds(3));\n\n        Debug.Log(\"Đã 3 giây trôi qua! Quá dễ dàng.\");\n\n        // Thực hiện một hành động khác\n        await ChangeColorAfterDelay(Color.cyan, 2f);\n\n        Debug.Log(\"Đã đổi màu xong.\");\n    }\n\n    private async UniTask ChangeColorAfterDelay(Color color, float delay)\n    {\n        await UniTask.Delay(TimeSpan.FromSeconds(delay));\n        \n        // Kiểm tra nếu đối tượng đã bị hủy trong khi chờ\n        if (this.GetCancellationTokenOnDestroy().IsCancellationRequested)\n        {\n            return;\n        }\n\n        GetComponent<Renderer>().material.color = color;\n        Debug.Log(\"Đã đổi màu thành công!\");\n    }\n}"
+    },
+    {
+      "slug": "optimize-memory-with-struct",
+      "title": "Tối ưu bộ nhớ với Struct thay vì Class",
+      "description": "Hiểu rõ khi nào nên sử dụng `struct` thay cho `class` để giảm áp lực lên bộ nhớ và garbage collector, đặc biệt hữu ích cho các đối tượng dữ liệu nhỏ, bất biến.",
+      "categories": [],
+      "tags": ["Optimization", "Performance", "Architecture"],
+      "imageUrl": "https://picsum.photos/seed/82/400/200",
+      "code": "// Ví dụ về dữ liệu nên dùng struct\n// Struct là value type, được lưu trên stack, không tạo rác cho GC.\npublic struct PointData\n{\n    public float x;\n    public float y;\n\n    public PointData(float x, float y)\n    {\n        this.x = x;\n        this.y = y;\n    }\n}\n\n// Ví dụ về đối tượng nên dùng class\n// Class là reference type, được lưu trên heap.\n// Dùng khi đối tượng có vòng đời dài, cần tham chiếu, hoặc có hành vi phức tạp.\npublic class Enemy\n{\n    public int health;\n    public float speed;\n\n    public void TakeDamage(int amount)\n    {\n        health -= amount;\n    }\n}\n\npublic class OptimizationExample : MonoBehaviour\n{\n    void Start()\n    {\n        // Sử dụng struct: hiệu quả cho các mảng dữ liệu lớn.\n        // Mảng này sẽ được cấp phát liền một khối trên bộ nhớ.\n        PointData[] points = new PointData[1000];\n        for (int i = 0; i < points.Length; i++)\n        {\n            points[i] = new PointData(i, i);\n        }\n    }\n}"
+    },
+    {
+      "slug": "dependency-injection-intro",
+      "title": "Dependency Injection (DI) trong Unity",
+      "description": "Giới thiệu về mẫu thiết kế Dependency Injection (DI) và tại sao nó giúp code của bạn dễ bảo trì, dễ test và giảm sự phụ thuộc cứng (hard dependencies).",
+      "categories": [],
+      "tags": ["Architecture", "Design Pattern", "Optimization"],
+      "imageUrl": "https://picsum.photos/seed/83/400/200",
+      "code": "// --- CÁCH LÀM THÔNG THƯỜNG (phụ thuộc cứng) ---\npublic class Player : MonoBehaviour\n{\n    private HealthSystem healthSystem;\n\n    void Awake()\n    {\n        // Player tự tạo ra hoặc tìm kiếm HealthSystem.\n        // Điều này tạo ra một sự phụ thuộc cứng vào HealthSystem.\n        healthSystem = GetComponent<HealthSystem>(); \n    }\n}\n\n// --- SỬ DỤNG DEPENDENCY INJECTION ---\n\n// 1. Dùng Constructor Injection (phổ biến nhất trong DI)\npublic class PlayerWithDI\n{\n    private IHealthSystem _healthSystem;\n\n    // Phụ thuộc được 'tiêm' vào qua constructor.\n    // Player không cần biết HealthSystem được tạo ra như thế nào.\n    public PlayerWithDI(IHealthSystem healthSystem)\n    {\n        _healthSystem = healthSystem;\n    }\n}\n\n// 2. Dùng Method/Property Injection (thường thấy trong Unity với [Inject])\npublic class PlayerWithZenject : MonoBehaviour\n{\n    [Inject]\n    private IHealthSystem _healthSystem;\n    [Inject]\n    private IInputManager _inputManager;\n\n    void Update()\n    {\n        // Sử dụng các dependency đã được tiêm vào.\n    }\n}\n\n/*\n* Lợi ích của DI:\n* - Decoupling: Player không còn phụ thuộc trực tiếp vào class HealthSystem, mà phụ thuộc vào một interface IHealthSystem.\n* - Testability: Dễ dàng thay thế HealthSystem bằng một 'mock' HealthSystem giả để unit test.\n* - Reusability: Các component trở nên độc lập và dễ tái sử dụng hơn.\n* - Dễ dàng quản lý các dependency phức tạp trong các dự án lớn.\n*\n* Các framework DI phổ biến cho Unity: Zenject, VContainer.\n*/"
+    },
+    {
+      "slug": "optimize-caching-components",
+      "title": "Tối ưu bằng Caching Components",
+      "description": "Một kỹ thuật tối ưu cơ bản và quan trọng: cache (lưu trữ) các tham chiếu đến component trong Awake() hoặc Start() để tránh gọi GetComponent() liên tục trong Update(), giúp giảm đáng kể chi phí hiệu năng.",
+      "categories": [],
+      "tags": ["Optimization", "Performance"],
+      "imageUrl": "https://picsum.photos/seed/84/400/200",
+      "code": "using UnityEngine;\n\npublic class CachingExample : MonoBehaviour\n{\n    // --- CÁCH LÀM CHƯA TỐI ƯU ---\n    /*\n    void Update()\n    {\n        // GetComponent() được gọi mỗi frame, rất tốn kém hiệu năng.\n        Rigidbody rb = GetComponent<Rigidbody>();\n        rb.AddForce(Vector3.up * 10f);\n    }\n    */\n\n    // --- CÁCH LÀM ĐÃ TỐI ƯU (CACHING) ---\n    private Rigidbody cachedRigidbody;\n    private Transform cachedTransform;\n    private AudioSource cachedAudioSource;\n\n    void Awake()\n    {\n        // Tìm và lưu lại tham chiếu đến các component một lần duy nhất.\n        cachedRigidbody = GetComponent<Rigidbody>();\n        cachedTransform = transform; // 'transform' là một trường hợp đặc biệt, nó cũng là một lời gọi GetComponent ngầm.\n        cachedAudioSource = GetComponent<AudioSource>();\n    }\n\n    void Update()\n    {\n        // Sử dụng tham chiếu đã được cache, nhanh hơn rất nhiều.\n        if (cachedRigidbody != null)\n        {\n            cachedRigidbody.AddForce(Vector3.up * 10f);\n        }\n\n        // Di chuyển đối tượng bằng transform đã cache.\n        cachedTransform.position += Vector3.forward * Time.deltaTime;\n    }\n\n    public void PlaySound(AudioClip clip)\n    {\n        if(cachedAudioSource != null)\n        {\n            cachedAudioSource.PlayOneShot(clip);\n        }\n    }\n}"
     }
   ]
 }
