@@ -1,0 +1,13 @@
+# Ignore artifacts:
+.next/
+node_modules/
+dist/
+build/
+
+# Ignore config files
+next.config.js
+next-sitemap.config.js
+
+# Ignore generated files
+components.json
+package-lock.json

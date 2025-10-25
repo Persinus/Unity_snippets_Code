@@ -23,6 +23,7 @@ import { collection } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import { Separator } from "./ui/separator";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 type SnippetCardProps = {
   snippet: Snippet;
@@ -64,101 +65,107 @@ export default function SnippetCard({ snippet, index, selectedCategories, select
   };
 
   return (
-    <Card 
-      className="flex h-full flex-col overflow-hidden transition-all duration-300 group hover:border-primary hover:shadow-lg hover:shadow-primary/10 animate-in fade-in-90 slide-in-from-bottom-4 zoom-in-95"
-      style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'backwards' }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.05 }}
+      className="h-full"
     >
-       <Link href={`/snippets/${snippet.slug}`} className="block group/image relative">
-         <Image
-            src={snippet.imageUrl}
-            alt={snippet.title}
-            width={400}
-            height={200}
-            className="w-full object-cover aspect-[16/9] group-hover/image:scale-105 transition-transform duration-300"
-            data-ai-hint="code snippet"
-          />
-         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-      </Link>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-            <Link href={`/snippets/${snippet.slug}`} className="group/title block flex-grow">
-              <CardTitle as="h2" className="font-headline text-lg font-semibold group-hover/title:text-primary">
-                {snippet.title}
-              </CardTitle>
+      <Card 
+        className="flex h-full flex-col overflow-hidden transition-all duration-300 group hover:border-primary hover:shadow-lg hover:shadow-primary/10"
+      >
+         <Link href={`/snippets/${snippet.slug}`} className="block group/image relative">
+           <Image
+              src={snippet.imageUrl}
+              alt={snippet.title}
+              width={400}
+              height={200}
+              className="w-full object-cover aspect-[16/9] group-hover/image:scale-105 transition-transform duration-300"
+              data-ai-hint="code snippet"
+            />
+           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+        </Link>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+              <Link href={`/snippets/${snippet.slug}`} className="group/title block flex-grow">
+                <CardTitle as="h2" className="font-headline text-lg font-semibold group-hover/title:text-primary">
+                  {snippet.title}
+                </CardTitle>
+              </Link>
+              {user && (
+                   <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0"
+                      onClick={handleBookmarkClick}
+                      aria-label="Bookmark this snippet"
+                    >
+                      <Bookmark className={cn("h-5 w-5", isBookmarked ? "fill-primary text-primary" : "text-muted-foreground")} />
+                    </Button>
+              )}
+          </div>
+          <CardDescription className="line-clamp-2 pt-1">
+            {snippet.description}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex-grow flex flex-col gap-4">
+          {snippet.categories.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {snippet.categories.map((cat) => (
+                <Badge
+                  key={cat}
+                  className={cn(
+                    "cursor-pointer",
+                    getTagColorClasses(cat, selectedCategories.includes(cat), hasSelection, true)
+                  )}
+                  onClick={(e) => { e.preventDefault(); onCategoryClick(cat); }}
+                >
+                  {cat}
+                </Badge>
+              ))}
+            </div>
+          )}
+           {snippet.categories.length > 0 && snippet.tags.length > 0 && (
+            <Separator />
+          )}
+          {snippet.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {snippet.tags.map((tag) => (
+                <Badge 
+                  key={tag} 
+                  className={cn(
+                    "cursor-pointer",
+                    getTagColorClasses(tag, selectedTags.includes(tag), hasSelection)
+                  )}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onTagClick(tag);
+                  }}
+                  variant="outline"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+               <div className="flex items-center gap-1.5">
+                  <MessageSquare className="h-4 w-4" />
+                  <span>({snippet.commentCount ?? 0})</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                  <Eye className="h-4 w-4" />
+                   <span>{snippet.viewCount ?? 0}</span>
+              </div>
+            </div>
+            <Link href={`/snippets/${snippet.slug}`} className="flex items-center text-sm font-medium text-primary opacity-80 hover:opacity-100 transition-opacity duration-300 group-hover:text-primary">
+                Xem thêm
+                <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
-            {user && (
-                 <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 shrink-0"
-                    onClick={handleBookmarkClick}
-                    aria-label="Bookmark this snippet"
-                  >
-                    <Bookmark className={cn("h-5 w-5", isBookmarked ? "fill-primary text-primary" : "text-muted-foreground")} />
-                  </Button>
-            )}
-        </div>
-        <CardDescription className="line-clamp-2 pt-1">
-          {snippet.description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-grow flex flex-col gap-4">
-        {snippet.categories.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {snippet.categories.map((cat) => (
-              <Badge
-                key={cat}
-                className={cn(
-                  "cursor-pointer",
-                  getTagColorClasses(cat, selectedCategories.includes(cat), hasSelection, true)
-                )}
-                onClick={(e) => { e.preventDefault(); onCategoryClick(cat); }}
-              >
-                {cat}
-              </Badge>
-            ))}
-          </div>
-        )}
-         {snippet.categories.length > 0 && snippet.tags.length > 0 && (
-          <Separator />
-        )}
-        {snippet.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {snippet.tags.map((tag) => (
-              <Badge 
-                key={tag} 
-                className={cn(
-                  "cursor-pointer",
-                  getTagColorClasses(tag, selectedTags.includes(tag), hasSelection)
-                )}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onTagClick(tag);
-                }}
-                variant="outline"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-             <div className="flex items-center gap-1.5">
-                <MessageSquare className="h-4 w-4" />
-                <span>({snippet.commentCount ?? 0})</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-                <Eye className="h-4 w-4" />
-                 <span>{snippet.viewCount ?? 0}</span>
-            </div>
-          </div>
-          <Link href={`/snippets/${snippet.slug}`} className="flex items-center text-sm font-medium text-primary opacity-80 hover:opacity-100 transition-opacity duration-300 group-hover:text-primary">
-              Xem thêm
-              <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
-      </CardFooter>
-    </Card>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }

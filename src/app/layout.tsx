@@ -1,12 +1,13 @@
 
-import type { Metadata } from "next";
-import { ThemeProvider } from "@/components/layout/theme-provider";
-import Header from "@/components/layout/header";
-import { Toaster } from "@/components/ui/toaster";
-import "./globals.css";
-import { FirebaseClientProvider } from "@/firebase/client-provider"; // Import the provider
+import type { Metadata } from 'next';
+import { ThemeProvider } from '@/components/layout/theme-provider';
+import Header from '@/components/layout/header';
+import { Toaster as OldToaster } from '@/components/ui/toaster';
+import './globals.css';
+import { FirebaseClientProvider } from '@/firebase/client-provider'; // Import the provider
 import { Source_Code_Pro, Fira_Code } from 'next/font/google';
-import Link from "next/link";
+import Link from 'next/link';
+import { Toaster } from '@/components/ui/sonner';
 
 const sourceCodePro = Source_Code_Pro({
   subsets: ['latin'],
@@ -21,8 +22,8 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "Unity Codex",
-  description: "A modern blog for collecting and sharing Unity C# code snippets.",
+  title: 'Unity Codex',
+  description: 'A modern blog for collecting and sharing Unity C# code snippets.',
   verification: {
     google: 'BkguS3oS48hEyhzSJnWY1IsfKr13lJZiM9lEZ7ELRGs',
   },
@@ -54,12 +55,11 @@ export default function RootLayout({
                 </div>
               </footer>
             </div>
-            <Toaster />
+            <OldToaster />
+            <Toaster richColors />
           </ThemeProvider>
         </FirebaseClientProvider>
       </body>
     </html>
   );
 }
-
-    
