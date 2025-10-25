@@ -13,11 +13,11 @@ import { useAuth }from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import SnippetCard from '@/components/snippet-card';
-import { Snippet, getAllSnippets } from '@/lib/snippets';
+import { getAllSnippets, type Snippet } from '@/lib/snippets';
 import Link from 'next/link';
 import { useUserClaims } from '@/lib/user-claims';
 import { Badge } from '@/components/ui/badge';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, User } from 'lucide-react';
 
 function ProfileSkeleton() {
   return (
@@ -51,7 +51,15 @@ export default function ProfilePage() {
 
   const { data: bookmarks, isLoading: bookmarksLoading } = useCollection<{id: string}>(userBookmarksQuery);
 
-  const allSnippets = useMemo(() => getAllSnippets(), []);
+  const [allSnippets, setAllSnippets] = useState<Snippet[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const snippets = await getAllSnippets();
+      setAllSnippets(snippets);
+    }
+    fetchData();
+  }, []);
   
   const bookmarkedSnippets = useMemo(() => {
     if (!bookmarks || !allSnippets) return [];
@@ -106,7 +114,7 @@ export default function ProfilePage() {
 =======
     <div className="container mx-auto max-w-4xl py-8">
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12">
-        <Card className="w-full max-w-xs sticky top-24">
+        <Card className="w-full md:max-w-xs md:sticky md:top-24">
           <CardHeader className="items-center text-center">
             <Avatar className="h-24 w-24">
               <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} />
@@ -116,10 +124,15 @@ export default function ProfilePage() {
             </Avatar>
             <CardTitle className="text-2xl mt-4">{user.displayName}</CardTitle>
             <CardDescription>{user.email}</CardDescription>
-            {claims?.admin && (
+            {claims?.admin ? (
               <Badge variant="secondary" className="mt-2 border-primary/50 bg-primary/10 text-primary">
                 <ShieldCheck className="mr-1.5 h-4 w-4" />
                 Quản trị viên
+              </Badge>
+            ) : (
+               <Badge variant="outline" className="mt-2 font-normal">
+                <User className="mr-1.5 h-4 w-4" />
+                Thành viên
               </Badge>
             )}
           </CardHeader>
