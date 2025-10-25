@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from "next/link";
@@ -18,12 +17,16 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { LogIn, User as UserIcon, LogOut, ChevronDown, Braces, Code, Star, Share2 } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
 import { AdmobIcon, FirebaseIcon, GooglePlayGamesIcon, MetaIcon } from "../icons";
 =======
 import { LogIn, User as UserIcon, LogOut, ShieldCheck } from "lucide-react";
+=======
+import { LogIn, User as UserIcon, LogOut, ShieldCheck, Rss } from "lucide-react";
+>>>>>>> d35aba7 (thêm c# ở phần header tạo trang blog giống unity luôn)
 import { doc, setDoc } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
 import { useUserClaims } from "@/lib/user-claims";
@@ -73,6 +76,7 @@ export default function Header() {
           <Logo />
         </Link>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <nav className="hidden flex-1 items-center space-x-2 text-sm font-medium text-muted-foreground md:flex">
           <Button variant="link" asChild className="text-muted-foreground">
             <Link href="/">Trang chủ</Link>
@@ -119,16 +123,26 @@ export default function Header() {
 
 =======
         <nav className="hidden flex-1 items-center space-x-4 text-sm font-medium text-muted-foreground md:flex">
+=======
+        <nav className="hidden flex-1 items-center space-x-6 text-sm font-medium text-muted-foreground md:flex">
+>>>>>>> d35aba7 (thêm c# ở phần header tạo trang blog giống unity luôn)
           <Link
             href="/"
             className="transition-colors hover:text-foreground"
           >
             Home
           </Link>
+           <Link
+            href="/blog"
+            className="transition-colors hover:text-foreground flex items-center gap-1.5"
+          >
+            <Rss className="h-4 w-4" />
+            Blog
+          </Link>
           {claims?.admin && (
              <Link
                 href="/admin"
-                className="transition-colors hover:text-foreground flex items-center gap-2"
+                className="transition-colors hover:text-foreground flex items-center gap-1.5"
              >
                 <ShieldCheck className="h-4 w-4" />
                 Admin
