@@ -153,82 +153,30 @@
   "auth": {
     "providers": [
       "google.com"
-    ]
+    ],
+    "customClaims": {
+      "admin": {
+        "type": "boolean",
+        "description": "Grants administrator privileges to the user."
+      }
+    }
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user profile information. The 'userId' parameter matches the Firebase Authentication UID.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}/bookmarks/{snippetSlug}",
-        "definition": {
-          "entityName": "Bookmark",
-          "schema": {
-            "$ref": "#/backend/entities/Bookmark"
-          },
-          "description": "Stores a reference to a snippet bookmarked by the user. The document ID is the snippet slug.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user who owns the bookmark."
-            },
-            {
-              "name": "snippetSlug",
-              "description": "The slug of the bookmarked snippet, used as the document ID."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/tags/{tagId}",
-        "definition": {
-          "entityName": "Tag",
-          "schema": {
-            "$ref": "#/backend/entities/Tag"
-          },
-          "description": "Stores tags that can be associated with code snippets.",
-          "params": [
-            {
-              "name": "tagId",
-              "description": "Unique identifier for the tag."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/snippets/{snippetId}/comments/{commentId}",
-        "definition": {
-          "entityName": "Comment",
-          "schema": {
-            "$ref": "#/backend/entities/Comment"
-          },
-          "description": "Stores comments for a specific code snippet.",
-          "params": [
-            {
-              "name": "snippetId",
-              "description": "The slug of the snippet being commented on."
-            },
-            {
-              "name": "commentId",
-              "description": "Unique identifier for the comment."
-            }
-          ]
-        }
-      }
-    ]
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profile information. The 'userId' parameter matches the Firebase Authentication UID."
+    },
+    "/users/{userId}/bookmarks/{snippetSlug}": {
+      "schema": { "$ref": "#/entities/Bookmark" },
+      "description": "Stores a reference to a snippet bookmarked by the user. The document ID is the snippet slug."
+    },
+    "/tags/{tagId}": {
+      "schema": { "$ref": "#/entities/Tag" },
+      "description": "Stores tags that can be associated with code snippets."
+    },
+    "/snippets/{snippetId}/comments/{commentId}": {
+      "schema": { "$ref": "#/entities/Comment" },
+      "description": "Stores comments for a specific code snippet."
+    }
   }
 }

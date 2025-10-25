@@ -17,15 +17,23 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
+<<<<<<< HEAD
 import { LogIn, User as UserIcon, LogOut, ChevronDown, Braces, Code, Star, Share2 } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
 import { AdmobIcon, FirebaseIcon, GooglePlayGamesIcon, MetaIcon } from "../icons";
+=======
+import { LogIn, User as UserIcon, LogOut, ShieldCheck } from "lucide-react";
+import { doc, setDoc } from "firebase/firestore";
+import { useFirestore } from "@/firebase";
+import { useUserClaims } from "@/lib/user-claims";
+>>>>>>> 6736199 (thêm chưa thêm đi)
 
 export default function Header() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const { claims } = useUserClaims();
 
   const handleLogin = async () => {
     if (!auth) return;
@@ -64,6 +72,7 @@ export default function Header() {
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Logo />
         </Link>
+<<<<<<< HEAD
         <nav className="hidden flex-1 items-center space-x-2 text-sm font-medium text-muted-foreground md:flex">
           <Button variant="link" asChild className="text-muted-foreground">
             <Link href="/">Trang chủ</Link>
@@ -108,6 +117,24 @@ export default function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
 
+=======
+        <nav className="hidden flex-1 items-center space-x-4 text-sm font-medium text-muted-foreground md:flex">
+          <Link
+            href="/"
+            className="transition-colors hover:text-foreground"
+          >
+            Home
+          </Link>
+          {claims?.admin && (
+             <Link
+                href="/admin"
+                className="transition-colors hover:text-foreground flex items-center gap-2"
+             >
+                <ShieldCheck className="h-4 w-4" />
+                Admin
+             </Link>
+          )}
+>>>>>>> 6736199 (thêm chưa thêm đi)
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <ThemeToggle />
@@ -141,6 +168,14 @@ export default function Header() {
                     <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
+                 {claims?.admin && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin">
+                      <ShieldCheck className="mr-2 h-4 w-4" />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />

@@ -42,6 +42,11 @@
     "embla-carousel-autoplay": "^8.1.5",
     "embla-carousel-react": "^8.6.0",
     "firebase": "^11.9.1",
+<<<<<<< HEAD
+=======
+    "firebase-admin": "^12.1.1",
+    "genkit": "^1.20.0",
+>>>>>>> 6736199 (thêm chưa thêm đi)
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.9.0",
     "lucide-react": "^0.475.0",
