@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase';
@@ -10,11 +11,23 @@ import AdminRoute from '@/components/layout/admin-route';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield } from 'lucide-react';
 import { useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const ADMIN_EMAIL = 'procnttdzaivl@gmail.com';
 
+function AdminPageSkeleton() {
+    return (
+        <div className="space-y-4 p-4">
+            <Skeleton className="h-12 w-1/4" />
+            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-8 w-1/2 mt-8" />
+            <Skeleton className="h-40 w-full" />
+        </div>
+    );
+}
+
 export default function AdminPage() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const { claims, isLoading: claimsLoading } = useUserClaims();
   const [isClaiming, setIsClaiming] = useState(false);
 
@@ -33,31 +46,31 @@ export default function AdminPage() {
       const result = await setAdminClaim(ADMIN_EMAIL);
       toast({
         title: 'Thành công!',
-        description: result.message,
+        description: result.message + " Trang sẽ được tải lại...",
       });
+      // Force a page reload to ensure the new token with claims is fetched
+      window.location.reload();
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Đã xảy ra lỗi',
         description: error.message,
       });
-    } finally {
       setIsClaiming(false);
     }
   };
-
-  // If user is not the designated admin, show nothing.
-  // The AdminRoute will handle redirection for non-admins.
-  if (user && user.email !== ADMIN_EMAIL && !claims?.admin) {
-     return (
-        <AdminRoute> 
-            <div></div>
-        </AdminRoute>
-     );
+  
+  if (isUserLoading || claimsLoading) {
+    return <AdminPageSkeleton />;
   }
 
+  // If user is not logged in, AdminRoute will handle redirection after loading.
+  if (!user) {
+    return <AdminRoute><AdminPageSkeleton /></AdminRoute>;
+  }
+  
   // Show the grant admin UI if the user is the designated admin but doesn't have the claim yet.
-  if (user?.email === ADMIN_EMAIL && !claims?.admin) {
+  if (user.email === ADMIN_EMAIL && !claims?.admin) {
     return (
         <div className="container mx-auto flex items-center justify-center py-20">
             <Card className="max-w-md text-center">
@@ -81,6 +94,7 @@ export default function AdminPage() {
   }
 
   // If user is an admin, show the dashboard, protected by AdminRoute.
+  // If not admin, AdminRoute will redirect.
   return (
     <AdminRoute>
       <AdminDashboard />
