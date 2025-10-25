@@ -15,6 +15,9 @@ import { Separator } from '@/components/ui/separator';
 import SnippetCard from '@/components/snippet-card';
 import { Snippet, getAllSnippets } from '@/lib/snippets';
 import Link from 'next/link';
+import { useUserClaims } from '@/lib/user-claims';
+import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 
 function ProfileSkeleton() {
   return (
@@ -35,6 +38,7 @@ function ProfileSkeleton() {
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
+  const { claims, isLoading: claimsLoading } = useUserClaims();
   const router = useRouter();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -72,11 +76,12 @@ export default function ProfilePage() {
     }
   };
 
-  if (isUserLoading || !user) {
+  if (isUserLoading || !user || claimsLoading) {
     return <ProfileSkeleton />;
   }
 
   return (
+<<<<<<< HEAD
     <div className="container mx-auto max-w-6xl py-8">
       <div className="flex flex-col md:flex-row items-start gap-8">
         <aside className="w-full md:w-1/4 lg:w-1/5 md:sticky md:top-24">
@@ -98,6 +103,33 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
         </aside>
+=======
+    <div className="container mx-auto max-w-4xl py-8">
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12">
+        <Card className="w-full max-w-xs sticky top-24">
+          <CardHeader className="items-center text-center">
+            <Avatar className="h-24 w-24">
+              <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} />
+              <AvatarFallback className="text-3xl">
+                {user.displayName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <CardTitle className="text-2xl mt-4">{user.displayName}</CardTitle>
+            <CardDescription>{user.email}</CardDescription>
+            {claims?.admin && (
+              <Badge variant="secondary" className="mt-2 border-primary/50 bg-primary/10 text-primary">
+                <ShieldCheck className="mr-1.5 h-4 w-4" />
+                Quản trị viên
+              </Badge>
+            )}
+          </CardHeader>
+          <CardContent className="flex flex-col items-center gap-4">
+            <Button onClick={handleLogout} className="w-full" variant="destructive">
+              Đăng xuất
+            </Button>
+          </CardContent>
+        </Card>
+>>>>>>> 539f3b0 (thể hiện quyền của mình ở profile)
         
         <main className="w-full flex-1">
           <div className="flex justify-between items-center mb-6">
