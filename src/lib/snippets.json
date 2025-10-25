@@ -756,6 +756,96 @@
       "tags": ["Optimization", "Performance"],
       "imageUrl": "https://picsum.photos/seed/84/400/200",
       "code": "using UnityEngine;\n\npublic class CachingExample : MonoBehaviour\n{\n    // --- CÁCH LÀM CHƯA TỐI ƯU ---\n    /*\n    void Update()\n    {\n        // GetComponent() được gọi mỗi frame, rất tốn kém hiệu năng.\n        Rigidbody rb = GetComponent<Rigidbody>();\n        rb.AddForce(Vector3.up * 10f);\n    }\n    */\n\n    // --- CÁCH LÀM ĐÃ TỐI ƯU (CACHING) ---\n    private Rigidbody cachedRigidbody;\n    private Transform cachedTransform;\n    private AudioSource cachedAudioSource;\n\n    void Awake()\n    {\n        // Tìm và lưu lại tham chiếu đến các component một lần duy nhất.\n        cachedRigidbody = GetComponent<Rigidbody>();\n        cachedTransform = transform; // 'transform' là một trường hợp đặc biệt, nó cũng là một lời gọi GetComponent ngầm.\n        cachedAudioSource = GetComponent<AudioSource>();\n    }\n\n    void Update()\n    {\n        // Sử dụng tham chiếu đã được cache, nhanh hơn rất nhiều.\n        if (cachedRigidbody != null)\n        {\n            cachedRigidbody.AddForce(Vector3.up * 10f);\n        }\n\n        // Di chuyển đối tượng bằng transform đã cache.\n        cachedTransform.position += Vector3.forward * Time.deltaTime;\n    }\n\n    public void PlaySound(AudioClip clip)\n    {\n        if(cachedAudioSource != null)\n        {\n            cachedAudioSource.PlayOneShot(clip);\n        }\n    }\n}"
+    },
+    {
+      "slug": "dependency-injection-zenject",
+      "title": "Dependency Injection thực tế với Zenject",
+      "description": "Hướng dẫn cài đặt và sử dụng Zenject, một framework Dependency Injection phổ biến cho Unity, để quản lý các phụ thuộc trong dự án một cách hiệu quả.",
+      "categories": [],
+      "tags": ["Architecture", "Design Pattern", "DI", "Zenject", "Optimization"],
+      "imageUrl": "https://picsum.photos/seed/85/400/200",
+      "code": "// Yêu cầu: Cài đặt Zenject (Extenject) từ GitHub hoặc Unity Asset Store.\n// 1. Tạo một Interface (ví dụ: IHealthManager)\npublic interface IHealthManager {\n    void TakeDamage(int amount);\n}\n\n// 2. Tạo một Class triển khai Interface đó\npublic class HealthManager : IHealthManager {\n    public void TakeDamage(int amount) {\n        Debug.Log(\"Player took \" + amount + \" damage.\");\n    }\n}\n\n// 3. Tạo một Installer để 'bind' chúng lại với nhau\nusing Zenject;\npublic class GameInstaller : MonoInstaller {\n    public override void InstallBindings() {\n        // Bất cứ khi nào có yêu cầu IHealthManager, Zenject sẽ cung cấp một instance của HealthManager.\n        Container.Bind<IHealthManager>().To<HealthManager>().AsSingle();\n    }\n}\n\n// 4. 'Tiêm' (Inject) dependency vào Class cần sử dụng\nusing Zenject;\npublic class PlayerController : MonoBehaviour {\n    private IHealthManager _healthManager;\n\n    // Zenject sẽ tự động 'tiêm' dependency vào đây\n    [Inject]\n    public void Construct(IHealthManager healthManager) {\n        _healthManager = healthManager;\n    }\n\n    void Update() {\n        if (Input.GetKeyDown(KeyCode.Space)) {\n            _healthManager.TakeDamage(10);\n        }\n    }\n}\n\n// 5. Thiết lập Scene:\n// - Tạo một GameObject rỗng, đặt tên là 'GameInstaller'.\n// - Gắn script GameInstaller.cs vào GameObject đó.\n// - Tạo một Scene Context trong Scene (chuột phải trong Hierarchy -> Zenject -> Scene Context).\n// - Trong Inspector của Scene Context, kéo GameInstaller vào danh sách 'Mono Installers'."
+    },
+    {
+      "slug": "optimize-with-linq",
+      "title": "Tối ưu truy vấn dữ liệu với LINQ",
+      "description": "LINQ rất mạnh mẽ nhưng có thể gây tốn hiệu năng nếu không sử dụng cẩn thận. Snippet này chỉ ra các mẹo và cạm bẫy khi dùng LINQ trong game.",
+      "categories": [],
+      "tags": ["Optimization", "Performance", "LINQ", "Architecture"],
+      "imageUrl": "https://picsum.photos/seed/86/400/200",
+      "code": "using UnityEngine;\nusing System.Collections.Generic;\nusing System.Linq;\n\npublic class LinqOptimization : MonoBehaviour\n{\n    public List<Enemy> allEnemies = new List<Enemy>();\n\n    // Cạm bẫy: Dùng LINQ trong hàm Update()\n    // Mỗi frame, nó sẽ tạo ra rác (garbage) và thực hiện duyệt toàn bộ danh sách.\n    void Update_Bad()\n    {\n        // KHÔNG NÊN LÀM VẬY!\n        var visibleEnemies = allEnemies.Where(e => e.IsVisible()).ToList();\n        foreach (var enemy in visibleEnemies)\n        {\n            // ...\n        }\n    }\n\n    // Cách tối ưu hơn: Dùng vòng lặp for/foreach truyền thống\n    void Update_Good()\n    {\n        foreach (var enemy in allEnemies)\n        {\n            if (enemy.IsVisible())\n            {\n                // ...\n            }\n        }\n    }\n\n    // Khi nào nên dùng LINQ? -> Khi thực hiện các tác vụ một lần, không lặp lại mỗi frame.\n    void FindStrongestEnemyOnce()\n    {\n        // Ví dụ: Tìm kẻ địch mạnh nhất khi bắt đầu màn chơi\n        var strongestEnemy = allEnemies.OrderByDescending(e => e.powerLevel).FirstOrDefault();\n\n        if (strongestEnemy != null)\n        {\n            Debug.Log(\"Kẻ địch mạnh nhất là: \" + strongestEnemy.name);\n        }\n    }\n}\n\npublic class Enemy {\n    public string name;\n    public int powerLevel;\n    public bool IsVisible() { return true; /* Logic kiểm tra hiển thị */ }\n}"
+    },
+    {
+      "slug": "sorting-algorithms-in-games",
+      "title": "Các thuật toán sắp xếp trong Game",
+      "description": "So sánh các thuật toán sắp xếp như Bubble Sort, Insertion Sort và Quick Sort và khi nào nên sử dụng chúng trong game (ví dụ: sắp xếp bảng xếp hạng).",
+      "categories": [],
+      "tags": ["Algorithm", "Architecture", "Optimization"],
+      "imageUrl": "https://picsum.photos/seed/87/400/200",
+      "code": "// 1. Bubble Sort: Đơn giản nhất, nhưng chậm nhất (O(n^2)). Chỉ nên dùng cho dữ liệu RẤT nhỏ.\npublic void BubbleSort(int[] arr) {\n    int n = arr.Length;\n    for (int i = 0; i < n - 1; i++)\n        for (int j = 0; j < n - i - 1; j++)\n            if (arr[j] > arr[j + 1]) {\n                int temp = arr[j];\n                arr[j] = arr[j + 1];\n                arr[j + 1] = temp;\n            }\n}\n\n// 2. Insertion Sort: Hiệu quả với dữ liệu gần như đã được sắp xếp (O(n) trong trường hợp tốt nhất).\npublic void InsertionSort(int[] arr) {\n    for (int i = 1; i < arr.Length; ++i) {\n        int key = arr[i];\n        int j = i - 1;\n        while (j >= 0 && arr[j] > key) {\n            arr[j + 1] = arr[j];\n            j = j - 1;\n        }\n        arr[j + 1] = key;\n    }\n}\n\n// 3. Quick Sort: Rất nhanh trong hầu hết các trường hợp (trung bình O(n log n)). Lựa chọn tốt cho dữ liệu lớn.\n// C# cung cấp sẵn Array.Sort() hoặc List.Sort() sử dụng một phiên bản tối ưu của Quick Sort.\npublic void UseBuiltInSort(List<int> list) {\n    // Đơn giản và hiệu quả nhất!\n    list.Sort(); // Sắp xếp tăng dần\n    \n    // Sắp xếp theo tiêu chí phức tạp (ví dụ: sắp xếp player theo điểm)\n    // List<Player> players = ...;\n    // players.Sort((p1, p2) => p2.score.CompareTo(p1.score)); // Giảm dần\n}"
+    },
+    {
+      "slug": "a-star-pathfinding",
+      "title": "Thuật toán tìm đường A* (A-Star)",
+      "description": "Triển khai thuật toán A* (A-Star), một trong những thuật toán tìm đường hiệu quả nhất cho AI, kết hợp giữa chi phí đã đi (G-cost) và chi phí ước tính đến đích (H-cost).",
+      "categories": ["3D", "2D"],
+      "tags": ["AI", "Algorithm", "Pathfinding"],
+      "imageUrl": "https://picsum.photos/seed/88/400/200",
+      "code": "// A* là một thuật toán phức tạp, đây là một phiên bản giả mã/đơn giản hóa để hiểu ý tưởng chính.\nusing System.Collections.Generic;\n\npublic class AStarPathfinder {\n    public List<Node> FindPath(Node startNode, Node targetNode) {\n        List<Node> openSet = new List<Node>();\n        HashSet<Node> closedSet = new HashSet<Node>();\n        openSet.Add(startNode);\n\n        while (openSet.Count > 0) {\n            Node currentNode = openSet[0];\n            // Tìm node có F-cost thấp nhất trong openSet\n            for (int i = 1; i < openSet.Count; i++) {\n                if (openSet[i].FCost < currentNode.FCost || \n                   (openSet[i].FCost == currentNode.FCost && openSet[i].hCost < currentNode.hCost)) {\n                    currentNode = openSet[i];\n                }\n            }\n\n            openSet.Remove(currentNode);\n            closedSet.Add(currentNode);\n\n            if (currentNode == targetNode) {\n                return RetracePath(startNode, targetNode);\n            }\n\n            foreach (Node neighbour in GetNeighbours(currentNode)) {\n                if (!neighbour.isWalkable || closedSet.Contains(neighbour)) continue;\n\n                int newMoveCost = currentNode.gCost + GetDistance(currentNode, neighbour);\n                if (newMoveCost < neighbour.gCost || !openSet.Contains(neighbour)) {\n                    neighbour.gCost = newMoveCost;\n                    neighbour.hCost = GetDistance(neighbour, targetNode); // H-cost: chi phí ước tính\n                    neighbour.parent = currentNode;\n\n                    if (!openSet.Contains(neighbour)) openSet.Add(neighbour);\n                }\n            }\n        }\n        return null; // Không tìm thấy đường đi\n    }\n    // Các hàm phụ trợ như RetracePath, GetNeighbours, GetDistance cần được triển khai...\n}\n\npublic class Node {\n    public bool isWalkable; public Vector3 worldPosition;\n    public int gCost, hCost; public Node parent;\n    public int FCost { get { return gCost + hCost; } }\n}"
+    },
+    {
+      "slug": "dijkstra-algorithm",
+      "title": "Thuật toán Dijkstra",
+      "description": "Thuật toán Dijkstra tìm đường đi ngắn nhất từ một đỉnh nguồn đến tất cả các đỉnh khác trong một đồ thị có trọng số không âm. Hữu ích cho việc tính toán phạm vi di chuyển.",
+      "categories": [],
+      "tags": ["AI", "Algorithm", "Pathfinding"],
+      "imageUrl": "https://picsum.photos/seed/89/400/200",
+      "code": "// Giả mã cho thuật toán Dijkstra.\n// Khác với A*, Dijkstra không sử dụng chi phí ước tính (heuristic), \n// nó khám phá tất cả các hướng một cách đồng đều.\n\npublic void Dijkstra(Graph graph, Node source) {\n    Dictionary<Node, int> dist = new Dictionary<Node, int>();\n    Dictionary<Node, Node> prev = new Dictionary<Node, Node>();\n    List<Node> unvisited = new List<Node>();\n\n    foreach (Node v in graph.Vertices) {\n        dist[v] = int.MaxValue;\n        prev[v] = null;\n        unvisited.Add(v);\n    }\n    dist[source] = 0;\n\n    while (unvisited.Count > 0) {\n        // Tìm node có khoảng cách nhỏ nhất trong danh sách chưa thăm\n        Node u = unvisited.OrderBy(node => dist[node]).First();\n        unvisited.Remove(u);\n\n        foreach (Node v in GetNeighbours(u)) {\n            int alt = dist[u] + GetWeight(u, v);\n            if (alt < dist[v]) {\n                dist[v] = alt;\n                prev[v] = u;\n            }\n        }\n    }\n    // Kết quả: dist chứa khoảng cách ngắn nhất từ source đến mọi node.\n}"
+    },
+    {
+      "slug": "breadth-first-search-bfs",
+      "title": "Tìm kiếm theo chiều rộng (BFS)",
+      "description": "Thuật toán tìm kiếm theo chiều rộng (BFS) duyệt qua đồ thị theo từng lớp. Rất hữu ích để tìm đường đi ngắn nhất trên bản đồ không có trọng số (ví dụ: lưới ô vuông).",
+      "categories": [],
+      "tags": ["AI", "Algorithm", "Pathfinding"],
+      "imageUrl": "https://picsum.photos/seed/90/400/200",
+      "code": "using System.Collections.Generic;\n\npublic class BFS {\n    // Tìm đường đi ngắn nhất trên lưới từ start đến end\n    public List<Node> FindPath(Grid grid, Node start, Node end) {\n        Queue<Node> queue = new Queue<Node>();\n        HashSet<Node> visited = new HashSet<Node>();\n        Dictionary<Node, Node> parentMap = new Dictionary<Node, Node>();\n\n        queue.Enqueue(start);\n        visited.Add(start);\n\n        while (queue.Count > 0) {\n            Node current = queue.Dequeue();\n\n            if (current == end) {\n                // Đã tìm thấy đích, xây dựng lại đường đi\n                return RetracePath(parentMap, start, end);\n            }\n\n            foreach (Node neighbor in grid.GetNeighbors(current)) {\n                if (neighbor.isWalkable && !visited.Contains(neighbor)) {\n                    visited.Add(neighbor);\n                    parentMap[neighbor] = current;\n                    queue.Enqueue(neighbor);\n                }\n            }\n        }\n        return null; // Không có đường đi\n    }\n    \n    private List<Node> RetracePath(...) { /* ... */ }\n}"
+    },
+    {
+      "slug": "depth-first-search-dfs",
+      "title": "Tìm kiếm theo chiều sâu (DFS)",
+      "description": "Thuật toán tìm kiếm theo chiều sâu (DFS) đi sâu vào một nhánh cho đến khi hết đường, sau đó quay lại. Thường được dùng để giải mê cung hoặc duyệt cây dữ liệu (skill tree).",
+      "categories": [],
+      "tags": ["AI", "Algorithm", "Pathfinding"],
+      "imageUrl": "https://picsum.photos/seed/91/400/200",
+      "code": "using System.Collections.Generic;\n\npublic class DFS {\n    // Ví dụ về việc duyệt một mê cung\n    public bool SolveMaze(Maze maze, Node start, Node end) {\n        Stack<Node> stack = new Stack<Node>();\n        HashSet<Node> visited = new HashSet<Node>();\n\n        stack.Push(start);\n\n        while (stack.Count > 0) {\n            Node current = stack.Pop();\n\n            if (current == end) {\n                return true; // Tìm thấy lối ra\n            }\n\n            if (!visited.Contains(current)) {\n                visited.Add(current);\n                foreach (Node neighbor in maze.GetNeighbors(current)) {\n                    if (!visited.Contains(neighbor) && neighbor.isWalkable) {\n                        stack.Push(neighbor);\n                    }\n                }\n            }\n        }\n        return false; // Không tìm thấy lối ra\n    }\n}"
+    },
+    {
+      "slug": "unity-navmesh-system",
+      "title": "Hệ thống NavMesh của Unity",
+      "description": "Hướng dẫn thiết lập và sử dụng hệ thống Navigation (NavMesh) tích hợp sẵn của Unity để AI có thể tự động tìm đường đi trong môi trường 3D phức tạp.",
+      "categories": ["3D"],
+      "tags": ["AI", "Pathfinding", "Navigation"],
+      "imageUrl": "https://picsum.photos/seed/92/400/200",
+      "code": "// Đây là hướng dẫn, không phải là một script hoàn chỉnh.\n\n// 1. Cài đặt Gói Navigation:\n//    - Vào Window -> Package Manager, tìm và cài đặt gói \"AI Navigation\".\n\n// 2. Bake NavMesh:\n//    - Chọn các đối tượng tĩnh (mặt đất, tường,...) trong Scene.\n//    - Trong Inspector, đánh dấu chúng là \"Navigation Static\".\n//    - Mở cửa sổ AI Navigation (Window -> AI -> Navigation).\n//    - Trong tab \"Bake\", điều chỉnh các thông số (ví dụ: Agent Radius, Step Height).\n//    - Nhấn nút \"Bake\" để Unity tạo ra NavMesh (vùng màu xanh dương).\n\n// 3. Sử dụng NavMeshAgent:\n//    - Gắn component 'NavMesh Agent' vào đối tượng AI của bạn.\n//    - Điều chỉnh các thông số như Speed, Angular Speed, Acceleration.\n\n// 4. Di chuyển AI bằng Script:\nusing UnityEngine;\nusing UnityEngine.AI;\n\npublic class AgentController : MonoBehaviour\n{\n    public Transform target;\n    private NavMeshAgent agent;\n\n    void Start()\n    {\n        agent = GetComponent<NavMeshAgent>();\n    }\n\n    void Update()\n    {\n        // Di chuyển AI đến vị trí của target\n        if (target != null) {\n            agent.SetDestination(target.position);\n        }\n    }\n}"
+    },
+    {
+      "slug": "walkable-area-2d",
+      "title": "Giới hạn Vùng đi lại 2D (Walkable Area)",
+      "description": "Sử dụng Tilemap Collider 2D và Composite Collider 2D để tạo ra một vùng đi lại duy nhất cho nhân vật, ngăn họ đi xuyên tường hoặc ra khỏi bản đồ.",
+      "categories": ["2D"],
+      "tags": ["Movement", "Player", "Physics", "Tilemap"],
+      "imageUrl": "https://picsum.photos/seed/93/400/200",
+      "code": "// Đây là hướng dẫn thiết lập trong Editor.\n\n// 1. Tạo Tilemap cho các vật cản:\n//    - Tạo một Grid (GameObject -> 2D Object -> Tilemap -> Rectangular).\n//    - Vẽ các vật cản (tường, đá,...) lên Tilemap này.\n\n// 2. Thêm Tilemap Collider 2D:\n//    - Chọn GameObject Tilemap vật cản.\n//    - Add Component -> Tilemap Collider 2D.\n\n// 3. Sử dụng Composite Collider 2D:\n//    - Vẫn trên GameObject Tilemap đó, Add Component -> Composite Collider 2D.\n//    - Component Rigidbody 2D sẽ được tự động thêm vào. Hãy set Body Type của nó thành 'Static'.\n//    - Trong Tilemap Collider 2D, tick vào ô 'Used by Composite'.\n\n// -> Kết quả: Unity sẽ gộp tất cả các collider của từng tile thành một collider lớn duy nhất,\n//    giúp tối ưu hiệu năng và đảm bảo nhân vật (với Rigidbody2D và Collider2D) sẽ va chạm chính xác.\n\n// 4. Thiết lập cho Player:\n//    - Player cần có Rigidbody2D (Body Type: Dynamic).\n//    - Player cần có một Collider2D (ví dụ: CapsuleCollider2D, BoxCollider2D)."
+    },
+    {
+      "slug": "job-system-burst-compiler",
+      "title": "Tối ưu với Job System & Burst Compiler",
+      "description": "Giới thiệu về DOTS (Data-Oriented Technology Stack) bằng cách sử dụng Job System để thực hiện các tác vụ nặng song song trên nhiều luồng CPU và Burst Compiler để tối ưu hóa code C# thành mã máy cực nhanh.",
+      "categories": [],
+      "tags": ["Optimization", "Performance", "DOTS", "Job System", "Burst"],
+      "imageUrl": "https://picsum.photos/seed/94/400/200",
+      "code": "// Yêu cầu: Cài đặt các gói 'Jobs', 'Burst', 'Collections' từ Package Manager.\nusing Unity.Collections;\nusing Unity.Jobs;\nusing Unity.Burst;\nusing UnityEngine;\n\npublic class JobSystemExample : MonoBehaviour\n{\n    void Start()\n    {\n        NativeArray<float> inputArray = new NativeArray<float>(1000, Allocator.TempJob);\n        NativeArray<float> outputArray = new NativeArray<float>(1000, Allocator.TempJob);\n\n        // Tạo một job\n        MyJob jobData = new MyJob {\n            input = inputArray,\n            output = outputArray\n        };\n\n        // Lên lịch thực thi job\n        JobHandle handle = jobData.Schedule(inputArray.Length, 64);\n\n        // Chờ job hoàn thành\n        handle.Complete();\n\n        // Sử dụng kết quả\n        Debug.Log(\"Kết quả job: \" + outputArray[0]);\n\n        // Giải phóng bộ nhớ của NativeArray\n        inputArray.Dispose();\n        outputArray.Dispose();\n    }\n}\n\n// [BurstCompile] sẽ tối ưu hóa job này thành mã máy cực nhanh\n[BurstCompile]\npublic struct MyJob : IJobParallelFor\n{\n    [ReadOnly] public NativeArray<float> input;\n    public NativeArray<float> output;\n\n    public void Execute(int index)\n    {\n        // Logic tính toán phức tạp ở đây\n        output[index] = input[index] * 2.0f;\n    }\n}"
     }
   ]
 }
