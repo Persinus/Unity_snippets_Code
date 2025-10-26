@@ -1,4 +1,5 @@
 import snippetsData from "./snippets.json";
+import snippetsData2 from "./snippets-2.json";
 
 export type Snippet = {
   slug: string;
@@ -12,8 +13,8 @@ export type Snippet = {
   commentCount?: number;
 };
 
-// The data is now directly imported from the JSON file
-const allSnippets: Snippet[] = [...snippetsData.snippets].sort((a, b) => a.title.localeCompare(b.title, 'en-US'));
+// Combine snippets from all sources and sort them
+const allSnippets: Snippet[] = [...snippetsData.snippets, ...snippetsData2.snippets].sort((a, b) => a.title.localeCompare(b.title, 'en-US'));
 
 export function getAllSnippets(): Snippet[] {
   // Return a copy of the pre-sorted array
