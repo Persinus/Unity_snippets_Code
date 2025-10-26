@@ -8,11 +8,7 @@ import { cn } from "@/lib/utils";
 import hljs from "highlight.js/lib/core";
 import csharp from "highlight.js/lib/languages/csharp";
 
-// Import themes
-import "highlight.js/styles/github-dark.css";
-import "highlight.js/styles/a11y-light.css";
-import "highlight.js/styles/monokai-sublime.css";
-
+// Register csharp language
 hljs.registerLanguage("csharp", csharp);
 
 type CodeBlockProps = {

@@ -20,6 +20,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import 'highlight.js/styles/github-dark.css';
+import 'highlight.js/styles/a11y-light.css';
+import 'highlight.js/styles/monokai-sublime.css';
 
 type SnippetClientPageProps = {
   snippet: Snippet;
