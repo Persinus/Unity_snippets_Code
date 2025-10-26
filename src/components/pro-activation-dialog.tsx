@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -12,40 +11,47 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useUser } from '@/firebase';
-import { setProClaim } from '@/lib/pro-claim';
+import { useUser, useFirestore } from '@/firebase';
 import { toast } from 'sonner';
 import { BadgeCheck, Codepen, Star, Unlock } from 'lucide-react';
+import { doc, updateDoc } from 'firebase/firestore';
 
 interface ProActivationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+const PRO_ACTIVATION_CODE = 'FaEE2405';
+
 export default function ProActivationDialog({ open, onOpenChange }: ProActivationDialogProps) {
   const { user } = useUser();
+  const firestore = useFirestore();
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!user) {
+    if (!user || !firestore) {
       toast.error('Bạn cần đăng nhập để thực hiện hành động này.');
       return;
     }
-    if (!code) {
-      toast.error('Vui lòng nhập mã kích hoạt.');
+    if (code.trim() !== PRO_ACTIVATION_CODE) {
+      toast.error('Mã kích hoạt không hợp lệ. Vui lòng thử lại.');
       return;
     }
 
     setIsLoading(true);
     try {
-      const result = await setProClaim(user.uid, code);
-      toast.success(result.message);
+      const userDocRef = doc(firestore, 'users', user.uid);
+      await updateDoc(userDocRef, { isPro: true });
+      
+      toast.success('Chúc mừng! Tài khoản của bạn đã được nâng cấp lên PRO.');
       onOpenChange(false); // Close dialog on success
+      
       // Force a reload to get new claims reflected everywhere
       setTimeout(() => window.location.reload(), 1500);
     } catch (error: any) {
-      toast.error(error.message);
+      console.error("Error setting pro status:", error);
+      toast.error(error.message || 'Không thể nâng cấp tài khoản. Vui lòng thử lại.');
     } finally {
       setIsLoading(false);
     }

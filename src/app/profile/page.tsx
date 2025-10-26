@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -8,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { signOut } from 'firebase/auth';
-import { collection } from 'firebase/firestore';
+import { collection, doc } from 'firebase/firestore';
 import { useAuth } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
@@ -19,6 +18,7 @@ import { useUserClaims } from '@/lib/user-claims';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck, User, Star, Sparkles } from 'lucide-react';
 import ProActivationDialog from '@/components/pro-activation-dialog';
+import { useDocumentData } from '@/hooks/use-document-data';
 
 function ProfileSkeleton() {
   return (
@@ -39,11 +39,21 @@ function ProfileSkeleton() {
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
-  const { claims, isLoading: claimsLoading } = useUserClaims();
+  const { claims } = useUserClaims();
   const router = useRouter();
   const auth = useAuth();
   const firestore = useFirestore();
   const [isProDialogOpen, setIsProDialogOpen] = useState(false);
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userData, isLoading: isUserDataLoading } = useDocumentData<{ isPro?: boolean }>(userDocRef);
+
+  const isPro = userData?.isPro === true;
+  const isAdmin = claims?.admin === true;
 
 
   // Memoize the query to prevent re-renders
@@ -87,12 +97,12 @@ export default function ProfilePage() {
     }
   };
 
-  if (isUserLoading || !user || claimsLoading) {
+  if (isUserLoading || !user || isUserDataLoading) {
     return <ProfileSkeleton />;
   }
 
   const UserRoleBadge = () => {
-    if (claims?.admin) {
+    if (isAdmin) {
       return (
         <Badge variant="secondary" className="border-primary/50 bg-primary/10 text-primary">
           <ShieldCheck className="mr-1.5 h-4 w-4" />
@@ -100,7 +110,7 @@ export default function ProfilePage() {
         </Badge>
       );
     }
-    if (claims?.pro) {
+    if (isPro) {
        return (
         <Badge variant="secondary" className="border-yellow-500/50 bg-yellow-500/10 text-yellow-500">
           <Star className="mr-1.5 h-4 w-4" />
@@ -138,7 +148,7 @@ export default function ProfilePage() {
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col items-center gap-2">
-                 {!claims?.pro && !claims?.admin && (
+                 {!isPro && !isAdmin && (
                   <Button onClick={() => setIsProDialogOpen(true)} className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 text-xs sm:text-sm">
                     <Sparkles className="mr-2 h-4 w-4" />
                     Nâng cấp lên PRO

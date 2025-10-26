@@ -1,11 +1,10 @@
-
 'use client';
 
 import Link from "next/link";
 import Logo from "@/components/logo";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { useAuth, useUser } from "@/firebase"; // Updated import
+import { useAuth, useUser, useMemoFirebase, useFirestore } from "@/firebase";
 import { signInWithPopup, GoogleAuthProvider, signOut } from "firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -19,15 +18,24 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogIn, User as UserIcon, LogOut, ChevronDown, ShieldCheck, Star } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
-import { useFirestore } from "@/firebase";
 import { AdmobIcon, FirebaseIcon, GooglePlayGamesIcon, MetaIcon } from "../icons";
 import { useUserClaims } from "@/lib/user-claims";
+import { useDocumentData } from "@/hooks/use-document-data";
 
 export default function Header() {
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const { claims } = useUserClaims();
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userData } = useDocumentData<{ isPro?: boolean }>(userDocRef);
+  const isPro = userData?.isPro === true;
+  const isAdmin = claims?.admin === true;
 
   const handleLogin = async () => {
     if (!auth) return;
@@ -140,7 +148,7 @@ export default function Header() {
                   <div className="flex flex-col space-y-1">
                     <div className="flex items-center gap-2">
                         <p className="text-sm font-medium leading-none">{user.displayName}</p>
-                        {claims?.pro && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500"/>}
+                        {(isPro || isAdmin) && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500"/>}
                     </div>
                     <p className="text-xs leading-none text-muted-foreground break-all">
                       {user.email}
