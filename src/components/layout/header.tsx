@@ -142,7 +142,7 @@ export default function Header() {
                         <p className="text-sm font-medium leading-none">{user.displayName}</p>
                         {claims?.pro && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500"/>}
                     </div>
-                    <p className="text-xs leading-none text-muted-foreground">
+                    <p className="text-xs leading-none text-muted-foreground break-all">
                       {user.email}
                     </p>
                   </div>

@@ -3,7 +3,6 @@
 
 import { initializeAdminApp } from '@/firebase/admin-config';
 import { revalidatePath } from 'next/cache';
-import { auth as adminAuth } from 'firebase-admin';
 
 const PRO_ACTIVATION_CODE = 'FaEE2405';
 
@@ -44,6 +43,10 @@ export async function setProClaim(uid: string, activationCode: string) {
     return { message: `Chúc mừng! Tài khoản của bạn đã được nâng cấp lên PRO.` };
   } catch (error: any) {
     console.error('Error setting pro claim:', error);
+    // Provide a more generic error to the user for security
+    if (error.message.includes("Could not initialize Firebase Admin SDK")) {
+        throw new Error("Lỗi phía máy chủ: Không thể xác thực dịch vụ. Vui lòng liên hệ quản trị viên.");
+    }
     throw new Error(`Không thể nâng cấp tài khoản: ${error.message}`);
   }
 }

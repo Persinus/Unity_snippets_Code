@@ -132,14 +132,14 @@ export default function ProfilePage() {
                   </AvatarFallback>
                 </Avatar>
                 <CardTitle className="text-2xl mt-4">{user.displayName}</CardTitle>
-                <CardDescription>{user.email}</CardDescription>
+                <CardDescription className="text-xs sm:text-sm break-all">{user.email}</CardDescription>
                 <div className="mt-2">
                   <UserRoleBadge />
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col items-center gap-2">
                  {!claims?.pro && !claims?.admin && (
-                  <Button onClick={() => setIsProDialogOpen(true)} className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600">
+                  <Button onClick={() => setIsProDialogOpen(true)} className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600 text-xs sm:text-sm">
                     <Sparkles className="mr-2 h-4 w-4" />
                     Nâng cấp lên PRO
                   </Button>

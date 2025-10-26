@@ -2,6 +2,7 @@
 // It requires Node.js environment and is intended for Server Actions or API routes.
 
 import * as admin from 'firebase-admin';
+import serviceAccountKey from '../../../firebase-admin-config.json';
 
 // We store the initialized app to avoid re-initializing it on every call.
 let adminApp: admin.app.App | null = null;
@@ -13,18 +14,19 @@ export function initializeAdminApp() {
       auth: admin.auth(),
     };
   }
-
-  const serviceAccountKeyJson = process.env.GCP_SA_KEY;
-
-  if (!serviceAccountKeyJson) {
-    throw new Error('Firebase service account key not found. Please set GCP_SA_KEY environment variable.');
-  }
   
-  const serviceAccount = JSON.parse(serviceAccountKeyJson);
+  const serviceAccount = serviceAccountKey as admin.ServiceAccount;
 
-  adminApp = admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
+  try {
+    adminApp = admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+  } catch (error) {
+     console.error("Firebase admin initialization error", error);
+     // Re-throw or handle as needed
+     throw new Error("Could not initialize Firebase Admin SDK. Please check your service account key.");
+  }
+
 
   return {
     firestore: admin.firestore(),
