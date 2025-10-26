@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useRef } from 'react';
@@ -54,7 +53,7 @@ export default function RelatedSnippets({ currentSnippet }: RelatedSnippetsProps
 
   return (
     <section className="space-y-8">
-       <div className="flex items-center gap-4">
+       <div className="flex items-center gap-3">
         <BookCopy className="h-7 w-7 text-primary" />
         <h2 className="text-2xl font-bold tracking-tight">Bài viết liên quan</h2>
       </div>

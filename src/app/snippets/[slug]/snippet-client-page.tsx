@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, Suspense, lazy } from "react";
 import CodeBlock from "@/components/code-block";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,9 +20,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Dynamically import CSS files
 import 'highlight.js/styles/github-dark.css';
 import 'highlight.js/styles/a11y-light.css';
 import 'highlight.js/styles/monokai-sublime.css';
+
 
 type SnippetClientPageProps = {
   snippet: Snippet;

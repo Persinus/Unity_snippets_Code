@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -48,7 +47,7 @@ function CommentSkeleton() {
   );
 }
 
-const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '🎉', '🤔'];
+const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '🎉', '🤔', '🙏', '💯', '✨', '🚀', '💡', '✅', '🙌'];
 
 export default function CommentSection({ snippetSlug }: CommentSectionProps) {
   const { user } = useUser();
@@ -143,7 +142,7 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-2">
-                        <div className="flex gap-2">
+                        <div className="grid grid-cols-5 gap-1">
                           {EMOJIS.map(emoji => (
                             <Button
                               key={emoji}
@@ -222,4 +221,3 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
     </section>
   );
 }
-

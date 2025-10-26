@@ -5,7 +5,7 @@ import { type Snippet } from '@/lib/snippets';
 import SnippetCard from '@/components/snippet-card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Search, XCircle } from 'lucide-react';
 import {
   Pagination,
   PaginationContent,
@@ -304,6 +304,7 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
 
             {(selectedTags.length > 0 || selectedCategories.length > 0) && (
               <Button variant="ghost" onClick={clearFilters}>
+                <XCircle className="mr-2 h-4 w-4" />
                 Xóa bộ lọc
               </Button>
             )}
