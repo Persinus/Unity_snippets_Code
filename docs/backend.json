@@ -158,6 +158,10 @@
       "admin": {
         "type": "boolean",
         "description": "Grants administrator privileges to the user."
+      },
+      "pro": {
+        "type": "boolean",
+        "description": "Grants PRO user privileges."
       }
     }
   },

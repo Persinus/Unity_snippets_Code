@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useUser } from '@/firebase';
@@ -5,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 export interface UserClaims {
   admin?: boolean;
+  pro?: boolean;
   // Add other potential claims here
 }
 

@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { signOut } from 'firebase/auth';
 import { collection } from 'firebase/firestore';
-import { useAuth }from '@/firebase';
+import { useAuth } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import SnippetCard from '@/components/snippet-card';
@@ -17,7 +17,8 @@ import { getAllSnippets, type Snippet } from '@/lib/snippets';
 import Link from 'next/link';
 import { useUserClaims } from '@/lib/user-claims';
 import { Badge } from '@/components/ui/badge';
-import { ShieldCheck, User } from 'lucide-react';
+import { ShieldCheck, User, Star, Sparkles } from 'lucide-react';
+import ProActivationDialog from '@/components/pro-activation-dialog';
 
 function ProfileSkeleton() {
   return (
@@ -42,6 +43,8 @@ export default function ProfilePage() {
   const router = useRouter();
   const auth = useAuth();
   const firestore = useFirestore();
+  const [isProDialogOpen, setIsProDialogOpen] = useState(false);
+
 
   // Memoize the query to prevent re-renders
   const userBookmarksQuery = useMemoFirebase(() => {
@@ -88,7 +91,35 @@ export default function ProfilePage() {
     return <ProfileSkeleton />;
   }
 
+  const UserRoleBadge = () => {
+    if (claims?.admin) {
+      return (
+        <Badge variant="secondary" className="border-primary/50 bg-primary/10 text-primary">
+          <ShieldCheck className="mr-1.5 h-4 w-4" />
+          Quản trị viên
+        </Badge>
+      );
+    }
+    if (claims?.pro) {
+       return (
+        <Badge variant="secondary" className="border-yellow-500/50 bg-yellow-500/10 text-yellow-500">
+          <Star className="mr-1.5 h-4 w-4" />
+          Tài khoản PRO
+        </Badge>
+      );
+    }
+    return (
+       <Badge variant="outline" className="font-normal">
+          <User className="mr-1.5 h-4 w-4" />
+          Thành viên
+        </Badge>
+    );
+  };
+
+
   return (
+    <>
+    <ProActivationDialog open={isProDialogOpen} onOpenChange={setIsProDialogOpen} />
     <div className="container mx-auto max-w-6xl py-8">
       <div className="flex flex-col md:flex-row items-start gap-8">
         <aside className="w-full md:w-1/4 lg:w-1/5 md:sticky md:top-24">
@@ -102,19 +133,17 @@ export default function ProfilePage() {
                 </Avatar>
                 <CardTitle className="text-2xl mt-4">{user.displayName}</CardTitle>
                 <CardDescription>{user.email}</CardDescription>
-                {claims?.admin ? (
-                  <Badge variant="secondary" className="mt-2 border-primary/50 bg-primary/10 text-primary">
-                    <ShieldCheck className="mr-1.5 h-4 w-4" />
-                    Quản trị viên
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="mt-2 font-normal">
-                    <User className="mr-1.5 h-4 w-4" />
-                    Thành viên
-                  </Badge>
-                )}
+                <div className="mt-2">
+                  <UserRoleBadge />
+                </div>
               </CardHeader>
-              <CardContent className="flex flex-col items-center gap-4">
+              <CardContent className="flex flex-col items-center gap-2">
+                 {!claims?.pro && !claims?.admin && (
+                  <Button onClick={() => setIsProDialogOpen(true)} className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Nâng cấp lên PRO
+                  </Button>
+                )}
                 <Button onClick={handleLogout} className="w-full" variant="destructive">
                   Đăng xuất
                 </Button>
@@ -163,5 +192,6 @@ export default function ProfilePage() {
         </main>
       </div>
     </div>
+    </>
   );
 }

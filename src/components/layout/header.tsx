@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-import { LogIn, User as UserIcon, LogOut, ChevronDown, ShieldCheck } from "lucide-react";
+import { LogIn, User as UserIcon, LogOut, ChevronDown, ShieldCheck, Star } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
 import { AdmobIcon, FirebaseIcon, GooglePlayGamesIcon, MetaIcon } from "../icons";
@@ -138,7 +138,10 @@ export default function Header() {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                    <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                        {claims?.pro && <Star className="h-4 w-4 text-yellow-500 fill-yellow-500"/>}
+                    </div>
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.email}
                     </p>
