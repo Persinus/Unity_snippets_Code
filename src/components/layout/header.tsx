@@ -132,13 +132,6 @@ export default function Header() {
           >
             Home
           </Link>
-           <Link
-            href="/blog"
-            className="transition-colors hover:text-foreground flex items-center gap-1.5"
-          >
-            <Rss className="h-4 w-4" />
-            Blog
-          </Link>
           {claims?.admin && (
              <Link
                 href="/admin"

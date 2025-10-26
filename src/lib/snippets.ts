@@ -8,9 +8,6 @@ export type Snippet = {
   categories: string[];
   tags: string[];
   code: string;
-  imageUrl: string;
-  viewCount?: number;
-  commentCount?: number;
 };
 
 // Combine snippets from all sources and sort them

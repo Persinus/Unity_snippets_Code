@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState, useEffect } from "react";
@@ -21,7 +20,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from 'next/image';
 
 type SnippetClientPageProps = {
   snippet: Snippet;
@@ -154,18 +152,6 @@ export default function SnippetClientPage({ snippet }: SnippetClientPageProps) {
             </Link>
         </Button>
       </nav>
-
-      <div className="relative w-full aspect-[16/7] rounded-lg overflow-hidden">
-        <Image
-          src={snippet.imageUrl}
-          alt={snippet.title}
-          fill
-          className="object-cover"
-          priority
-          data-ai-hint="feature image"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-      </div>
 
       <article className="space-y-6">
         <header className="space-y-4">

@@ -15,6 +15,8 @@ import { Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useCollection, useMemoFirebase } from '@/firebase';
+import { Turnstile } from '@marsidev/react-turnstile';
+
 
 interface CommentSectionProps {
   snippetSlug: string;
@@ -50,6 +52,7 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
   const firestore = useFirestore();
   const [commentText, setCommentText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   const commentsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -61,7 +64,14 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !firestore || commentText.trim() === '') {
+    if (!user || !firestore || commentText.trim() === '' || !captchaToken) {
+      if (!captchaToken) {
+        toast({
+          variant: "destructive",
+          title: "Lỗi",
+          description: "Vui lòng hoàn thành xác thực CAPTCHA.",
+        });
+      }
       return;
     }
 
@@ -75,6 +85,7 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
         authorAvatarUrl: user.photoURL || '',
       });
       setCommentText('');
+      setCaptchaToken(null);
       toast({
         title: 'Thành công',
         description: 'Bình luận của bạn đã được đăng.',
@@ -90,6 +101,8 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
       setIsSubmitting(false);
     }
   };
+  
+  const siteKey = process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY;
 
   return (
     <section className="space-y-8">
@@ -110,10 +123,23 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
               rows={3}
             />
           </div>
-          <Button type="submit" disabled={isSubmitting || commentText.trim() === ''} className="self-end">
-            <Send className="mr-2 h-4 w-4" />
-            {isSubmitting ? 'Đang gửi...' : 'Gửi bình luận'}
-          </Button>
+
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
+            {siteKey && (
+              <Turnstile
+                siteKey={siteKey}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                options={{
+                  theme: 'dark' // Hoặc 'light' tùy vào theme của bạn
+                }}
+              />
+            )}
+            <Button type="submit" disabled={isSubmitting || commentText.trim() === '' || !captchaToken} className="w-full sm:w-auto">
+              <Send className="mr-2 h-4 w-4" />
+              {isSubmitting ? 'Đang gửi...' : 'Gửi bình luận'}
+            </Button>
+          </div>
         </form>
       ) : (
         <Card className="text-center">
