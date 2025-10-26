@@ -38,5 +38,5 @@ next-env.d.ts
 # studio
 .studio
 
-# firebase
+# Sensitive files
 firebase-admin-config.json
