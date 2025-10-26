@@ -6,17 +6,18 @@ import { useUser, useFirestore } from '@/firebase';
 import { collection, orderBy, query } from 'firebase/firestore';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { addComment } from '@/lib/comments';
 import { toast } from '@/hooks/use-toast';
 import { Skeleton } from './ui/skeleton';
-import { Send } from 'lucide-react';
+import { Send, MessageSquare, Smile } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useCollection, useMemoFirebase } from '@/firebase';
 import { Turnstile } from '@marsidev/react-turnstile';
-
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from './ui/separator';
 
 interface CommentSectionProps {
   snippetSlug: string;
@@ -47,6 +48,8 @@ function CommentSkeleton() {
   );
 }
 
+const EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🔥', '🎉', '🤔'];
+
 export default function CommentSection({ snippetSlug }: CommentSectionProps) {
   const { user } = useUser();
   const firestore = useFirestore();
@@ -61,6 +64,10 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
   }, [firestore, snippetSlug]);
 
   const { data: comments, isLoading: commentsLoading } = useCollection<Comment>(commentsQuery);
+
+  const handleEmojiSelect = (emoji: string) => {
+    setCommentText(prev => prev + emoji);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,70 +113,105 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
 
   return (
     <section className="space-y-8">
-      <h2 className="text-2xl font-bold tracking-tight">Bình luận ({comments?.length ?? 0})</h2>
+      <div className="flex items-center gap-3">
+        <MessageSquare className="h-7 w-7 text-primary" />
+        <h2 className="text-2xl font-bold tracking-tight">Bình luận ({comments?.length ?? 0})</h2>
+      </div>
 
       {user ? (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex gap-4 items-start">
-             <Avatar>
-                <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
-                <AvatarFallback>{user.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <Textarea
-              placeholder="Viết bình luận của bạn..."
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              disabled={isSubmitting}
-              rows={3}
-            />
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-end gap-4">
-            {siteKey && (
-              <Turnstile
-                siteKey={siteKey}
-                onSuccess={(token) => setCaptchaToken(token)}
-                onExpire={() => setCaptchaToken(null)}
-                options={{
-                  theme: 'dark' // Hoặc 'light' tùy vào theme của bạn
-                }}
-              />
-            )}
-            <Button type="submit" disabled={isSubmitting || commentText.trim() === '' || !captchaToken} className="w-full sm:w-auto">
-              <Send className="mr-2 h-4 w-4" />
-              {isSubmitting ? 'Đang gửi...' : 'Gửi bình luận'}
-            </Button>
-          </div>
-        </form>
-      ) : (
-        <Card className="text-center">
+        <Card>
           <CardContent className="p-6">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex gap-4 items-start">
+                 <Avatar>
+                    <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
+                    <AvatarFallback>{user.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div className="relative w-full">
+                  <Textarea
+                    placeholder="Viết bình luận của bạn..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    disabled={isSubmitting}
+                    rows={4}
+                    className="pr-12"
+                  />
+                   <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" className="absolute right-2 top-2 h-8 w-8 text-muted-foreground hover:bg-muted">
+                          <Smile className="h-5 w-5" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-2">
+                        <div className="flex gap-2">
+                          {EMOJIS.map(emoji => (
+                            <Button
+                              key={emoji}
+                              variant="ghost"
+                              size="icon"
+                              className="h-9 w-9 text-xl"
+                              onClick={() => handleEmojiSelect(emoji)}
+                            >
+                              {emoji}
+                            </Button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="w-full sm:w-auto">
+                    {siteKey && (
+                      <Turnstile
+                        siteKey={siteKey}
+                        onSuccess={(token) => setCaptchaToken(token)}
+                        onExpire={() => setCaptchaToken(null)}
+                        options={{ theme: 'dark' }}
+                      />
+                    )}
+                </div>
+                <Button type="submit" disabled={isSubmitting || commentText.trim() === '' || !captchaToken} className="w-full sm:w-auto">
+                  <Send className="mr-2 h-4 w-4" />
+                  {isSubmitting ? 'Đang gửi...' : 'Gửi bình luận'}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="text-center bg-accent/20 border-dashed">
+          <CardContent className="p-6 flex flex-col items-center justify-center">
             <p className="text-muted-foreground">Bạn cần <span className="font-semibold text-primary">đăng nhập</span> để có thể bình luận.</p>
           </CardContent>
         </Card>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {commentsLoading ? (
             <div className="space-y-6">
                 <CommentSkeleton />
                 <CommentSkeleton />
             </div>
         ) : comments && comments.length > 0 ? (
-          comments.map((comment) => (
-            <div key={comment.id} className="flex items-start space-x-4">
-              <Avatar>
-                <AvatarImage src={comment.authorAvatarUrl} alt={comment.authorDisplayName} />
-                <AvatarFallback>{comment.authorDisplayName.charAt(0).toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold">{comment.authorDisplayName}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt.seconds * 1000), { addSuffix: true, locale: vi }) : '...'}
-                  </p>
+          comments.map((comment, index) => (
+            <div key={comment.id}>
+              {index > 0 && <Separator className="my-6" />}
+              <div className="flex items-start space-x-4">
+                <Avatar>
+                  <AvatarImage src={comment.authorAvatarUrl} alt={comment.authorDisplayName} />
+                  <AvatarFallback>{comment.authorDisplayName.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3">
+                    <p className="font-semibold">{comment.authorDisplayName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      • {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt.seconds * 1000), { addSuffix: true, locale: vi }) : '...'}
+                    </p>
+                  </div>
+                  <p className="text-muted-foreground mt-2 whitespace-pre-wrap">{comment.text}</p>
                 </div>
-                <p className="text-muted-foreground whitespace-pre-wrap">{comment.text}</p>
               </div>
             </div>
           ))
@@ -180,3 +222,4 @@ export default function CommentSection({ snippetSlug }: CommentSectionProps) {
     </section>
   );
 }
+
