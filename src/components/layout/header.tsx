@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from "next/link";
@@ -16,21 +17,11 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { LogIn, User as UserIcon, LogOut, ChevronDown, Braces, Code, Star, Share2 } from "lucide-react";
+import { LogIn, User as UserIcon, LogOut, ChevronDown, ShieldCheck } from "lucide-react";
 import { doc, setDoc } from "firebase/firestore";
 import { useFirestore } from "@/firebase";
 import { AdmobIcon, FirebaseIcon, GooglePlayGamesIcon, MetaIcon } from "../icons";
-=======
-import { LogIn, User as UserIcon, LogOut, ShieldCheck } from "lucide-react";
-=======
-import { LogIn, User as UserIcon, LogOut, ShieldCheck, Rss } from "lucide-react";
->>>>>>> d35aba7 (thêm c# ở phần header tạo trang blog giống unity luôn)
-import { doc, setDoc } from "firebase/firestore";
-import { useFirestore } from "@/firebase";
 import { useUserClaims } from "@/lib/user-claims";
->>>>>>> 6736199 (thêm chưa thêm đi)
 
 export default function Header() {
   const auth = useAuth();
@@ -75,8 +66,6 @@ export default function Header() {
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Logo />
         </Link>
-<<<<<<< HEAD
-<<<<<<< HEAD
         <nav className="hidden flex-1 items-center space-x-2 text-sm font-medium text-muted-foreground md:flex">
           <Button variant="link" asChild className="text-muted-foreground">
             <Link href="/">Trang chủ</Link>
@@ -120,18 +109,6 @@ export default function Header() {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-
-=======
-        <nav className="hidden flex-1 items-center space-x-4 text-sm font-medium text-muted-foreground md:flex">
-=======
-        <nav className="hidden flex-1 items-center space-x-6 text-sm font-medium text-muted-foreground md:flex">
->>>>>>> d35aba7 (thêm c# ở phần header tạo trang blog giống unity luôn)
-          <Link
-            href="/"
-            className="transition-colors hover:text-foreground"
-          >
-            Home
-          </Link>
           {claims?.admin && (
              <Link
                 href="/admin"
@@ -141,7 +118,6 @@ export default function Header() {
                 Admin
              </Link>
           )}
->>>>>>> 6736199 (thêm chưa thêm đi)
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <ThemeToggle />

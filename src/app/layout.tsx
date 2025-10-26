@@ -1,4 +1,3 @@
-
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/components/layout/theme-provider';
 import Header from '@/components/layout/header';
