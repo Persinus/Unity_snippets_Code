@@ -2,7 +2,8 @@
 // It requires Node.js environment and is intended for Server Actions or API routes.
 
 import * as admin from 'firebase-admin';
-import serviceAccountKey from '../../../firebase-admin-config.json';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // We store the initialized app to avoid re-initializing it on every call.
 let adminApp: admin.app.App | null = null;
@@ -14,8 +15,16 @@ export function initializeAdminApp() {
       auth: admin.auth(),
     };
   }
-  
-  const serviceAccount = serviceAccountKey as admin.ServiceAccount;
+
+  const serviceAccountPath = path.resolve(process.cwd(), 'firebase-admin-config.json');
+
+  if (!fs.existsSync(serviceAccountPath)) {
+    throw new Error(
+      'Firebase service account key not found. Please create firebase-admin-config.json in the root directory.'
+    );
+  }
+
+  const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
 
   try {
     adminApp = admin.initializeApp({
