@@ -1,6 +1,6 @@
 'use client';
 
-import Link from "next/link";
+import Link from 'next/link';
 import {
   Card,
   CardHeader,
@@ -8,20 +8,20 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import type { Snippet } from "@/lib/snippets";
-import { ArrowRight, Bookmark } from "lucide-react";
-import { getTagColorClasses } from "@/lib/tag-colors";
-import { cn } from "@/lib/utils";
-import React, { useMemo } from "react";
-import { Button } from "./ui/button";
-import { useCollection, useFirestore, useMemoFirebase, useUser } from "@/firebase";
-import { toggleBookmark } from "@/lib/bookmarks";
-import { collection } from "firebase/firestore";
-import { toast } from "@/hooks/use-toast";
-import { Separator } from "./ui/separator";
-import { motion } from "framer-motion";
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import type { Snippet } from '@/lib/snippets';
+import { ArrowRight, Bookmark } from 'lucide-react';
+import { getTagColorClasses } from '@/lib/tag-colors';
+import { cn } from '@/lib/utils';
+import React, { useMemo } from 'react';
+import { Button } from './ui/button';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { toggleBookmark } from '@/lib/bookmarks';
+import { collection } from 'firebase/firestore';
+import { toast } from '@/hooks/use-toast';
+import { Separator } from './ui/separator';
+import { motion } from 'framer-motion';
 
 type SnippetCardProps = {
   snippet: Snippet;
@@ -32,7 +32,14 @@ type SnippetCardProps = {
   onTagClick: (tag: string) => void;
 };
 
-export default function SnippetCard({ snippet, index, selectedCategories, selectedTags, onCategoryClick, onTagClick }: SnippetCardProps) {
+export default function SnippetCard({
+  snippet,
+  index,
+  selectedCategories,
+  selectedTags,
+  onCategoryClick,
+  onTagClick,
+}: SnippetCardProps) {
   const hasSelection = selectedTags.length > 0 || selectedCategories.length > 0;
   const { user } = useUser();
   const firestore = useFirestore();
@@ -42,20 +49,19 @@ export default function SnippetCard({ snippet, index, selectedCategories, select
     return collection(firestore, 'users', user.uid, 'bookmarks');
   }, [firestore, user]);
 
-  const { data: bookmarks } = useCollection<{id: string}>(userBookmarksQuery);
+  const { data: bookmarks } = useCollection<{ id: string }>(userBookmarksQuery);
 
   const isBookmarked = useMemo(() => {
-    return !!(bookmarks && bookmarks.some(b => b.id === snippet.slug));
+    return !!(bookmarks && bookmarks.some((b) => b.id === snippet.slug));
   }, [bookmarks, snippet.slug]);
-
 
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!user || !firestore) {
       toast({
-        variant: "destructive",
-        title: "Lỗi",
-        description: "Bạn cần đăng nhập để sử dụng tính năng này.",
+        variant: 'destructive',
+        title: 'Lỗi',
+        description: 'Bạn cần đăng nhập để sử dụng tính năng này.',
       });
       return;
     }
@@ -69,29 +75,32 @@ export default function SnippetCard({ snippet, index, selectedCategories, select
       transition={{ duration: 0.3, delay: index * 0.05 }}
       className="h-full"
     >
-      <Card 
-        className="flex h-full flex-col overflow-hidden transition-all duration-300 group hover:border-primary hover:shadow-lg hover:shadow-primary/10"
-      >
+      <Card className="flex h-full flex-col overflow-hidden transition-all duration-300 group hover:border-primary hover:shadow-lg hover:shadow-primary/10">
         <CardHeader>
           <div className="flex justify-between items-start">
-              <Link href={`/snippets/${snippet.slug}`} className="group/title block flex-grow">
-                <CardTitle as="h2" className="font-headline text-lg font-semibold group-hover/title:text-primary">
-                  {snippet.title}
-                </CardTitle>
-              </Link>
-              {user && (
-                   <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 shrink-0"
-                      onClick={handleBookmarkClick}
-                      aria-label="Bookmark this snippet"
-                    >
-                      <Bookmark className={cn("h-5 w-5", isBookmarked ? "fill-primary text-primary" : "text-muted-foreground")} />
-                    </Button>
-              )}
+            <Link href={`/snippets/${snippet.slug}`} className="group/title block flex-grow">
+              <CardTitle as="h2" className="font-headline text-xl font-semibold group-hover/title:text-primary">
+                {snippet.title}
+              </CardTitle>
+            </Link>
+            {user && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 shrink-0 -mr-2 -mt-2"
+                onClick={handleBookmarkClick}
+                aria-label="Bookmark this snippet"
+              >
+                <Bookmark
+                  className={cn(
+                    'h-5 w-5',
+                    isBookmarked ? 'fill-primary text-primary' : 'text-muted-foreground'
+                  )}
+                />
+              </Button>
+            )}
           </div>
-          <CardDescription className="line-clamp-2 pt-1">
+          <CardDescription className="line-clamp-3 pt-1">
             {snippet.description}
           </CardDescription>
         </CardHeader>
@@ -102,26 +111,27 @@ export default function SnippetCard({ snippet, index, selectedCategories, select
                 <Badge
                   key={cat}
                   className={cn(
-                    "cursor-pointer",
+                    'cursor-pointer',
                     getTagColorClasses(cat, selectedCategories.includes(cat), hasSelection, true)
                   )}
-                  onClick={(e) => { e.preventDefault(); onCategoryClick(cat); }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onCategoryClick(cat);
+                  }}
                 >
                   {cat}
                 </Badge>
               ))}
             </div>
           )}
-           {snippet.categories.length > 0 && snippet.tags.length > 0 && (
-            <Separator />
-          )}
+          {snippet.categories.length > 0 && snippet.tags.length > 0 && <Separator />}
           {snippet.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {snippet.tags.map((tag) => (
-                <Badge 
-                  key={tag} 
+                <Badge
+                  key={tag}
                   className={cn(
-                    "cursor-pointer",
+                    'cursor-pointer',
                     getTagColorClasses(tag, selectedTags.includes(tag), hasSelection)
                   )}
                   onClick={(e) => {
@@ -137,10 +147,13 @@ export default function SnippetCard({ snippet, index, selectedCategories, select
           )}
         </CardContent>
         <CardFooter className="flex justify-end items-center bg-muted/30 p-4 mt-auto">
-            <Link href={`/snippets/${snippet.slug}`} className="flex items-center text-sm font-medium text-primary opacity-80 hover:opacity-100 transition-opacity duration-300 group-hover:text-primary">
-                Xem thêm
-                <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+          <Link
+            href={`/snippets/${snippet.slug}`}
+            className="flex items-center text-sm font-medium text-primary opacity-80 hover:opacity-100 transition-opacity duration-300 group-hover:text-primary"
+          >
+            Xem thêm
+            <ArrowRight className="ml-1.5 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
         </CardFooter>
       </Card>
     </motion.div>

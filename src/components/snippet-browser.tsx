@@ -1,12 +1,11 @@
-
 'use client';
 
-import { useState, useMemo } from "react";
-import { type Snippet } from "@/lib/snippets";
-import SnippetCard from "@/components/snippet-card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Search } from "lucide-react";
+import { useState, useMemo } from 'react';
+import { type Snippet } from '@/lib/snippets';
+import SnippetCard from '@/components/snippet-card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { ChevronDown, Search } from 'lucide-react';
 import {
   Pagination,
   PaginationContent,
@@ -15,18 +14,14 @@ import {
   PaginationPrevious,
   PaginationLink,
   PaginationEllipsis,
-} from "@/components/ui/pagination";
-import { getTagColorClasses } from "@/lib/tag-colors";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/pagination';
+import { getTagColorClasses } from '@/lib/tag-colors';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 
-const SNIPPETS_PER_PAGE = 10;
+const SNIPPETS_PER_PAGE = 12;
 
 type SnippetBrowserProps = {
   allSnippets: Snippet[];
@@ -46,7 +41,7 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
     };
   }, [allSnippets]);
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -54,13 +49,12 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
   const filteredSnippets = useMemo(() => {
     return allSnippets.filter((snippet) => {
       const searchMatch =
-        searchTerm === "" ||
+        searchTerm === '' ||
         snippet.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         snippet.description.toLowerCase().includes(searchTerm.toLowerCase());
 
       const tagMatch =
-        selectedTags.length === 0 ||
-        selectedTags.every((tag) => snippet.tags.includes(tag));
+        selectedTags.length === 0 || selectedTags.every((tag) => snippet.tags.includes(tag));
 
       const categoryMatch =
         selectedCategories.length === 0 ||
@@ -80,9 +74,7 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) => {
-      const newSelection = prev.includes(tag)
-        ? prev.filter((t) => t !== tag)
-        : [...prev, tag];
+      const newSelection = prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag];
       setCurrentPage(1);
       return newSelection;
     });
@@ -101,6 +93,7 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
+      window.scrollTo(0, 0);
     }
   };
 
@@ -120,10 +113,6 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
       startPage = Math.max(1, totalPages - maxPagesToShow + 1);
     }
 
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-
     return (
       <Pagination>
         <PaginationContent>
@@ -135,9 +124,7 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
                 handlePageChange(currentPage - 1);
               }}
               aria-disabled={currentPage === 1}
-              className={
-                currentPage === 1 ? "pointer-events-none opacity-50" : ""
-              }
+              className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
             />
           </PaginationItem>
 
@@ -202,11 +189,7 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
                 handlePageChange(currentPage + 1);
               }}
               aria-disabled={currentPage === totalPages}
-              className={
-                currentPage === totalPages
-                  ? "pointer-events-none opacity-50"
-                  : ""
-              }
+              className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
             />
           </PaginationItem>
         </PaginationContent>
@@ -230,7 +213,7 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
         type="checkbox"
         checked={selectedTags.includes(tag)}
         readOnly
-        className="form-checkbox h-4 w-4 text-primary rounded border-gray-300 focus:ring-primary"
+        className="form-checkbox h-4 w-4 text-primary rounded border-muted-foreground/50 focus:ring-primary"
       />
       <label className="text-sm font-medium leading-none cursor-pointer">{tag}</label>
     </div>
@@ -246,15 +229,15 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
         type="checkbox"
         checked={selectedCategories.includes(category)}
         readOnly
-        className="form-checkbox h-4 w-4 text-primary rounded border-gray-300 focus:ring-primary"
+        className="form-checkbox h-4 w-4 text-primary rounded border-muted-foreground/50 focus:ring-primary"
       />
       <label className="text-sm font-medium leading-none cursor-pointer">{category}</label>
     </div>
   );
 
   return (
-    <>
-      <div className="mx-auto max-w-4xl space-y-6">
+    <div className="space-y-8">
+      <div className="space-y-6">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
@@ -269,100 +252,101 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
           />
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">
-                Lọc theo Nền tảng
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="start" side="bottom">
-              <div className="grid gap-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium leading-none">Chọn Nền tảng</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Chọn một hoặc nhiều nền tảng để lọc.
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
-                  {allCategories.map((cat) => (
-                    <CategoryCheckboxItem key={cat} category={cat} />
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">
-                Lọc theo Tag
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="start" side="bottom">
-              <div className="grid gap-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium leading-none">Chọn Tag</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Chọn một hoặc nhiều tag để lọc.
-                  </p>
-                </div>
-                <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
-                  {allTags.map((tag) => (
-                    <TagCheckboxItem key={tag} tag={tag} />
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          {(selectedTags.length > 0 || selectedCategories.length > 0) && (
-            <Button variant="ghost" onClick={clearFilters}>
-              Xóa bộ lọc
-            </Button>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center justify-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
           <div className="flex flex-wrap items-center justify-center gap-2">
-            {selectedCategories.map((cat) => (
-              <Badge
-                key={cat}
-                className={cn(
-                  getTagColorClasses(cat, true, true, true),
-                  "cursor-pointer text-base"
-                )}
-                onClick={() => toggleCategory(cat)}
-              >
-                {cat}
-              </Badge>
-            ))}
-          </div>
-          {selectedCategories.length > 0 && selectedTags.length > 0 && (
-            <Separator orientation="vertical" className="h-6" />
-          )}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {selectedTags.map((tag) => (
-              <Badge
-                key={tag}
-                className={cn(
-                  getTagColorClasses(tag, true, true),
-                  "cursor-pointer"
-                )}
-                variant="outline"
-                onClick={() => toggleTag(tag)}
-              >
-                {tag}
-              </Badge>
-            ))}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline">
+                  Lọc theo Nền tảng
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="start" side="bottom">
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium leading-none">Chọn Nền tảng</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Chọn một hoặc nhiều nền tảng để lọc.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
+                    {allCategories.map((cat) => (
+                      <CategoryCheckboxItem key={cat} category={cat} />
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline">
+                  Lọc theo Tag
+                  <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="start" side="bottom">
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium leading-none">Chọn Tag</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Chọn một hoặc nhiều tag để lọc.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
+                    {allTags.map((tag) => (
+                      <TagCheckboxItem key={tag} tag={tag} />
+                    ))}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            {(selectedTags.length > 0 || selectedCategories.length > 0) && (
+              <Button variant="ghost" onClick={clearFilters}>
+                Xóa bộ lọc
+              </Button>
+            )}
           </div>
         </div>
+
+        {(selectedCategories.length > 0 || selectedTags.length > 0) && (
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {selectedCategories.map((cat) => (
+                <Badge
+                  key={cat}
+                  className={cn(
+                    getTagColorClasses(cat, true, true, true),
+                    'cursor-pointer text-base'
+                  )}
+                  onClick={() => toggleCategory(cat)}
+                >
+                  {cat}
+                </Badge>
+              ))}
+            </div>
+            {selectedCategories.length > 0 && selectedTags.length > 0 && (
+              <Separator orientation="vertical" className="h-6" />
+            )}
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {selectedTags.map((tag) => (
+                <Badge
+                  key={tag}
+                  className={cn(getTagColorClasses(tag, true, true), 'cursor-pointer')}
+                  variant="outline"
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {currentSnippets.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {currentSnippets.map((snippet, index) => (
             <SnippetCard
               key={snippet.slug}
@@ -384,6 +368,6 @@ export default function SnippetBrowser({ allSnippets }: SnippetBrowserProps) {
       )}
 
       {renderPagination()}
-    </>
+    </div>
   );
 }
